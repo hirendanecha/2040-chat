@@ -11,16 +11,11 @@ import 'localstorage-polyfill';
 import 'reflect-metadata';
 import { environment } from 'src/environments/environment.prod';
 
-// SEO
-// const url = 'https://freedom-api.opash.in';
-// const url = 'https://freedom-api.opash.in';
-// const url_img = url;
 const api_url = environment.serverUrl;
 
-// The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-  const distFolder = join(process.cwd(), 'dist/freedom-ssr/browser');
+  const distFolder = join(process.cwd(), 'dist/2040-chat/browser');
   const indexHtml = existsSync(join(distFolder, 'index.original.html'))
     ? 'index.original.html'
     : 'index';
@@ -30,10 +25,9 @@ export function app(): express.Express {
   const path = require('path');
   const template = fs
     .readFileSync(
-      path.join(join(process.cwd(), 'dist/freedom-ssr/browser'), 'index.html')
+      path.join(join(process.cwd(), 'dist/2040-chat/browser'), 'index.html')
     )
     .toString();
-  // Shim for the global window and document objects.
   const window = domino.createWindow(template);
 
   global['localStorage'] = localStorage;
@@ -46,11 +40,7 @@ export function app(): express.Express {
   global['Event'] = window.Event;
   global['Event']['prototype'] = window.Event.prototype;
   global['HTMLElement'] = window.HTMLElement;
-  global['jwplayer'] = window.jwplayer;
-  // global.google = google;
   global['getComputedStyle'] = window.getComputedStyle;
-
-  // Our Universal express-engine (found @ https://github.com/angular/universal/tree/main/modules/express-engine)
   server.engine(
     'html',
     ngExpressEngine({
@@ -61,18 +51,12 @@ export function app(): express.Express {
 
   server.set('view engine', 'html');
   server.set('views', distFolder);
-
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
-  // Serve static files from /browser
   server.get(
     '*.*',
     express.static(distFolder, {
       maxAge: '1y',
     })
   );
-
-  // All regular routes use the Universal engine
 
   server.get('*', (req, res) => {
     res.render(
@@ -93,40 +77,9 @@ export function app(): express.Express {
           url: 'https://freedom.buzz' + params,
           keywords: 'FreedomBuzz, Freedom',
         };
-        if (
-          params.indexOf('communities/') > -1 ||
-          params.indexOf('pages/') > -1
-        ) {
-          let id = params.split('/');
-          id = id[id.length - 1];
-          // id = params[params.length - 1];
-          // id = Number(id);
-          // let id = 'local-organic-food-sources';
-          console.log({ id });
-
-          // if (!isNaN(id) || Math.sign(id) > 0) {
-          const community: any = await getCommunity(id);
-
-          console.log({ params }, { id }, { community });
-
-          const talent = {
-            name: community?.CommunityName,
-            description: community?.CommunityDescription,
-            image: community?.coverImg,
-          };
-          seo.title = talent.name;
-          seo.description = strip_html_tags(talent.description);
-          seo.image = `${talent.image}`;
-          // }
-        } else if (params.indexOf('settings/view-profile/') > -1) {
+        if (params.indexOf('settings/view-profile/') > -1) {
           let id = params.split('/');
           id = +id[id.length - 1];
-          // id = params[params.length - 1];
-          // id = Number(id);
-          // let id = 'local-organic-food-sources';
-          // console.log({ id });
-
-          // if (!isNaN(id) || Math.sign(id) > 0) {
           const { data: profile }: any = await getProfile(id);
 
           console.log({ params }, { id }, { profile: JSON.stringify(profile) });
@@ -138,45 +91,6 @@ export function app(): express.Express {
           seo.title = talent.name;
           seo.description = strip_html_tags(talent.description);
           seo.image = `${talent.image}`;
-        } else if (params.indexOf('post/') > -1) {
-          let id = params.split('/');
-          id = id[id.length - 1];
-          // id = params[params.length - 1];
-          // id = Number(id);
-          // let id = 'local-organic-food-sources';
-          console.log({ id });
-
-          // if (!isNaN(id) || Math.sign(id) > 0) {
-          const [post]: any = await getPost(+id);
-
-          console.log('post===>', post);
-          const pdhtml = document.createElement('div');
-          pdhtml.innerHTML = post?.postdescription || post?.metadescription;
-          const talent = {
-            name: post?.title || post?.albumname || 'Freedom.Buzz Post',
-            description: pdhtml?.textContent || 'Post content',
-            image: post?.thumbfilename || post?.metaimage || post?.imageUrl || 'https://freedom.buzz/assets/images/banner/freedom-buzz-high-res.jpeg',
-          };
-          seo.title = talent.name;
-          seo.description = strip_html_tags(talent.description);
-          seo.image = talent.image;
-          // }
-        } else if (params.indexOf('research/') > -1) {
-          let id = params.split('/');
-          id = id[id.length - 1];
-          console.log({ id });
-
-          const group: any = await getResearchGroup(id);
-
-          console.log('group===>', group);
-          const talent = {
-            name: `Freedom.Buzz Research ${group?.PageTitle}`,
-            description: group?.PageDescription,
-            image: group?.CoverPicName || group?.ProfilePicName
-          };
-          seo.title = talent.name;
-          seo.description = talent.description;
-          seo.image = talent.image;
         }
 
         html = html.replace(/\$TITLE/g, seo.title);
@@ -201,24 +115,8 @@ export function app(): express.Express {
   return server;
 }
 
-async function getCommunity(id: any) {
-  return fetch(api_url + 'community/bySlug/' + id).then((resp) =>
-    resp.json()
-  );
-}
-
-async function getPost(id: any) {
-  console.log(api_url);
-  return fetch(api_url + 'posts/get/' + id).then((resp) => resp.json());
-}
 async function getProfile(id: any) {
   return fetch(api_url + 'customers/profile/' + id).then((resp: any) =>
-    resp.json()
-  );
-}
-
-async function getResearchGroup(id: any) {
-  return fetch(api_url + 'profile/getGroupBasicDetails/' + id).then((resp: any) =>
     resp.json()
   );
 }
@@ -235,16 +133,12 @@ function strip_html_tags(str: any) {
 function run(): void {
   const port = process.env['PORT'] || 4000;
 
-  // Start up the Node server
   const server = app();
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
 
-// Webpack will replace 'require' with '__webpack_require__'
-// '__non_webpack_require__' is a proxy to Node 'require'
-// The below code is to ensure that the server is run only when not requiring the bundle.
 declare const __non_webpack_require__: NodeRequire;
 const mainModule = __non_webpack_require__.main;
 const moduleFilename = (mainModule && mainModule.filename) || '';

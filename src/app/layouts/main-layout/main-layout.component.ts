@@ -1,11 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, Scroll } from '@angular/router';
-import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { filter, map } from 'rxjs';
 import { BreakpointService } from 'src/app/@shared/services/breakpoint.service';
-import { LeftSidebarComponent } from './components/left-sidebar/left-sidebar.component';
-import { ResearchSidebarComponent } from './components/research-sidebar/research-sidebar.component';
-import { RightSidebarComponent } from './components/right-sidebar/right-sidebar.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -24,7 +20,6 @@ export class MainLayoutComponent {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private offcanvasService: NgbOffcanvas,
     public breakpointService: BreakpointService,
   ) {
     this.router.events.pipe(
@@ -49,11 +44,4 @@ export class MainLayoutComponent {
     });
   }
 
-  openLeftSidebar() {
-		this.offcanvasService.open(this.sidebar?.isShowResearchLeftSideBar ? ResearchSidebarComponent : LeftSidebarComponent, { position: 'start', panelClass: 'w-300-px' });
-	}
-
-  openRightSidebar() {
-		this.offcanvasService.open(RightSidebarComponent, { position: 'end', panelClass: 'w-300-px' });
-	}
 }

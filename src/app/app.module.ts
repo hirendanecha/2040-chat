@@ -22,7 +22,7 @@ import { SharedModule } from './@shared/shared.module';
     AppRoutingModule,
     HttpClientModule,
     SharedModule,
-    BrowserModule.withServerTransition({ appId: 'Freedom-buzz' }),
+    BrowserModule.withServerTransition({ appId: '2040-chat' }),
     BrowserAnimationsModule,
     TransferHttpCacheModule,
   ],

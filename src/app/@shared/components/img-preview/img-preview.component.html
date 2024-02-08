@@ -20,8 +20,6 @@
     class="img-preview-full-screen d-flex flex-column justify-content-center align-items-center p-5 c-icon-color" (click)="closeImagePreview()"
   >
     <fa-icon [icon]="['fas', 'xmark']" class="c-pointer close-icon font-40-px" (click)="closeImagePreview()" />
-
-    <!-- width="600" -->
     <img
       loading="lazy"
       data-src="{{ src }}"

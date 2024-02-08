@@ -12,7 +12,6 @@ import { Subject, debounceTime, forkJoin, fromEvent, of } from 'rxjs';
 import { ConfirmationModalComponent } from 'src/app/@shared/modals/confirmation-modal/confirmation-modal.component';
 import { Customer } from 'src/app/@shared/constant/customer';
 import { CustomerService } from 'src/app/@shared/services/customer.service';
-import { PostService } from 'src/app/@shared/services/post.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
 import { TokenStorageService } from 'src/app/@shared/services/token-storage.service';
 import { ToastService } from 'src/app/@shared/services/toast.service';
@@ -54,7 +53,6 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     private customerService: CustomerService,
     private spinner: NgxSpinnerService,
     private tokenStorage: TokenStorageService,
-    private postService: PostService,
     public sharedService: SharedService,
     private toastService: ToastService,
     private uploadService: UploadFilesService,

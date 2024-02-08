@@ -12,9 +12,7 @@ import {
 } from '@angular/core';
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerService } from '../../services/customer.service';
-import { PostService } from '../../services/post.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { SocketService } from '../../services/socket.service';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { MessageService } from '../../services/message.service';
 
@@ -50,25 +48,15 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
 
   emojiPaths = [
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Heart.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Nerd.gif'
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Cry.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Cool.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Anger.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Crazy.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Censorship.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Doctor.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Hug.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/In-Love.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Kiss.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/LOL.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Party.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Poop.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Sad.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Scholar.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Shock.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Sick.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Think.gif',
-    // 'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Sleep.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Thumbs-UP.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Thumbs-down.gif',
   ];
@@ -76,9 +64,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   constructor(
     private renderer: Renderer2,
     private customerService: CustomerService,
-    private postService: PostService,
     private spinner: NgxSpinnerService,
-    private socketService: SocketService,
     private messageService: MessageService
   ) {
     this.metaDataSubject.pipe(debounceTime(10)).subscribe(() => {
@@ -99,7 +85,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
       this.getMetaDataFromUrlStr();
       this.checkUserTagFlag();
     }
-    // this.moveCursorToEnd()
   }
 
   ngOnDestroy(): void {
@@ -112,24 +97,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     this.emitChangeEvent();
   }
 
-  // checkUserTagFlag1(): void {
-  //   if (this.isAllowTagUser) {
-  //     const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
-
-  //     const atSymbolIndex = htmlText.lastIndexOf('@');
-
-  //     if (atSymbolIndex !== -1) {
-  //       this.userNameSearch = htmlText.substring(atSymbolIndex + 1);
-  //       if (this.userNameSearch?.length > 2) {
-  //         this.getUserList(this.userNameSearch);
-  //       } else {
-  //         this.clearUserSearchData();
-  //       }
-  //     } else {
-  //       this.clearUserSearchData();
-  //     }
-  //   }
-  // }
   checkUserTagFlag(): void {
     this.userList = [];
     if (this.isAllowTagUser) {
@@ -163,17 +130,13 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     }
 
     const text = htmlText.replace(/<[^>]*>/g, '');
-    // const matches = text.match(/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?(.*)/gi);
-    // const matches = text.match(/((ftp|http|https):\/\/)?(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
     const matches = text.match(/(?:https?:\/\/|www\.)[^\s]+/g);
     const url = matches?.[0];
-    // console.log(url, matches);
     if (url) {
       if (url !== this.metaData?.url) {
-        //   // this.spinner.show();
         this.isMetaLoader = true;
         const unsubscribe$ = new Subject<void>();
-        this.postService
+        this.customerService
           .getMetaData({ url })
           .pipe(takeUntil(unsubscribe$))
           .subscribe({
@@ -218,40 +181,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
               unsubscribe$.complete();
             },
           });
-        // this.socketService.getMeta({ url: url });
-        // if (this.socketService.socket.connect()) {
-        //   this.socketService.socket.on('get-meta', (data: any) => {
-        //     this.isMetaLoader = false;
-        //     console.log('meta-data', data);
-        //     this.isMetaLoader = false;
-        //     if (data?.image) {
-        //       const urls = data.image?.url;
-        //       const imgUrl = Array.isArray(urls) ? urls?.[0] : urls;
-
-        //       const metatitles = data?.title;
-        //       const metatitle = Array.isArray(metatitles)
-        //         ? metatitles?.[0]
-        //         : metatitles;
-
-        //       const metaurls = data?.url || url;
-        //       const metaursl = Array.isArray(metaurls)
-        //         ? metaurls?.[0]
-        //         : metaurls;
-
-        //       this.metaData = {
-        //         title: metatitle,
-        //         metadescription: data?.description,
-        //         metaimage: imgUrl,
-        //         metalink: metaursl,
-        //         url: url,
-        //       };
-
-        //       this.emitChangeEvent();
-        //     } else {
-        //       this.metaData.metalink = url
-        //     }
-        //   })
-        // }
       }
     } else {
       this.clearMetaData();
@@ -278,8 +207,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
     const text = htmlText.replace(
       `@${this.userNameSearch}`,
-      `<a href="/settings/view-profile/${
-        user?.Id
+      `<a href="/settings/view-profile/${user?.Id
       }" class="text-danger" data-id="${user?.Id}">@${user?.Username.split(
         ' '
       ).join('')}</a>`
@@ -305,8 +233,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
           next: (res: any) => {
             if (res?.data?.length > 0) {
               this.userList = res.data.map((e) => e);
-              // console.log(this.userList);
-              // this.userSearchNgbDropdown.open();
             } else {
               this.clearUserSearchData();
             }
@@ -320,7 +246,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
         next: (res: any) => {
           if (res?.data?.length > 0) {
             this.userList = res.data.map((e) => e);
-            // this.userSearchNgbDropdown.open();
           } else {
             this.clearUserSearchData();
           }
@@ -335,7 +260,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   clearUserSearchData(): void {
     this.userNameSearch = '';
     this.userList = [];
-    // this.userSearchNgbDropdown?.close();
   }
 
   clearMetaData(): void {
@@ -356,15 +280,10 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   emitChangeEvent(): void {
     if (this.tagInputDiv) {
       const htmlText = this.tagInputDiv?.nativeElement?.innerHTML;
-
-      // this.value = `${htmlText}`.replace(/\<div\>\<br\>\<\/div\>/gi, '');
       this.value = `${htmlText}`.replace(
         /(?:<div><br><\/div>\s*)+/gi,
         '<div><br></div>'
       );
-      // this.moveCursorToEnd();
-      // console.log('htmlText', `${htmlText}`.replace(/\<div\>\<br\>\<\/div\>/ig, ''))
-      // console.log('htmlText', this.value);
       this.onDataChange?.emit({
         html: this.value,
         tags: this.tagInputDiv?.nativeElement?.children,

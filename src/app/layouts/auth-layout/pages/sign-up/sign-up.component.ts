@@ -6,15 +6,13 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { debounceTime, fromEvent } from 'rxjs';
 import { Customer } from 'src/app/@shared/constant/customer';
 import { CustomerService } from 'src/app/@shared/services/customer.service';
-import { SeoService } from 'src/app/@shared/services/seo.service';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { UploadFilesService } from 'src/app/@shared/services/upload-files.service';
-import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
@@ -23,7 +21,7 @@ import { environment } from 'src/environments/environment';
 export class SignUpComponent implements OnInit, AfterViewInit {
   customer = new Customer();
   useDetails: any = {};
-  isragister = false;
+  isRegister = false;
   registrationMessage = '';
   confirm_password = '';
   msg = '';
@@ -58,20 +56,11 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   constructor(
     private spinner: NgxSpinnerService,
-    private route: ActivatedRoute,
     private customerService: CustomerService,
     private router: Router,
     private uploadService: UploadFilesService,
     private toastService: ToastService,
-    private seoService: SeoService
   ) {
-    const data = {
-      title: 'Freeedom buzz Registration',
-      url: `${environment.webUrl}sign-up`,
-      description: 'Registration page',
-      image: `${environment.webUrl}assets/images/landingpage/freedom-buzz.png`,
-    };
-    // this.seoService.updateSeoMetaData(data);
   }
 
   ngOnInit(): void {
@@ -94,9 +83,6 @@ export class SignUpComponent implements OnInit, AfterViewInit {
   }
 
   upload(file) {
-    // if (file.size / (1024 * 1024) > 5) {
-    //   return 'Image file size exceeds 5 MB!';
-    // }
     this.spinner.show();
     this.uploadService.uploadFile(file).subscribe({
       next: (res: any) => {
@@ -105,10 +91,6 @@ export class SignUpComponent implements OnInit, AfterViewInit {
           this.profilePic = res?.body?.url;
           this.creatProfile(this.registerForm.value);
         }
-        // if (file?.size < 5120000) {
-        // } else {
-        //   this.toastService.warring('Image is too large!');
-        // }
       },
       error: (err) => {
         this.spinner.hide();
@@ -123,7 +105,6 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   save() {
     this.spinner.show();
-
     this.customerService.createCustomer(this.registerForm.value).subscribe({
       next: (data: any) => {
         this.spinner.hide();
@@ -133,11 +114,11 @@ export class SignUpComponent implements OnInit, AfterViewInit {
           this.registrationMessage =
             'Your account has registered successfully. Kindly login with your email and password !!!';
           this.scrollTop();
-          this.isragister = true;
+          this.isRegister = true;
           const id = data.data;
           if (id) {
             this.upload(this.profileImg?.file);
-            localStorage.setItem('register', String(this.isragister));
+            localStorage.setItem('register', String(this.isRegister));
             this.router.navigateByUrl('/login?isVerify=false');
           }
         }
@@ -153,13 +134,8 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   validatepassword(): boolean {
     const pattern = '[a-zA-Z0-9]{5,}';
-    // const pattern =
-    //   '(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[a-z])(?=.*[0-9].*[0-9]).{8}';
-
     if (!this.registerForm.get('Password').value.match(pattern)) {
       this.msg = 'Password must be a minimum of 5 characters';
-      // this.msg =
-      //   'Password must be a minimum of 8 characters and include one uppercase letter, one lowercase letter, and one special character';
       this.scrollTop();
       return false;
     }
@@ -181,7 +157,6 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     if (!this.profileImg?.file?.name) {
       this.msg = 'Please upload profile picture';
       this.scrollTop();
-      // return false;
     }
     if (
       this.registerForm.valid &&
@@ -191,30 +166,14 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       if (!this.validatepassword()) {
         return;
       }
-
-      const id = this.route.snapshot.paramMap.get('id');
       if (this.userId) {
-        // this.updateCustomer();
       } else {
-        // this.submitted = true;
         this.save();
       }
     } else {
       this.msg = 'Please enter mandatory fields(*) data.';
       this.scrollTop();
-      // return false;
     }
-
-    // if (
-    //  this.registerForm.invalid ||
-    //   this.registerForm.get('termAndPolicy')?.value === false ||
-    //   !this.profileImg?.file?.name
-    // ) {
-    //   this.msg =
-    //     'Please enter mandatory fields(*) data and please check terms and conditions.';
-    //   this.scrollTop();
-    //   return false;
-    // }
   }
 
   changeCountry() {

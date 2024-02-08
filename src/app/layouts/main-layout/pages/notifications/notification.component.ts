@@ -55,8 +55,8 @@ export class NotificationsComponent {
       });
   }
 
-  viewUserPost(id) {
-    this.router.navigate([`post/${id}`]);
+  viewUserPost() {
+    this.router.navigate([`profile-chats`]);
   }
 
   removeNotification(id: number): void {

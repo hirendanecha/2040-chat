@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "freedom-ssr": {
+    "2040-chat": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -22,7 +22,7 @@
               "utf-8-validate",
               "socket.io-client"
             ],
-            "outputPath": "dist/freedom-ssr/browser",
+            "outputPath": "dist/2040-chat/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -84,10 +84,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "freedom-ssr:build:production"
+              "browserTarget": "2040-chat:build:production"
             },
             "development": {
-              "browserTarget": "freedom-ssr:build:development"
+              "browserTarget": "2040-chat:build:development"
             }
           },
           "defaultConfiguration": ""
@@ -95,7 +95,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "freedom-ssr:build"
+            "browserTarget": "2040-chat:build"
           }
         },
         "test": {
@@ -120,7 +120,7 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "dist/freedom-ssr/server",
+            "outputPath": "dist/2040-chat/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json",
             "inlineStyleLanguage": "scss"
@@ -143,8 +143,8 @@
           "builder": "@nguniversal/builders:ssr-dev-server",
           "configurations": {
             "development": {
-              "browserTarget": "freedom-ssr:build:development",
-              "serverTarget": "freedom-ssr:server:development"
+              "browserTarget": "2040-chat:build:development",
+              "serverTarget": "2040-chat:server:development"
             }
           },
           "defaultConfiguration": "development"
@@ -153,12 +153,12 @@
           "builder": "@nguniversal/builders:ssr-dev-server",
           "configurations": {
             "development": {
-              "browserTarget": "freedom-ssr:build:development",
-              "serverTarget": "freedom-ssr:server:development"
+              "browserTarget": "2040-chat:build:development",
+              "serverTarget": "2040-chat:server:development"
             },
             "production": {
-              "browserTarget": "freedom-ssr:build:production",
-              "serverTarget": "freedom-ssr:server:production"
+              "browserTarget": "2040-chat:build:production",
+              "serverTarget": "2040-chat:server:production"
             }
           },
           "defaultConfiguration": "production"
@@ -172,12 +172,12 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "freedom-ssr:build:production",
-              "serverTarget": "freedom-ssr:server:production"
+              "browserTarget": "2040-chat:build:production",
+              "serverTarget": "2040-chat:server:production"
             },
             "development": {
-              "browserTarget": "freedom-ssr:build:development",
-              "serverTarget": "freedom-ssr:server:development"
+              "browserTarget": "2040-chat:build:development",
+              "serverTarget": "2040-chat:server:development"
             }
           },
           "defaultConfiguration": ""

@@ -1,7 +1,5 @@
-import { DOCUMENT } from '@angular/common';
 import {
   AfterViewChecked,
-  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -20,13 +18,13 @@ import { Subject, takeUntil } from 'rxjs';
 import { OutGoingCallModalComponent } from 'src/app/@shared/modals/outgoing-call-modal/outgoing-call-modal.component';
 import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.service';
 import { MessageService } from 'src/app/@shared/services/message.service';
-import { PostService } from 'src/app/@shared/services/post.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
 import { SocketService } from 'src/app/@shared/services/socket.service';
-import { ToastService } from 'src/app/@shared/services/toast.service';
 import { Howl } from 'howler';
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
 import { EditGroupModalComponent } from 'src/app/@shared/modals/edit-group-modal/edit-group-modal.component';
+import { UploadFilesService } from 'src/app/@shared/services/upload-files.service';
+import { CustomerService } from 'src/app/@shared/services/customer.service';
 @Component({
   selector: 'app-profile-chats-list',
   templateUrl: './profile-chats-list.component.html',
@@ -34,8 +32,7 @@ import { EditGroupModalComponent } from 'src/app/@shared/modals/edit-group-modal
 })
 // changeDetection: ChangeDetectionStrategy.OnPush,
 export class ProfileChatsListComponent
-  implements OnInit, OnChanges, AfterViewChecked, OnDestroy
-{
+  implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
   @Input('userChat') userChat: any = {};
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
@@ -83,11 +80,11 @@ export class ProfileChatsListComponent
     private socketService: SocketService,
     public sharedService: SharedService,
     private messageService: MessageService,
-    private postService: PostService,
-    private toastService: ToastService,
     private spinner: NgxSpinnerService,
     public encryptDecryptService: EncryptDecryptService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private uploadService: UploadFilesService,
+    private customerService: CustomerService
   ) {
     this.profileId = +localStorage.getItem('profileId');
   }
@@ -297,8 +294,8 @@ export class ProfileChatsListComponent
           const url =
             element.messageText != null
               ? this.encryptDecryptService?.decryptUsingAES256(
-                  element?.messageText
-                )
+                element?.messageText
+              )
               : null;
           const text = url?.replace(/<br\s*\/?>|<[^>]*>/g, '');
           const matches = text?.match(
@@ -314,7 +311,7 @@ export class ProfileChatsListComponent
           }
         });
       },
-      error: (err) => {},
+      error: (err) => { },
     });
   }
 
@@ -368,7 +365,7 @@ export class ProfileChatsListComponent
       if (this.chatObj.msgText || this.selectedFile.name) {
         if (this.selectedFile) {
           this.isFileUploadInProgress = true;
-          this.postService.uploadFile(this.selectedFile).subscribe({
+          this.uploadService.uploadFile(this.selectedFile).subscribe({
             next: (res: any) => {
               // this.spinner.hide();
               if (res?.body?.url) {
@@ -474,7 +471,7 @@ export class ProfileChatsListComponent
         this.ngUnsubscribe.next();
         const unsubscribe$ = new Subject<void>();
 
-        this.postService
+        this.customerService
           .getMetaData({ url })
           .pipe(takeUntil(unsubscribe$))
           .subscribe({

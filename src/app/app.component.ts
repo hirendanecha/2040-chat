@@ -33,12 +33,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.checkDocumentFocus();
+    this.profileId = +localStorage.getItem('profileId');
   }
 
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      this.profileId = +localStorage.getItem('profileId');
       this.originalFavicon = document.querySelector('link[rel="icon"]');
       this.sharedService.getUserDetails();
       this.spinner.hide();
@@ -53,31 +53,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.socketService.socket?.connect();
         this.socketService.socket?.emit('online-users');
       }
-
       this.socketService.socket?.emit('join', { room: this.profileId });
       this.socketService.socket?.on('notification', (data: any) => {
         if (data) {
           console.log('new-notification', data);
           this.notificationId = data.id;
           this.originalFavicon.href = '/assets/images/icon-unread.jpg';
-          if (data?.actionType === 'T') {
-            this.sharedService.isNotify = true;
-            var sound = new Howl({
-              src: [
-                'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-notification.mp3',
-              ],
-            });
-            // const soundPrefs = JSON.parse(localStorage.getItem('soundPreferences'));
-            // const notificationSoundOct = soundPrefs ? soundPrefs.notificationSoundEnabled : null;
-            const notificationSoundOct = JSON.parse(
-              localStorage.getItem('soundPreferences')
-            )?.notificationSoundEnabled;
-            if (notificationSoundOct !== 'N') {
-              if (sound) {
-                sound?.play();
-              }
-            }
-          }
           if (data?.actionType === 'M' && data.notificationToProfileId !== this.profileId) {
             this.sharedService.isNotify = true;
             var sound = new Howl({
@@ -166,16 +147,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         clearInterval(this.tab);
       }
       if (!this.socketService.socket?.connected) {
-        this.socketService.socket?.connect();
-        const profileId = +localStorage.getItem('profileId');
-        // this.socketService.socket?.emit('join', { room: profileId });
+        this.socketService.connect();
       }
     } else {
       this.tab = setInterval(() => {
         if (!this.socketService.socket?.connected) {
-          this.socketService.socket?.connect();
-          const profileId = +localStorage.getItem('profileId');
-          // this.socketService.socket?.emit('join', { room: profileId });
+          this.socketService.connect();
         }
       }, 3000);
     }

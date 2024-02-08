@@ -11,32 +11,9 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: () =>
-          import('./pages/home/home.module').then((m) => m.HomeModule),
-        data: {
-          isShowLeftSideBar: true,
-          isShowRightSideBar: true,
-        },
-      },
-      {
-        path: 'communities',
-        loadChildren: () =>
-          import('./pages/communities/communities.module').then(
-            (m) => m.CommunitiesModule
+          import('./pages/profile-chats/profile-chats.module').then(
+            (m) => m.ProfileChartsModule
           ),
-        data: {
-          isShowLeftSideBar: true,
-        },
-        canActivate: mapToCanActivate([AuthenticationGuard]),
-      },
-      {
-        path: 'pages',
-        loadChildren: () =>
-          import('./pages/freedom-page/freedom-page.module').then(
-            (m) => m.FreedomPageModule
-          ),
-        data: {
-          isShowLeftSideBar: true,
-        },
         canActivate: mapToCanActivate([AuthenticationGuard]),
       },
       {
@@ -62,30 +39,11 @@ const routes: Routes = [
         canActivate: mapToCanActivate([AuthenticationGuard]),
       },
       {
-        path: 'research',
-        loadChildren: () =>
-          import('./pages/research/research.module').then(
-            (m) => m.ResearchModule
-          ),
-        data: {
-          isShowLeftSideBar: true,
-          isShowRightSideBar: true,
-          isShowResearchLeftSideBar: true,
-        },
-        canActivate: mapToCanActivate([AuthenticationGuard]),
-      },
-      {
         path: 'profile-chats',
         loadChildren: () =>
           import('./pages/profile-chats/profile-chats.module').then(
             (m) => m.ProfileChartsModule
           ),
-        data: {
-          isShowLeftSideBar: false,
-          isShowRightSideBar: false,
-          isShowResearchLeftSideBar: false,
-          isShowChatListSideBar: true,
-        },
         canActivate: mapToCanActivate([AuthenticationGuard]),
       },
     ],
@@ -96,4 +54,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class MainLayoutRoutingModule {}
+export class MainLayoutRoutingModule { }

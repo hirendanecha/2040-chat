@@ -8,10 +8,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthService } from 'src/app/@shared/services/auth.service';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
-import { CookieService } from 'ngx-cookie-service';
-import { environment } from 'src/environments/environment';
-import { CustomerService } from 'src/app/@shared/services/customer.service';
-import { SeoService } from 'src/app/@shared/services/seo.service';
 import { SocketService } from 'src/app/@shared/services/socket.service';
 
 @Component({
@@ -41,9 +37,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private toastService: ToastService,
     private sharedService: SharedService,
-    private customerService: CustomerService,
-    private tokenStorageService: TokenStorageService,
-    private seoService: SeoService,
     private socketService: SocketService
   ) {
     const isVerify = this.route.snapshot.queryParams.isVerify;
@@ -51,24 +44,16 @@ export class LoginComponent implements OnInit, AfterViewInit {
       this.msg =
         'Please check your email and click the activation link to activate your account.';
       this.type = 'success';
-      // this.toastService.success(this.msg);
     } else if (isVerify === 'true') {
       this.msg = 'Account activated';
       this.type = 'success';
     }
-    const data = {
-      title: 'Freeedom buzz login',
-      url: `${environment.webUrl}login`,
-      description: 'login page',
-      image: `${environment.webUrl}assets/images/landingpage/freedom-buzz.png`,
-    };
-    // this.seoService.updateSeoMetaData(data);
   }
 
   ngOnInit(): void {
     if (this.tokenStorage.getToken()) {
       this.isLoggedIn = true;
-      this.router.navigate([`/home`]);
+      this.router.navigate(['/profile-chats']);
     }
 
     this.loginForm = this.fb.group({
@@ -86,17 +71,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
       next: (data: any) => {
         this.spinner.hide();
         if (!data.error) {
-          // this.cookieService.set('token', data?.accessToken);
-          // this.cookieService.set('auth-user', JSON.stringify(data?.user));
           this.tokenStorage.saveToken(data?.accessToken);
           this.tokenStorage.saveUser(data.user);
           localStorage.setItem('profileId', data.user.profileId);
-          localStorage.setItem('communityId', data.user.communityId);
-          localStorage.setItem('channelId', data.user?.channelId);
-          window.localStorage.user_level_id = 2;
           window.localStorage.user_id = data.user.Id;
-          window.localStorage.user_country = data.user.Country;
-          window.localStorage.user_zip = data.user.ZipCode;
           this.sharedService.getUserDetails();
           this.isLoginFailed = false;
           this.isLoggedIn = true;
@@ -111,26 +89,22 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 this.sharedService.onlineUserList.push(ele.userId)
               }
             })
-            // this.onlineUserList = data;
           })
-          // Redirect to a new page after reload
           this.toastService.success('Logged in successfully');
           window.location.reload();
-          this.router.navigate([`/home`]);
+          this.router.navigate(['/profile-chats']);
         } else {
           this.loginMessage = data.mesaage;
           this.spinner.hide();
           this.errorMessage =
             'Invalid Email and Password. Kindly try again !!!!';
           this.isLoginFailed = true;
-          // this.toastService.danger(this.errorMessage);
         }
       },
       error: (err) => {
         this.spinner.hide();
         console.log(err.error);
-        this.errorMessage = err.error.message; //err.error.message;
-        // this.toastService.danger(this.errorMessage);
+        this.errorMessage = err.error.message;
         this.isLoginFailed = true;
         this.errorCode = err.error.errorCode;
       }
@@ -144,13 +118,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
         {
           next: (result: any) => {
             this.msg = result.message;
-            // this.toastService.success(this.msg);
             this.type = 'success';
           },
           error:
             (error) => {
               this.msg = error.message;
-              // this.toastService.danger(this.msg);
               this.type = 'danger';
             }
         });

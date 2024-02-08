@@ -109,4 +109,8 @@ export class CustomerService {
       `${this.baseUrl}/notification/${id}&q=${Date.now()}`,
     );
   }
+
+  getMetaData(url) {
+    return this.http.post(`${this.baseUrl}/get-meta`, url);
+  }
 }

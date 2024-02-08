@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal, NgbActiveOffcanvas, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CookieService } from 'ngx-cookie-service';
 import { CustomerService } from 'src/app/@shared/services/customer.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
 import { SocketService } from 'src/app/@shared/services/socket.service';
-import { ToastService } from 'src/app/@shared/services/toast.service';
 import { TokenStorageService } from 'src/app/@shared/services/token-storage.service';
 import { ForgotPasswordComponent } from 'src/app/layouts/auth-layout/pages/forgot-password/forgot-password.component';
 
@@ -23,11 +21,9 @@ export class ProfileMenusModalComponent {
     private activeModal: NgbActiveModal,
     private activeOffcanvas: NgbActiveOffcanvas,
     private modalService: NgbModal,
-    private toastService: ToastService,
     private tokenStorageService: TokenStorageService,
     private router: Router,
     private customerService: CustomerService,
-    private cookieService: CookieService,
     private socketService: SocketService
   ) {
     this.userId = +localStorage.getItem('user_id');
@@ -61,7 +57,6 @@ export class ProfileMenusModalComponent {
   }
 
   logout(): void {
-    // this.isCollapsed = true;
     this.socketService?.socket?.emit('offline', (data) => {
       console.log('user=>', data)
     })
@@ -71,7 +66,6 @@ export class ProfileMenusModalComponent {
           this.sharedService.onlineUserList.push(ele.userId)
         }
       })
-      // this.onlineUserList = data;
     })
     this.customerService.logout().subscribe({
       next: (res => {
@@ -79,18 +73,13 @@ export class ProfileMenusModalComponent {
         console.log(res)
       })
     });
-    // this.toastService.success('Logout successfully');
-    // this.router.navigate(['/auth']);
-    // this.isDomain = false;
   }
 
   goToSetting() {
     this.router.navigate([`settings/edit-profile/${this.userId}`]);
-    // window.open(`settings/edit-profile/${userId}`, '_blank')
   }
 
   goToViewProfile() {
-    // window.open(`settings/view-profile/${profileId}`, '_blank')
     this.router.navigate([`settings/view-profile/${this.profileId}`]);
   }
 
@@ -103,8 +92,5 @@ export class ProfileMenusModalComponent {
     modalRef.componentInstance.cancelButtonLabel = 'Cancel';
     modalRef.componentInstance.confirmButtonLabel = 'Submit';
     modalRef.componentInstance.closeIcon = true;
-    // modelRef.result.then(res => {
-    //   return res = user_id
-    // });
   }
 }

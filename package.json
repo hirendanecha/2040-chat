@@ -1,5 +1,5 @@
 {
-  "name": "freedom-ssr",
+  "name": "2040-chat",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,10 +7,10 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "dev:ssr": "ng run freedom-ssr:dev-serve-ssr",
-    "serve:ssr": "node dist/freedom-ssr/server/main.js",
-    "build:ssr": "ng build --configuration production && ng run freedom-ssr:server",
-    "prerender": "ng run freedom-ssr:prerender"
+    "dev:ssr": "ng run 2040-chat:dev-serve-ssr",
+    "serve:ssr": "node dist/2040-chat/server/main.js",
+    "build:ssr": "ng build --configuration production && ng run 2040-chat:server",
+    "prerender": "ng run 2040-chat:prerender"
   },
   "private": true,
   "dependencies": {

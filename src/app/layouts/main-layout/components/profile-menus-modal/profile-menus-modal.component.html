@@ -25,9 +25,11 @@
   </div>
   <ul class="ps-0">
     <li>
-      <a 
+      <a
         [routerLink]="'settings/edit-profile/' + userId"
-        class="mdtxt" (click)="closeMenu($event, 'setting')">
+        class="mdtxt"
+        (click)="closeMenu($event, 'setting')"
+      >
         <fa-icon [icon]="['fas', 'gear']" class="font-20-px" />
         Setting & Privacy
       </a>
@@ -38,12 +40,6 @@
         Sign Out
       </a>
     </li>
-    <!-- <li>
-      <a class="mdtxt" (click)="closeMenu($event, 'change-password')">
-        <fa-icon [icon]="['fas', 'unlock-keyhole']" class="font-20-px" />
-        Change Password
-      </a>
-    </li> -->
   </ul>
   <div
     class="switch-wrapper mt-4 d-flex gap-1 align-items-center"
@@ -71,9 +67,6 @@
       [ngClass]="{ active: !sharedService.isDark }"
       class="font-20-px"
     />
-
-    <!-- [icon]="['fas', 'moon']" -->
-
     <span class="mdtxt ms-2">Mode</span>
   </div>
 </div>

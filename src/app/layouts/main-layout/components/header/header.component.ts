@@ -10,9 +10,6 @@ import { CustomerService } from '../../../../@shared/services/customer.service';
 import { ProfileMenusModalComponent } from '../profile-menus-modal/profile-menus-modal.component';
 import { NotificationsModalComponent } from '../notifications-modal/notifications-modal.component';
 import { BreakpointService } from 'src/app/@shared/services/breakpoint.service';
-import { RightSidebarComponent } from '../../components/right-sidebar/right-sidebar.component';
-import { ResearchSidebarComponent } from '../../components/research-sidebar/research-sidebar.component';
-import { LeftSidebarComponent } from '../../components/left-sidebar/left-sidebar.component';
 import { environment } from 'src/environments/environment';
 import { TokenStorageService } from 'src/app/@shared/services/token-storage.service';
 import { SocketService } from 'src/app/@shared/services/socket.service';
@@ -67,7 +64,6 @@ export class HeaderComponent {
     } else {
       this.sharedService.isNotify = false;
     }
-    this.channelId = +localStorage.getItem('channelId');
   }
 
   openProfileMenuModal(): void {
@@ -129,43 +125,11 @@ export class HeaderComponent {
     }
   }
 
-  openLeftSidebar() {
-    this.offcanvasService.open(
-      this.sidebar?.isShowResearchLeftSideBar
-        ? ResearchSidebarComponent
-        : LeftSidebarComponent,
-      { position: 'start', panelClass: 'w-300-px' }
-    );
-  }
-
-  openRightSidebar() {
-    this.offcanvasService.open(RightSidebarComponent, {
-      position: 'end',
-      panelClass: 'w-300-px',
-    });
-  }
-
   scrollToTop() {
     window.scroll({
       top: 0,
       left: 0,
       behavior: 'smooth',
     });
-    this.router.navigate(['home']);
-  }
-
-  reloadPage(): void {
-    this.router.navigate(['home']).then(() => {
-      location.reload();
-    });
-  }
-
-  redirectToTube(): void {
-    const channelId = +localStorage.getItem('channelId');
-    if (channelId) {
-      window.open(`${environment.tubeUrl}?channelId=${channelId}`, '_blank');
-    } else {
-      window.open(`${environment.tubeUrl}`, '_blank');
-    }
   }
 }

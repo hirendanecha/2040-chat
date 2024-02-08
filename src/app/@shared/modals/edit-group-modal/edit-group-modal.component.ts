@@ -7,9 +7,9 @@ import {
 import { CustomerService } from '../../services/customer.service';
 import { Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
-import { PostService } from '../../services/post.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 import { SharedService } from '../../services/shared.service';
+import { UploadFilesService } from '../../services/upload-files.service';
 
 @Component({
   selector: 'app-edit-group-modal',
@@ -41,11 +41,10 @@ export class EditGroupModalComponent implements OnInit {
   constructor(
     public activateModal: NgbActiveModal,
     private customerService: CustomerService,
-    private postService: PostService,
     private socketService: SocketService,
     private modalService: NgbModal,
-    private router: Router,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private uploadFileService: UploadFilesService
   ) {
     this.profileId = +localStorage.getItem('profileId');
   }
@@ -64,9 +63,9 @@ export class EditGroupModalComponent implements OnInit {
           // this.userList = res.data;
           this.userList = res.data.filter((user: any) => {
             return user.Id !== this.sharedService?.userData?.Id && !this.addedInvitesList.some(invite => invite.Id === user.Id) && !this.data.memberList.some(member => member.profileId === user.Id);
-        });
-        console.log(this.data.memberList);
-        
+          });
+          console.log(this.data.memberList);
+
           this.userSearchNgbDropdown.open();
         } else {
           this.userList = [];
@@ -110,7 +109,7 @@ export class EditGroupModalComponent implements OnInit {
 
   upload() {
     if (this.profileImg.file) {
-      this.postService.uploadFile(this.profileImg.file).subscribe({
+      this.uploadFileService.uploadFile(this.profileImg.file).subscribe({
         next: (res: any) => {
           if (res?.body?.url) {
             this.profileImg.url = res?.body?.url;
@@ -141,16 +140,13 @@ export class EditGroupModalComponent implements OnInit {
       centered: true,
       backdrop: 'static',
     });
-    modalRef.componentInstance.title = `${
-      id === this.profileId ? 'Leave' : 'Remove user'
-    } from conversation`;
-    modalRef.componentInstance.confirmButtonLabel = `${
-      id === this.profileId ? 'Leave' : 'Remove'
-    }`;
+    modalRef.componentInstance.title = `${id === this.profileId ? 'Leave' : 'Remove user'
+      } from conversation`;
+    modalRef.componentInstance.confirmButtonLabel = `${id === this.profileId ? 'Leave' : 'Remove'
+      }`;
     modalRef.componentInstance.cancelButtonLabel = 'Cancel';
-    modalRef.componentInstance.message = `Are you sure want to ${
-      id === this.profileId ? 'leave' : 'remove'
-    }?`;
+    modalRef.componentInstance.message = `Are you sure want to ${id === this.profileId ? 'leave' : 'remove'
+      }?`;
     modalRef.result.then((res) => {
       if (res === 'success') {
         const data = {
