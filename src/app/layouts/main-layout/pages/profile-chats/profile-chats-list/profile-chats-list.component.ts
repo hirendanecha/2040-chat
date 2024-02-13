@@ -32,7 +32,8 @@ import { CustomerService } from 'src/app/@shared/services/customer.service';
 })
 // changeDetection: ChangeDetectionStrategy.OnPush,
 export class ProfileChatsListComponent
-  implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
+  implements OnInit, OnChanges, AfterViewChecked, OnDestroy
+{
   @Input('userChat') userChat: any = {};
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
@@ -128,6 +129,8 @@ export class ProfileChatsListComponent
     if (this.userChat?.groupId) {
       this.getGroupDetails(this.userChat.groupId);
       this.resetData();
+    } else {
+      this.groupData = null;
     }
     if (this.userChat?.roomId || this.userChat?.groupId) {
       this.getMessageList();
@@ -294,8 +297,8 @@ export class ProfileChatsListComponent
           const url =
             element.messageText != null
               ? this.encryptDecryptService?.decryptUsingAES256(
-                element?.messageText
-              )
+                  element?.messageText
+                )
               : null;
           const text = url?.replace(/<br\s*\/?>|<[^>]*>/g, '');
           const matches = text?.match(
@@ -311,7 +314,7 @@ export class ProfileChatsListComponent
           }
         });
       },
-      error: (err) => { },
+      error: (err) => {},
     });
   }
 

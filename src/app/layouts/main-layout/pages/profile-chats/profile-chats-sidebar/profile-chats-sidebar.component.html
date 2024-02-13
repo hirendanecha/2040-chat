@@ -127,20 +127,20 @@
           </div>
         </div>
       </ng-container>
-      <div class="d-flex justify-content-between select-chat-group mt-3">
+      <!-- <div class="d-flex justify-content-between select-chat-group mt-3">
         <button (click)="selectButton('chats')" [ngClass]="{ 'active': selectedButton === 'chats' }" title="Chats">
           <fa-icon [icon]="['fas', 'comment-alt']" class="font-20-px" />
         </button>
         <button (click)="selectButton('groups')" [ngClass]="{ 'active': selectedButton === 'groups' }" title="Groups">
           <fa-icon [icon]="['fas', 'layer-group']" class="font-20-px" />
         </button>
-      </div>
+      </div> -->
     </div>
     <div class="header-menu cus-scrollbar overflow-auto position-relative">
       <ng-container>
         <app-inline-loader class="position-absolute" *ngIf="isChatLoader" />
       </ng-container>
-      <ng-container *ngIf="selectedButton === 'chats'"
+      <ng-container
       >
       <div class="single-item messages-area" *ngFor="let item of chatList">
         <div
@@ -149,7 +149,10 @@
           [ngClass]="{ active: item === selectedChatUser }"
         >
           <div class="d-flex gap-2">
-            <div class="avatar">
+            <div class="avatar position-relative online-status">
+              <span class="abs-area position-absolute d-center smtxt"
+              *ngIf="sharedService?.onlineUserList.includes(item?.profileId)"
+              ></span>
               <img
                 class="avatar-img h-40-px w-40-px max-un"
                 src="{{ item?.ProfilePicName }}"
@@ -190,7 +193,7 @@
         </div>
       </div>
     </ng-container>
-      <ng-container *ngIf="selectedButton === 'groups'"
+      <ng-container
       >
       <div class="single-item messages-area" *ngFor="let item of groupList">
         <div

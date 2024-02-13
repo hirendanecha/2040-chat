@@ -113,11 +113,12 @@ const sharedComponents = [
   OutGoingCallModalComponent,
   AppointmentCallComponent,
   CreateGroupModalComponent,
-  EditGroupModalComponent
+  EditGroupModalComponent,
 ];
 
 const sharedModules = [
   CommonModule,
+  FormsModule,
   FormsModule,
   ReactiveFormsModule,
   NgbDropdownModule,
