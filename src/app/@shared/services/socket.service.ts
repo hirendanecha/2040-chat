@@ -172,4 +172,12 @@ export class SocketService {
   removeGroupMember(params, callback: (data: any) => void) {
     this.socket.emit('remove-member', params, callback);
   }
+
+  startTyping(params, callback: (data: any) => any) {
+    this.socket.emit('start-typing', params, callback);
+  }
+
+  deleteRoom(params, callback: (data: any) => void) {
+    this.socket.emit('delete-room', params, callback);
+  }
 }

@@ -29,12 +29,15 @@ export class OutGoingCallModalComponent implements OnInit, AfterViewInit {
         this.sound?.play();
       }
     }
-    this.hangUpTimeout = setTimeout(() => {
-      this.hangUpCall();
-    }, 60000);
-    
+    if (!this.hangUpTimeout) {
+      this.hangUpTimeout = setTimeout(() => {
+        this.hangUpCall();
+      }, 60000);
+    }
+
     this.socketService.socket?.on('notification', (data: any) => {
       if (data?.actionType === 'DC') {
+        this.sound?.stop();
         this.activateModal.close('cancel');
       }
     });
@@ -51,14 +54,15 @@ export class OutGoingCallModalComponent implements OnInit, AfterViewInit {
 
   hangUpCall(): void {
     this.sound?.stop();
+    clearTimeout(this.hangUpTimeout);
     const data = {
       notificationToProfileId: this.calldata.notificationToProfileId,
-      roomId: this.calldata.roomId,
+      roomId: this.calldata?.roomId,
+      groupId: this.calldata?.groupId,
       notificationByProfileId: this.calldata.notificationByProfileId,
     };
     this.socketService?.hangUpCall(data, (data: any) => {
-      console.log(data);
-      this.activateModal.close('cancel');
     });
+    this.activateModal.close('missCalled');
   }
 }

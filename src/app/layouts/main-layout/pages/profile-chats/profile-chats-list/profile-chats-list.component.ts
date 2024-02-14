@@ -32,7 +32,8 @@ import { CustomerService } from 'src/app/@shared/services/customer.service';
 })
 // changeDetection: ChangeDetectionStrategy.OnPush,
 export class ProfileChatsListComponent
-  implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
+  implements OnInit, OnChanges, AfterViewChecked, OnDestroy
+{
   @Input('userChat') userChat: any = {};
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
@@ -59,6 +60,11 @@ export class ProfileChatsListComponent
   pdfmsg: string;
   messageInputValue: string = '';
   firstTimeScroll = false;
+  activePage = 1;
+  hasMoreData = false;
+
+  typingData: any = {};
+  isTyping = false;
 
   emojiPaths = [
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Heart.gif',
@@ -128,6 +134,8 @@ export class ProfileChatsListComponent
     if (this.userChat?.groupId) {
       this.getGroupDetails(this.userChat.groupId);
       this.resetData();
+    } else {
+      this.groupData = null;
     }
     if (this.userChat?.roomId || this.userChat?.groupId) {
       this.getMessageList();
@@ -261,18 +269,38 @@ export class ProfileChatsListComponent
     }
   }
 
+  loadMoreChats() {
+    this.activePage = this.activePage + 1;
+    this.getMessageList();
+  }
+
   // getMessages
   getMessageList(): void {
     const messageObj = {
-      page: 1,
-      size: 1000,
+      page: this.activePage,
+      size: 50,
       roomId: this.userChat?.roomId || null,
       groupId: this.userChat?.groupId || null,
     };
     this.messageService.getMessages(messageObj).subscribe({
       next: (data: any) => {
-        this.scrollToBottom();
-        this.messageList = data.data;
+        if (this.activePage === 1) {
+          this.scrollToBottom();
+        }
+        if (data?.data.length > 0) {
+          this.messageList = [...this.messageList, ...data.data];
+
+          this.messageList.sort(
+            (a, b) =>
+              new Date(a.createdDate).getTime() -
+              new Date(b.createdDate).getTime()
+          );
+        } else {
+          this.hasMoreData = false;
+        }
+        if (this.activePage < data.pagination.totalPages) {
+          this.hasMoreData = true;
+        }
         const ids = [];
         this.messageList.map((e: any) => {
           if (e.isRead === 'N' && e.sentBy !== this.profileId) {
@@ -294,8 +322,8 @@ export class ProfileChatsListComponent
           const url =
             element.messageText != null
               ? this.encryptDecryptService?.decryptUsingAES256(
-                element?.messageText
-              )
+                  element?.messageText
+                )
               : null;
           const text = url?.replace(/<br\s*\/?>|<[^>]*>/g, '');
           const matches = text?.match(
@@ -311,7 +339,7 @@ export class ProfileChatsListComponent
           }
         });
       },
-      error: (err) => { },
+      error: (err) => {},
     });
   }
 
@@ -531,15 +559,18 @@ export class ProfileChatsListComponent
       'https://facetime.tube/' + `callId-${new Date().getTime()}`;
 
     const data = {
-      ProfilePicName: this.userChat.ProfilePicName,
-      Username: this.userChat.Username,
-      notificationToProfileId: this.userChat.profileId,
-      roomId: this.userChat.roomId,
-      groupId: this.userChat.groupId,
+      ProfilePicName:
+        this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
+      Username: this.groupData?.groupName || this?.userChat.Username,
+      roomId: this.userChat?.roomId || null,
+      groupId: this.userChat?.groupId || null,
       notificationByProfileId: this.profileId,
       link: originUrl,
     };
-
+    if (!data?.groupId) {
+      data['notificationToProfileId'] = this.userChat.profileId;
+    }
+    console.log('outgoing-data', data);
     var callSound = new Howl({
       src: [
         'https://s3.us-east-1.wasabisys.com/freedom-social/famous_ringtone.mp3',
@@ -547,16 +578,14 @@ export class ProfileChatsListComponent
       loop: true,
     });
     modalRef.componentInstance.calldata = data;
-    // modalRef.componentInstance.sound = callSound;
+    modalRef.componentInstance.sound = callSound;
     modalRef.componentInstance.title = 'RINGING...';
 
-    this.socketService?.startCall(data, (data: any) => {
-      // console.log(data);
-    });
+    this.socketService?.startCall(data, (data: any) => {});
     modalRef.result.then((res) => {
-      if (res === 'cancel') {
-        this.chatObj.msgText = 'Your call has been ended';
-        // this.sendMessage();
+      if (res === 'missCalled') {
+        this.chatObj.msgText = 'You have a missed call';
+        this.sendMessage();
       }
     });
   }
@@ -656,5 +685,24 @@ export class ProfileChatsListComponent
         this.userChat = {};
       }
     });
+  }
+
+  startTypingChat(isTyping) {
+    // console.log(isTyping);
+    const data = {
+      groupId: this.userChat?.groupId,
+      roomId: this.userChat?.roomId,
+      profileId: this.userChat?.roomId
+        ? this.userChat.profileId
+        : this.profileId,
+      isTyping: isTyping,
+    };
+    this.socketService?.startTyping(data, (data: any) => {});
+  }
+
+  delayedStartTypingChat() {
+    setTimeout(() => {
+      this.startTypingChat(false);
+    }, 3000);
   }
 }

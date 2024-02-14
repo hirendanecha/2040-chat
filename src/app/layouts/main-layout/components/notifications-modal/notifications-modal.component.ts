@@ -33,8 +33,9 @@ export class NotificationsModalComponent implements AfterViewInit {
     this.customerService
       .readUnreadNotification(notification.id, 'Y')
       .subscribe({
-        next: (res) => {
-          if (notification.actionType === 'M') {
+         next: (res) => {
+          const type = ['M', 'SC', 'DC', 'VC']
+          if (type.includes(notification?.actionType)) {
             this.router.navigate([`profile-chats`]);
           }
           this.closeModal();
