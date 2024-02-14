@@ -1,6 +1,7 @@
-const url = 'https://dev-api.freedom.buzz';
-const webUrl = 'https://dev.freedom.buzz/';
+const url = 'https://api.2040.chat';
+const webUrl = 'https://www.2040.chat/';
 const tubeUrl = 'https://dev.tube.freedom.buzz/'
+
 // const url = 'http://localhost:8080';
 // const webUrl = 'http://localhost:4200/';
 
