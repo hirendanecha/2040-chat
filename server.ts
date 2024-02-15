@@ -70,12 +70,14 @@ export function app(): express.Express {
         var seo: any = {
           title: '2040.Chat',
           description:
-            'The Umbrella platform for All freedom based projects worldwide',
+            `> Enterprise on-premises Secure Live Chat Solution hosted on your server
+             > Individual or Group Secure Chat
+            `,
           image:
-            'https://freedom.buzz/assets/images/banner/freedom-buzz-high-res.jpeg',
-          site: 'https://freedom.buzz/',
-          url: 'https://freedom.buzz' + params,
-          keywords: 'FreedomBuzz, Freedom',
+            'https://2040.chat/assets/images/meta-image.jpg',
+          site: 'https://2040.chat/',
+          url: 'https://2040.chat' + params,
+          keywords: '2040Chat, 2040',
         };
         if (params.indexOf('settings/view-profile/') > -1) {
           let id = params.split('/');

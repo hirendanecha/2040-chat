@@ -15,7 +15,7 @@ import { ToastService } from './@shared/services/toast.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  title = 'freedom-ssr';
+  title = '2040-chat';
   showButton = false;
   tab: any;
 
