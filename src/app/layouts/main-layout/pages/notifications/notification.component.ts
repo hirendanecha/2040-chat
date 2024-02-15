@@ -24,7 +24,7 @@ export class NotificationsComponent {
 
   ) {
     const data = {
-      title: 'Freedom.Buzz Notification',
+      title: '2040.Chat Notification',
       url: `${location.href}`,
       description: '',
     };
