@@ -81,7 +81,8 @@ import {
   faUsers,
   faCommentAlt,
   faPencil,
-  faRefresh
+  faRefresh,
+  faReply
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -216,6 +217,7 @@ export class SharedModule {
       faGear,
       faPencil,
       faRefresh,
+      faReply
     );
   }
 }

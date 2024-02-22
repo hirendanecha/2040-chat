@@ -30,6 +30,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   @Input('isShowMetaLoader') isShowMetaLoader: boolean = true;
   @Input('isShowEmojis') isShowEmojis: boolean = false;
   @Input('isCustomeSearch') isCustomeSearch: number = null;
+  @Input() placement: string = 'bottom-end';
   @Output('onDataChange') onDataChange: EventEmitter<any> =
     new EventEmitter<any>();
 

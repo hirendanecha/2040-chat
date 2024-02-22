@@ -18,10 +18,11 @@ import { take } from 'rxjs';
   templateUrl: './profile-chats.component.html',
   styleUrls: ['./profile-chats.component.scss'],
 })
-export class ProfileChartsComponent implements OnDestroy, OnInit {
+export class ProfileChartsComponent implements OnInit, OnDestroy {
   activeIdTab: string = 'local';
   pageList = [];
   profileId: number;
+  selectedRoomId: number;
   isPageLoader: boolean = false;
   isRoomCreated: boolean = false;
 
@@ -73,13 +74,16 @@ export class ProfileChartsComponent implements OnDestroy, OnInit {
   }
 
   onChatPost(userName: any) {
-    // console.log(userName);
     this.userChat = userName;
   }
 
   onNewChatRoom(isRoomCreated) {
     this.isRoomCreated = isRoomCreated;
     return this.sharedService.updateIsRoomCreated(this.isRoomCreated);
+  }
+
+  onSelectChat(id) {
+    this.selectedRoomId = id;
   }
 
   openChatListSidebar() {
@@ -92,13 +96,6 @@ export class ProfileChartsComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnDestroy(): void {
-    this.isRoomCreated = false;
-    if (this.socketService?.socket) {
-      this.socketService.socket?.disconnect();
-    }
-  }
-
   mobileShortCutPopup() {
     const modalRef = this.modalService.open(ConfirmationModalComponent, {
       centered: true,
@@ -107,13 +104,13 @@ export class ProfileChartsComponent implements OnDestroy, OnInit {
     modalRef.componentInstance.confirmButtonLabel = 'Yes';
     modalRef.componentInstance.cancelButtonLabel = 'No';
     modalRef.componentInstance.message =
-      'World you like to add a 2040.Chat icon to your mobile Home screen?';
+      'World you like to add a Freedom.buzz icon to your mobile Home screen?';
     modalRef.result.then((res) => {
       if (res === 'success') {
         const modalRef = this.modalService.open(ConfirmationModalComponent, {
           centered: true,
         });
-        modalRef.componentInstance.title = 'Add 2040 chats on home';
+        modalRef.componentInstance.title = 'Add freedom chats on home';
         modalRef.componentInstance.confirmButtonLabel = 'Do not display again';
         modalRef.componentInstance.cancelButtonLabel = 'Close';
         modalRef.componentInstance.message =
@@ -125,5 +122,12 @@ export class ProfileChartsComponent implements OnDestroy, OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.isRoomCreated = false;
+    // if (this.socketService?.socket) {
+    //   this.socketService.socket?.disconnect();
+    // }
   }
 }

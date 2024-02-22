@@ -8,6 +8,7 @@ import { Howl } from 'howler';
 import { IncomingcallModalComponent } from './@shared/modals/incoming-call-modal/incoming-call-modal.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from './@shared/services/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private customerService: CustomerService,
     private modalService: NgbModal,
     private toasterService: ToastService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.checkDocumentFocus();
@@ -99,7 +101,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             if (!this.currentURL.includes(data?.link)) {
               this.currentURL.push(data.link)
               this.modalService.dismissAll();
-              window?.open(data?.link, '_blank');
+              // window?.open(data?.link, '_blank');
+              this.router.navigate([`/freedom-call/${data.link}`]);
             }
           }
           if (this.notificationId) {

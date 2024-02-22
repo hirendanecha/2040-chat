@@ -10,6 +10,8 @@ import { SocketService } from '../../services/socket.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 import { SharedService } from '../../services/shared.service';
 import { UploadFilesService } from '../../services/upload-files.service';
+import { ToastService } from '../../services/toast.service';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-edit-group-modal',
@@ -37,6 +39,7 @@ export class EditGroupModalComponent implements OnInit {
   @ViewChild('userSearchDropdownRef', { static: false, read: NgbDropdown })
   userSearchNgbDropdown: NgbDropdown;
   isOpenUserMenu = false;
+  chanageGroupNameFormControl = new FormControl('', [Validators.pattern(/^\S.*\S$/)]);
 
   constructor(
     public activateModal: NgbActiveModal,
@@ -44,7 +47,8 @@ export class EditGroupModalComponent implements OnInit {
     private socketService: SocketService,
     private modalService: NgbModal,
     private sharedService: SharedService,
-    private uploadFileService: UploadFilesService
+    private uploadFileService: UploadFilesService,
+    private toastService: ToastService
   ) {
     this.profileId = +localStorage.getItem('profileId');
   }
@@ -108,17 +112,21 @@ export class EditGroupModalComponent implements OnInit {
   }
 
   upload() {
-    if (this.profileImg.file) {
-      this.uploadFileService.uploadFile(this.profileImg.file).subscribe({
-        next: (res: any) => {
-          if (res?.body?.url) {
-            this.profileImg.url = res?.body?.url;
-            this.editGroup();
-          }
-        },
-      });
+    if (this.chanageGroupNameFormControl.valid) {
+      if (this.profileImg.file) {
+        this.uploadFileService.uploadFile(this.profileImg.file).subscribe({
+          next: (res: any) => {
+            if (res?.body?.url) {
+              this.profileImg.url = res?.body?.url;
+              this.editGroup();
+            }
+          },
+        });
+      } else {
+        this.editGroup();
+      }
     } else {
-      this.editGroup();
+      this.toastService.danger('Something went wrong please try again!');
     }
   }
 
@@ -131,7 +139,6 @@ export class EditGroupModalComponent implements OnInit {
       profileIds: groupMembers,
       groupId: this.groupId,
     };
-    // console.log(groupData);
     this.activateModal.close(groupData);
   }
 
@@ -155,7 +162,6 @@ export class EditGroupModalComponent implements OnInit {
         };
         this.socketService.removeGroupMember(data, (res) => {
           this.data = res;
-          console.log(res);
         })
         if (id === this.profileId) {
           this.activateModal.close('cancel')
