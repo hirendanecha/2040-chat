@@ -77,7 +77,7 @@ export class ProfileChatsListComponent
 
   typingData: any = {};
   isTyping = false;
-
+  typingTimeout: any;
   emojiPaths = [
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Heart.gif',
     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Cool.gif',
@@ -759,20 +759,18 @@ export class ProfileChatsListComponent
     });
   }
 
-  startTypingChat(isTyping) {
+  startTypingChat(isTyping: boolean) {
+    clearTimeout(this.typingTimeout);
     const data = {
       groupId: this.userChat?.groupId,
       roomId: this.userChat?.roomId,
       profileId: this.profileId,
       isTyping: isTyping,
     };
-    this.socketService?.startTyping(data, (data: any) => {});
-  }
-
-  delayedStartTypingChat() {
-    setTimeout(() => {
-      this.startTypingChat(false);
-    }, 3000);
+    this.socketService?.startTyping(data, () => {});
+    if (isTyping) {
+      this.typingTimeout = setTimeout(() => this.startTypingChat(false), 3000);
+    }
   }
 
   notificationNavigation() {
