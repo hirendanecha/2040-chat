@@ -1,15 +1,28 @@
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Howl } from 'howler';
 import { SocketService } from '../../services/socket.service';
 import { EncryptDecryptService } from '../../services/encrypt-decrypt.service';
+
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { SoundControlService } from '../../services/sound-control.service';
 
 @Component({
   selector: 'app-incoming-call-modal',
   templateUrl: './incoming-call-modal.component.html',
   styleUrls: ['./incoming-call-modal.component.scss'],
 })
-export class IncomingcallModalComponent implements OnInit, AfterViewInit {
+export class IncomingcallModalComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @Input() cancelButtonLabel: string = 'Hangup';
   @Input() confirmButtonLabel: string = 'Join';
   @Input() title: string = 'Incoming call...';
@@ -18,15 +31,28 @@ export class IncomingcallModalComponent implements OnInit, AfterViewInit {
   hangUpTimeout: any;
   currentURL: any = [];
   profileId: number;
+  soundEnabledSubscription: Subscription;
+
   constructor(
     public activateModal: NgbActiveModal,
     private socketService: SocketService,
-    public encryptDecryptService: EncryptDecryptService
+    public encryptDecryptService: EncryptDecryptService,
+    private soundControlService: SoundControlService,
+    private router: Router,
   ) {
     this.profileId = +localStorage.getItem('profileId');
   }
 
   ngAfterViewInit(): void {
+    this.soundControlService.initStorageListener();
+    // this.sound?.close();
+    this.soundEnabledSubscription =
+      this.soundControlService.soundEnabled$.subscribe((soundEnabled) => {
+        if (soundEnabled === false) {
+          // console.log(soundEnabled);
+          this.sound?.stop();
+        }
+      });
     const SoundOct = JSON.parse(
       localStorage.getItem('soundPreferences')
     )?.callSoundEnabled;
@@ -48,14 +74,19 @@ export class IncomingcallModalComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   pickUpCall(): void {
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     if (!this.currentURL.includes(this.calldata?.link)) {
       this.currentURL.push(this.calldata.link);
-      window.open(this.calldata.link, '_blank');
+      // window.open(this.calldata.link, '_blank');
+
+      console.log('incomin',this.calldata.link);
+      // this.router.navigate([`/appointment-call/${this.calldata.link}`]);  
+      const callId = this.calldata.link.replace('https://facetime.tube/', '');
+      this.router.navigate([`/2040-call/${callId}`]);
       this.sound?.stop();
     }
     this.activateModal.close('success');
@@ -69,9 +100,8 @@ export class IncomingcallModalComponent implements OnInit, AfterViewInit {
         this.calldata.notificationToProfileId || this.profileId,
       link: this.calldata.link,
     };
-    console.log('pick-up-call', data);
     this.socketService?.pickUpCall(data, (data: any) => {
-      console.log(data);
+      return;
     });
   }
 
@@ -107,6 +137,10 @@ export class IncomingcallModalComponent implements OnInit, AfterViewInit {
       sentBy: this.calldata.notificationToProfileId || this.profileId,
       profileId: this.calldata.notificationByProfileId || this.profileId,
     };
-    this.socketService.sendMessage(data, async (data: any) => {});
+    this.socketService.sendMessage(data, async (data: any) => { });
+  }
+
+  ngOnDestroy(): void {
+    this.soundEnabledSubscription.unsubscribe();
   }
 }

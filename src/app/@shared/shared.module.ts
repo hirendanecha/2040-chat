@@ -81,7 +81,9 @@ import {
   faUsers,
   faCommentAlt,
   faPencil,
-  faRefresh
+  faRefresh,
+  faReply,
+  faUserTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -95,7 +97,6 @@ import {
   NgbNavModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { IncomingcallModalComponent } from './modals/incoming-call-modal/incoming-call-modal.component';
-import { AppointmentCallComponent } from './components/appointment-call/appointment-call.component';
 import { OutGoingCallModalComponent } from './modals/outgoing-call-modal/outgoing-call-modal.component';
 import { CreateGroupModalComponent } from './modals/create-group-modal/create-group-modal.component';
 import { EditGroupModalComponent } from './modals/edit-group-modal/edit-group-modal.component';
@@ -112,7 +113,6 @@ const sharedComponents = [
   ForgotPasswordComponent,
   IncomingcallModalComponent,
   OutGoingCallModalComponent,
-  AppointmentCallComponent,
   CreateGroupModalComponent,
   EditGroupModalComponent,
 ];
@@ -216,6 +216,8 @@ export class SharedModule {
       faGear,
       faPencil,
       faRefresh,
+      faReply,
+      faUserTimes
     );
   }
 }

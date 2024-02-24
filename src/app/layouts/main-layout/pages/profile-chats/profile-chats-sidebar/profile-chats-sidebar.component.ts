@@ -27,8 +27,7 @@ import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-m
   styleUrls: ['./profile-chats-sidebar.component.scss'],
 })
 export class ProfileChatsSidebarComponent
-  implements AfterViewInit, OnChanges, OnInit
-{
+  implements AfterViewInit, OnChanges, OnInit {
   chatList: any = [];
   pendingChatList: any = [];
   groupList: any = [];
@@ -44,12 +43,12 @@ export class ProfileChatsSidebarComponent
   isCallSoundEnabled: boolean = true;
   isChatLoader = false;
   selectedButton: string = 'chats';
-  originalFavicon: HTMLLinkElement;
   newChatList = [];
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
   @Output('onNewChat') onNewChat: EventEmitter<any> = new EventEmitter<any>();
   @Input('isRoomCreated') isRoomCreated: boolean = false;
+  @Input('selectedRoomId') selectedRoomId: number = null;
   constructor(
     private customerService: CustomerService,
     private socketService: SocketService,
@@ -71,14 +70,14 @@ export class ProfileChatsSidebarComponent
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.originalFavicon = document.querySelector('link[rel="icon"]');
     this.sharedService
       .getIsRoomCreatedObservable()
       .subscribe((isRoomCreated) => {
-        this.isRoomCreated = isRoomCreated;
+        this.isRoomCreated = isRoomCreated
         this.getChatList();
         this.getGroupList();
       });
+    this.selectedChatUser = this.selectedRoomId || null
   }
 
   ngOnInit(): void {
@@ -147,16 +146,19 @@ export class ProfileChatsSidebarComponent
     return this.chatList;
   }
 
+  dismissSidebar(){
+    this.activeOffcanvas?.dismiss();
+  }
+
   onChat(item: any) {
-    this.selectedChatUser = item;
+    this.selectedChatUser = item.roomId || item.groupId;
     item.unReadMessage = 0;
     if (item.groupId) {
       item.isAccepted = 'Y';
     }
     // console.log(item);
-    this.notificationNavigation();
+    // this.notificationNavigation()
     this.onNewChat?.emit(item);
-    // this.activeOffcanvas?.dismiss();
     if (this.searchText) {
       this.searchText = null;
     }
@@ -191,15 +193,6 @@ export class ProfileChatsSidebarComponent
     });
   }
 
-  notificationNavigation() {
-    const isRead = localStorage.getItem('isRead');
-    if (isRead === 'N') {
-      this.originalFavicon.href = '/assets/images/icon.jpg';
-      localStorage.setItem('isRead', 'Y');
-      this.sharedService.isNotify = false;
-    }
-  }
-
   mergeUserChatList(): void {
     const chatList = this.chatList;
     const groupList = this.groupList;
@@ -221,7 +214,6 @@ export class ProfileChatsSidebarComponent
     modalRef.componentInstance.title = 'Create Group';
     modalRef.result.then((res) => {
       if (res) {
-        // console.log(res);
         this.socketService?.createGroup(res, (data: any) => {
           this.getChatList();
           this.getGroupList();
@@ -231,7 +223,6 @@ export class ProfileChatsSidebarComponent
   }
 
   deleteOrLeaveChat(item) {
-    console.log(item);
     if (item.roomId) {
       const data = {
         roomId: item.roomId,
@@ -244,7 +235,7 @@ export class ProfileChatsSidebarComponent
       });
     } else if (item.groupId) {
       const data = {
-        profileId: item.profileId,
+        profileId: this.profileId,
         groupId: item.groupId,
       };
       this.socketService.removeGroupMember(data, (res) => {
