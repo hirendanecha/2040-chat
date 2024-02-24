@@ -102,7 +102,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               this.currentURL.push(data.link)
               this.modalService.dismissAll();
               // window?.open(data?.link, '_blank');
-              this.router.navigate([`/freedom-call/${data.link}`]);
+              this.router.navigate([`/2040-call/${data.link}`]);
             }
           }
           if (this.notificationId) {

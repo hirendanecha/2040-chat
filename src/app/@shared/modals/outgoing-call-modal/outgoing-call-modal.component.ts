@@ -79,7 +79,7 @@ export class OutGoingCallModalComponent
     clearTimeout(this.hangUpTimeout);
     // this.router.navigate([`/appointment-call/${this.calldata.link}`]);
     const callId = this.calldata.link.replace('https://facetime.tube/', '');
-    this.router.navigate([`/freedom-call/${callId}`]);
+    this.router.navigate([`/2040-call/${callId}`]);
     // window.open(this.calldata.link, '_blank');    
     this.activateModal.close('success');
   }

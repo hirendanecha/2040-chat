@@ -35,7 +35,7 @@ export class AppointmentCallComponent implements OnInit {
 
   ngOnInit() {
     const appointmentURLCall =
-      this.route.snapshot['_routerState'].url.split('/freedom-call/')[1];
+      this.route.snapshot['_routerState'].url.split('/2040-call/')[1];
     this.options = {
       roomName: appointmentURLCall,
       parentNode: document.querySelector('#meet'),
