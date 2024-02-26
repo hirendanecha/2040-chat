@@ -269,7 +269,7 @@ export class ProfileChatsListComponent
         profileId: this.userChat.profileId,
         parentMessageId: this.chatObj?.parentMessageId || null,
       };
-      data.roomId ? (data['isRead'] = 'N') : null;
+      this.userChat?.roomId ? (data['isRead'] = 'N') : null;  
       this.socketService.sendMessage(data, async (data: any) => {
         this.isFileUploadInProgress = false;
         this.scrollToBottom();
@@ -289,7 +289,7 @@ export class ProfileChatsListComponent
         this.messageList.push(data);
         if (this.userChat.groupId) {
           this.socketService.readGroupMessage(data, (readUsers)=> {
-            this.readMessagesBy = readUsers.filter(item => item.ID !== this.profileId);
+            this.readMessagesBy = readUsers?.filter(item => item.ID !== this.profileId);
           })
         }
         const array = new MessageDatePipe().transform(this.messageList);
@@ -328,7 +328,7 @@ export class ProfileChatsListComponent
               new Date(b.createdDate).getTime()
           );
           this.readMessagesBy = data?.readUsers?.filter(item => item.ID !== this.profileId);
-          this.readMessageRoom = this.messageList[0].isRead
+          this.readMessageRoom = this.messageList[0]?.isRead
         } else {
           this.hasMoreData = false;
         }
