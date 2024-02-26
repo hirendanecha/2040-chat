@@ -62,6 +62,8 @@ export class ProfileChatsListComponent
   groupData: any = [];
   messageList: any = [];
   filteredMessageList: any = [];
+  readMessagesBy: any = [];
+  readMessageRoom: string = '';
   metaURL: any = [];
   metaData: any = {};
   ngUnsubscribe: Subject<void> = new Subject<void>();
@@ -170,6 +172,7 @@ export class ProfileChatsListComponent
     if (this.userChat?.roomId || this.userChat?.groupId) {
       this.activePage = 1;
       this.messageList = [];
+      this.resetData();
       this.getMessageList();
       this.hasMoreData = false;
       this.socketService.socket.on('get-users', (data) => {
@@ -197,7 +200,7 @@ export class ProfileChatsListComponent
         profileId2: this.userChat?.Id || this.userChat?.profileId,
       },
       (data: any) => {
-        console.log(data);
+        // console.log(data);
         this.userChat = { ...data?.room };
         this.newRoomCreated.emit(true);
       }
@@ -266,7 +269,7 @@ export class ProfileChatsListComponent
         profileId: this.userChat.profileId,
         parentMessageId: this.chatObj?.parentMessageId || null,
       };
-
+      this.userChat?.roomId ? (data['isRead'] = 'N') : null;  
       this.socketService.sendMessage(data, async (data: any) => {
         this.isFileUploadInProgress = false;
         this.scrollToBottom();
@@ -284,6 +287,11 @@ export class ProfileChatsListComponent
           data['metaData'] = await this.getMetaDataFromUrlStr(matches?.[0]);
         }
         this.messageList.push(data);
+        if (this.userChat.groupId) {
+          this.socketService.readGroupMessage(data, (readUsers)=> {
+            this.readMessagesBy = readUsers?.filter(item => item.ID !== this.profileId);
+          })
+        }
         const array = new MessageDatePipe().transform(this.messageList);
         // console.log(array);
         this.filteredMessageList = array;
@@ -319,27 +327,41 @@ export class ProfileChatsListComponent
               new Date(a.createdDate).getTime() -
               new Date(b.createdDate).getTime()
           );
+          this.readMessagesBy = data?.readUsers?.filter(item => item.ID !== this.profileId);
+          this.readMessageRoom = this.messageList[0]?.isRead
         } else {
           this.hasMoreData = false;
         }
         if (this.activePage < data.pagination.totalPages) {
           this.hasMoreData = true;
         }
-        const ids = [];
-        this.messageList.map((e: any) => {
-          if (e.isRead === 'N' && e.sentBy !== this.profileId) {
-            return ids.push(e.id);
-          } else {
-            return e;
-          }
-        });
-        if (ids.length) {
-          const data = {
-            ids: ids,
+        if (this.userChat?.groupId) {
+          const date = moment(new Date()).utc();
+          const oldChat = {
+            profileId: this.profileId,
+            groupId: this.userChat.groupId,
+            date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
           };
-          this.socketService.readMessage(data, (res) => {
-            return;
+          this.socketService.switchChat(oldChat, (data) => {
+            // console.log(data);
           });
+        } else {
+          const ids = [];
+          this.messageList.map((e: any) => {
+            if (e.isRead === 'N' && e.sentBy !== this.profileId) {
+              return ids.push(e.id);
+            } else {
+              return e;
+            }
+          });
+          if (ids.length) {
+            const data = {
+              ids: ids,
+            };
+            this.socketService.readMessage(data, (res) => {
+              return;
+            });
+          }
         }
         this.messageList.map(async (element: any) => {
           const url =
