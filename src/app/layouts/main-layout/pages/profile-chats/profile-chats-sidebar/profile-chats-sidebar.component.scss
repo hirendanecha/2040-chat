@@ -61,17 +61,17 @@
     max-width: 40px;
   }
   .cus-scrollbar {
-    height: 44vh;
+    height: 52vh;
     // height: 39vh;
-    @media (max-width: 992px) {
-      height: 42vh;
-    }
+    // @media (max-width: 992px) {
+    //   height: 42vh;
+    // }
   }
   .cus-scrollbar-pending {
-    height: 17vh;
-    @media (max-width: 992px) {
-      height: 26vh;
-    }
+    height: 25vh;
+    // @media (max-width: 992px) {
+    //   height: 26vh;
+    // }
   }
 
   .dropdown-preferences {
