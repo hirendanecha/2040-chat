@@ -9,7 +9,8 @@
       height: calc(100vh - 158px);
       // min-height: calc(100vh - 350px);
       @media (max-width: 991px) {
-        height: calc(100vh - 210px);
+        height: calc(100vh - 260px);
+        // height: calc(100vh - 210px);
       }
     }
     .c-pdf-show {
@@ -28,10 +29,12 @@
 
     .chat-footer {
       .message-content {
-        position: absolute;
-        width: 100%;
-        max-width: calc(100% - 40px);
-        top: 0px;
+        @media (min-width:991px) {
+          position: absolute;
+          width: 100%;
+          max-width: calc(100% - 40px);
+          top: 0px;
+        }
 
         @media (max-width: 575px) {
           max-width: 100%;
@@ -98,6 +101,10 @@
     background: var(--box-1st-color);
     border-radius: 16px;
     padding: 5px;
+
+    @media (max-width: 991px) {
+      bottom: 70px;
+    }
   }
 
   button:disabled {

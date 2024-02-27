@@ -1,44 +1,46 @@
 ::ng-deep {
   .profile-menus-modal {
     position: fixed;
-    right: 315px;
-    top: 50px;
+    // right: 315px;
+    // top: 50px;
+    top: 30px;
+    left: 25px;
     display: flex;
     bottom: unset !important;
     min-width: 280px;
     max-width: 80vw;
 
-    @media (max-width: 1024px) {
-      right: 40px !important;
-    }
+    // @media (max-width: 1024px) {
+    //   right: 40px !important;
+    // }
 
-    @media (width: 1180px) {
-      right: 112px !important;
-    }
+    // @media (width: 1180px) {
+    //   right: 112px !important;
+    // }
 
-    @media (min-width: 1300px) and (max-width: 1368px) {
-      right: 112px !important;
-    }
+    // @media (min-width: 1300px) and (max-width: 1368px) {
+    //   right: 112px !important;
+    // }
 
-    @media (width: 1114px) {
-      right: 90px !important;
-    }
+    // @media (width: 1114px) {
+    //   right: 90px !important;
+    // }
 
-    @media (min-width: 1200px) and (width: 1280px) {
-      right: 90px !important;
-    }
+    // @media (min-width: 1200px) and (width: 1280px) {
+    //   right: 90px !important;
+    // }
 
-    @media (min-width: 1400px) and (max-width: 1680px) {
-      right: 90px !important;
-    }
+    // @media (min-width: 1400px) and (max-width: 1680px) {
+    //   right: 90px !important;
+    // }
 
-    @media (min-width: 1941px) and (max-width: 2580px) {
-      right: 23% !important
-    }
+    // @media (min-width: 1941px) and (max-width: 2580px) {
+    //   right: 23% !important
+    // }
 
-    @media (min-width: 2641px) {
-      right: 23% !important;
-    }
+    // @media (min-width: 2641px) {
+    //   right: 23% !important;
+    // }
   }
 }
 

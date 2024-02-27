@@ -20,6 +20,7 @@ import { SharedService } from 'src/app/@shared/services/shared.service';
 import { Router } from '@angular/router';
 import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.service';
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
+import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
 
 @Component({
   selector: 'app-profile-chats-sidebar',
@@ -44,6 +45,9 @@ export class ProfileChatsSidebarComponent
   isChatLoader = false;
   selectedButton: string = 'chats';
   newChatList = [];
+
+  userMenusOverlayDialog: any;
+  
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
   @Output('onNewChat') onNewChat: EventEmitter<any> = new EventEmitter<any>();
@@ -244,5 +248,15 @@ export class ProfileChatsSidebarComponent
         this.onNewChat?.emit({});
       });
     }
+  }
+
+  openProfileMenuModal(): void {
+    this.userMenusOverlayDialog = this.modalService.open(
+      ProfileMenusModalComponent,
+      {
+        keyboard: true,
+        modalDialogClass: 'profile-menus-modal',
+      }
+    );
   }
 }
