@@ -137,7 +137,9 @@ export class ProfileChatsListComponent
         } else {
           console.log(this.messageList);
           this.scrollToBottom();
-          this.messageList.push(data);
+          if (data !== null) {
+            this.messageList.push(data);
+        }
           const array = new MessageDatePipe().transform(this.messageList);
           this.filteredMessageList = array;
           if (this.userChat.groupId) {
