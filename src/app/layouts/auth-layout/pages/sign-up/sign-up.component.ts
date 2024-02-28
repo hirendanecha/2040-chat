@@ -47,10 +47,10 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     confirm_password: new FormControl('', [Validators.required]),
     MobileNo: new FormControl('', [Validators.required]),
     Country: new FormControl('US', [Validators.required]),
-    Zip: new FormControl({ value: '', disabled: true }, Validators.required),
-    State: new FormControl({ value: '', disabled: true }, Validators.required),
-    City: new FormControl({ value: '', disabled: true }, Validators.required),
-    County: new FormControl({ value: '', disabled: true }, Validators.required),
+    Zip: new FormControl('', [Validators.required]),
+    State: new FormControl('', [Validators.required]),
+    City: new FormControl('', [Validators.required]),
+    County: new FormControl('', [Validators.required]),
     TermAndPolicy: new FormControl(false, Validators.required),
   });
 
@@ -73,7 +73,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       .subscribe((event) => {
         const val = event['target'].value;
         if (val.length > 3) {
-          this.onZipChange(val);
+          // this.onZipChange(val);
         }
       });
   }
@@ -289,5 +289,12 @@ export class SignUpComponent implements OnInit, AfterViewInit {
   }
   onChangeTag(event) {
     this.registerForm.get('Username').setValue(event.target.value.replaceAll(' ', '').replaceAll(/\s*,+\s*/g, ','));
+  }
+
+  convertToUppercase(event: any) {
+    const inputElement = event.target as HTMLInputElement;
+    let inputValue = inputElement.value;
+    inputValue = inputValue.replace(/\s/g, '');
+    inputElement.value = inputValue.toUpperCase();
   }
 }

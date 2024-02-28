@@ -219,7 +219,7 @@
             <span>Loadmore</span>
           </div>
           <ul
-            class="py-2 px-3 cus-scrollbar bottom-0 main-chat-box"
+            class="py-2 px-3 cus-scrollbar bottom-0 main-chat-box container"
             *ngFor="let msg of filteredMessageList"
           >
             <span class="d-flex w-100 justify-content-center custom-border">
@@ -234,15 +234,18 @@
                 >{{ displayLocalTime(message?.createdDate) }}</span
               > -->
               <div
-              class="d-flex"
-              *ngIf="
-                message?.sentBy !== this.profileId &&
-                message?.createdDate &&
-                message?.Username
-              "
-            >
-              <span class="font-12-px data-text-color ms-3">{{ message?.Username }}, {{displayLocalTime(message?.createdDate)}}</span>
-            </div>
+                class="d-flex"
+                *ngIf="
+                  message?.sentBy !== this.profileId &&
+                  message?.createdDate &&
+                  message?.Username
+                "
+              >
+                <span class="font-12-px data-text-color ms-3"
+                  >{{ message?.Username }},
+                  {{ displayLocalTime(message?.createdDate) }}</span
+                >
+              </div>
               <li class="you" *ngIf="message?.sentBy !== this.profileId">
                 <div class="d-flex drop-options">
                   <div class="btn-group d-flex options me-2">
@@ -655,21 +658,52 @@
               </li>
             </ng-container>
           </ul>
-          <ng-container *ngIf="userChat?.groupId || (userChat?.roomId && readMessageRoom === 'Y')">
-            <div class="d-flex flex-row-reverse pb-2 pe-6 gap-1" ngbDropdown>
-              <ng-container *ngFor="let item of (userChat?.groupId ? readMessagesBy : [userChat])">
-                <div class="c-pointer" [title]="item?.Username || item?.FirstName" ngbDropdownToggle>
-                  <img loading="lazy" data-src="{{item?.ProfilePicName}}" class="rounded-circle h-20-px w-20-px" draggable="false" onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';">
+          <ng-container
+            *ngIf="
+              userChat?.groupId || (userChat?.roomId && readMessageRoom === 'Y')
+            "
+          >
+            <div
+              class="d-flex flex-row-reverse pb-2 pe-6 gap-1 container"
+              ngbDropdown
+            >
+              <ng-container
+                *ngFor="
+                  let item of userChat?.groupId ? readMessagesBy : [userChat]
+                "
+              >
+                <div
+                  class="c-pointer"
+                  [title]="item?.Username || item?.FirstName"
+                  ngbDropdownToggle
+                >
+                  <img
+                    loading="lazy"
+                    data-src="{{ item?.ProfilePicName }}"
+                    class="rounded-circle h-20-px w-20-px"
+                    draggable="false"
+                    onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
+                  />
                 </div>
               </ng-container>
               <div ngbDropdownMenu class="w-228-px">
                 <div class="h6 ms-3 btn-link">
-                  READ BY {{ userChat?.groupId ? readMessagesBy?.length : '' }}
+                  READ BY {{ userChat?.groupId ? readMessagesBy?.length : "" }}
                 </div>
-                <ng-container *ngFor="let item of (userChat?.groupId ? readMessagesBy : [userChat])">
+                <ng-container
+                  *ngFor="
+                    let item of userChat?.groupId ? readMessagesBy : [userChat]
+                  "
+                >
                   <button ngbDropdownItem>
                     <div class="d-flex align-items-center gap-2">
-                      <img loading="lazy" data-src="{{item.ProfilePicName}}" class="rounded-circle h-28-px w-28-px" draggable="false" onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';">
+                      <img
+                        loading="lazy"
+                        data-src="{{ item.ProfilePicName }}"
+                        class="rounded-circle h-28-px w-28-px"
+                        draggable="false"
+                        onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
+                      />
                       <div class="replay-text">
                         {{ item.Username || item.FirstName }}
                       </div>
@@ -683,7 +717,7 @@
       </div>
 
       <div
-        class="text-end chat-footer position-relative w-100 px-sm-6 bg-color"
+        class="text-end chat-footer position-relative w-100 px-sm-6 bg-color container"
         *ngIf="userChat.isAccepted === 'Y'"
       >
         <ng-container *ngIf="viewUrl && !pdfName">
@@ -728,7 +762,7 @@
           *ngIf="
             typingData?.isTyping &&
             userChat.roomId === typingData.roomId &&
-              userChat.groupId === typingData.groupId &&
+            userChat.groupId === typingData.groupId &&
             typingData.profileId !== profileId
           "
         >
@@ -756,7 +790,10 @@
               (click)="removeReplay()"
             />
             <div class="d-flex">
-              <span class="font-12-px replay-border">{{replyMessage.Username}}, {{replyMessage.createdDate | date : "dd-MM-yyyy"}}</span>
+              <span class="font-12-px replay-border"
+                >{{ replyMessage.Username }},
+                {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
+              >
             </div>
           </div>
         </ng-container>
@@ -850,7 +887,9 @@
                   [isCopyImagePreview]="false"
                   [isShowEmojis]="true"
                   [placement]="'top-start'"
-                  [isCustomeSearch]="userChat?.groupId ? userChat?.groupId : null"
+                  [isCustomeSearch]="
+                    userChat?.groupId ? userChat?.groupId : null
+                  "
                   (onDataChange)="onTagUserInputChangeEvent($event)"
                   (keypress)="startTypingChat(true)"
                   (keydown.enter)="uploadPostFileAndCreatePost()"

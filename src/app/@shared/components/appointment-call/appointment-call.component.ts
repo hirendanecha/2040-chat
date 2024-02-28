@@ -47,6 +47,7 @@ export class AppointmentCallComponent implements OnInit {
         SHOW_JITSI_WATERMARK: false,
       },
       disableModeratorIndicator: true,
+      lang: 'en',
     };
 
     const api = new JitsiMeetExternalAPI(this.domain, this.options);

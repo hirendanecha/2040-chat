@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Inject, OnDestroy, OnInit, Output, PLATFORM_ID } from '@angular/core';
 import { SharedService } from './@shared/services/shared.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { isPlatformBrowser } from '@angular/common';
@@ -9,6 +9,7 @@ import { IncomingcallModalComponent } from './@shared/modals/incoming-call-modal
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from './@shared/services/toast.service';
 import { Router } from '@angular/router';
+import { SoundControlService } from './@shared/services/sound-control.service';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Output('newRoomCreated') newRoomCreated: EventEmitter<any> = new EventEmitter<any>();
   title = '2040-chat';
   showButton = false;
   tab: any;
@@ -32,6 +34,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private modalService: NgbModal,
     private toasterService: ToastService,
     private router: Router,
+    private soundControlService: SoundControlService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.checkDocumentFocus();
@@ -40,12 +43,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.socketService.socket?.emit('join', { room: this.profileId });
+  }
+
+  ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.originalFavicon = document.querySelector('link[rel="icon"]');
       this.sharedService.getUserDetails();
       this.spinner.hide();
       setTimeout(() => {
-        const splashScreenLoader = document.getElementById('splashScreenLoader');
+        const splashScreenLoader =
+          document.getElementById('splashScreenLoader');
         if (splashScreenLoader) {
           splashScreenLoader.style.display = 'none';
         }
@@ -55,14 +63,34 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.socketService.socket?.connect();
         this.socketService.socket?.emit('online-users');
       }
-      this.socketService.socket?.emit('join', { room: this.profileId });
+
       this.socketService.socket?.on('notification', (data: any) => {
         if (data) {
-          console.log('new-notification', data);
+          if (data?.notificationByProfileId !== this.profileId) {
+            this.sharedService.isNotify = true;
+          }
           this.notificationId = data.id;
           this.originalFavicon.href = '/assets/images/icon-unread.jpg';
-          if (data?.actionType === 'M' && data.notificationToProfileId !== this.profileId) {
-            this.sharedService.isNotify = true;
+          if (data?.actionType === 'T') {
+            var sound = new Howl({
+              src: [
+                'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-notification.mp3',
+              ],
+            });
+            const notificationSoundOct = JSON.parse(
+              localStorage.getItem('soundPreferences')
+            )?.notificationSoundEnabled;
+            if (notificationSoundOct !== 'N') {
+              if (sound) {
+                sound?.play();
+              }
+            }
+          }
+          if (
+            data?.actionType === 'M' &&
+            data?.notificationByProfileId !== this.profileId
+          ) {
+            this.newRoomCreated.emit(true);
             var sound = new Howl({
               src: [
                 'https://s3.us-east-1.wasabisys.com/freedom-social/messageTone.mp3',
@@ -76,44 +104,58 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 sound?.play();
               }
             }
-            this.toasterService.success(data?.notificationDesc)
+            this.toasterService.success(data?.notificationDesc);
           }
-          if (data?.actionType === 'VC' && data?.notificationByProfileId != this.profileId) {
+          if (
+            data?.actionType === 'VC' &&
+            data?.notificationByProfileId !== this.profileId
+          ) {
             var callSound = new Howl({
               src: [
                 'https://s3.us-east-1.wasabisys.com/freedom-social/famous_ringtone.mp3',
               ],
               loop: true,
             });
-            const modalRef = this.modalService.open(IncomingcallModalComponent, {
-              centered: true,
-              size: 'sm',
-              backdrop: 'static',
-            });
+            this.soundControlService.initTabId();
+            const modalRef = this.modalService.open(
+              IncomingcallModalComponent,
+              {
+                centered: true,
+                size: 'sm',
+                backdrop: 'static',
+              }
+            );
             modalRef.componentInstance.calldata = data;
             modalRef.componentInstance.sound = callSound;
             modalRef.result.then((res) => {
-              console.log(res);
+              return;
             });
           }
-          if (data?.actionType === 'SC') {
-            console.log(this.currentURL)
+          if (
+            data?.actionType === 'SC' &&
+            data?.notificationByProfileId !== this.profileId
+          ) {
             if (!this.currentURL.includes(data?.link)) {
-              this.currentURL.push(data.link)
+              this.currentURL.push(data.link);
               this.modalService.dismissAll();
+              if (!window.document.hidden) {
+                this.router.navigate([`/2040-call/${data.link}`]);
+              }
+              // window.open(`appointment-call/${data.link}`, '_blank');
               // window?.open(data?.link, '_blank');
-              this.router.navigate([`/2040-call/${data.link}`]);
             }
           }
           if (this.notificationId) {
-            this.customerService.getNotification(this.notificationId).subscribe({
-              next: (res) => {
-                localStorage.setItem('isRead', res.data[0]?.isRead);
-              },
-              error: (error) => {
-                console.log(error);
-              },
-            });
+            this.customerService
+              .getNotification(this.notificationId)
+              .subscribe({
+                next: (res) => {
+                  localStorage.setItem('isRead', res.data[0]?.isRead);
+                },
+                error: (error) => {
+                  console.log(error);
+                },
+              });
           }
         }
       });
@@ -122,9 +164,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.sharedService.isNotify = true;
       }
     }
-  }
-
-  ngAfterViewInit(): void {
   }
 
   @HostListener('window:scroll', [])
@@ -150,12 +189,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         clearInterval(this.tab);
       }
       if (!this.socketService.socket?.connected) {
-        this.socketService.connect();
+        this.socketService.socket?.connect();
+        const profileId = +localStorage.getItem('profileId');
+        // this.socketService.socket?.emit('join', { room: profileId });
       }
     } else {
       this.tab = setInterval(() => {
         if (!this.socketService.socket?.connected) {
-          this.socketService.connect();
+          this.socketService.socket?.connect();
+          const profileId = +localStorage.getItem('profileId');
+          // this.socketService.socket?.emit('join', { room: profileId });
         }
       }, 3000);
     }
@@ -164,5 +207,4 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.currentURL = [];
   }
-
 }
