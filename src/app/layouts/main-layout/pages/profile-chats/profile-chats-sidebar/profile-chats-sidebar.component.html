@@ -7,12 +7,13 @@
         <div
           class="avatar-item d-flex mb-2 gap-3 align-items-center cursor"
           (click)="openProfileMenuModal()"
-          >
+        >
           <!-- (click)="clearChatList()" -->
           <div class="avatar-item">
             <!--  -->
             <img
               [src]="sharedService?.userData?.ProfilePicName"
+              onerror="this.onerror=null;this.src='/assets/images/default-profile.jpg';"
               class="w-48-px rounded-3"
               alt="avatar"
             />

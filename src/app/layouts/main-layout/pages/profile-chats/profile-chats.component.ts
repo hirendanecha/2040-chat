@@ -44,7 +44,7 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private el: ElementRef,
     private offcanvasService: NgbOffcanvas,
-    private sharedService: SharedService,
+    public sharedService: SharedService,
     private socketService: SocketService,
     private modalService: NgbModal,
     public breakpointService: BreakpointService

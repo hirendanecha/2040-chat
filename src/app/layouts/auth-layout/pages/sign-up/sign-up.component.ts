@@ -30,7 +30,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
   allCountryData: any;
   type = 'danger';
   defaultCountry = 'US';
-  profilePic = '';
+  profilePic: string;
   profileImg: any = {
     file: null,
     url: '',
@@ -59,48 +59,52 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     private customerService: CustomerService,
     private router: Router,
     private uploadService: UploadFilesService,
-    private toastService: ToastService,
-  ) {
-  }
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
     this.getAllCountries();
   }
 
   ngAfterViewInit(): void {
-    fromEvent(this.zipCode.nativeElement, 'input')
-      .pipe(debounceTime(1000))
-      .subscribe((event) => {
-        const val = event['target'].value;
-        if (val.length > 3) {
-          // this.onZipChange(val);
-        }
-      });
+    // fromEvent(this.zipCode.nativeElement, 'input')
+    //   .pipe(debounceTime(1000))
+    //   .subscribe((event) => {
+    //     const val = event['target'].value;
+    //     if (val.length > 3) {
+    //       this.onZipChange(val);
+    //     }
+    //   });
   }
 
   selectFiles(event) {
     this.profileImg = event;
   }
 
-  upload(file) {
+  upload(file: any = {}) {
     this.spinner.show();
-    this.uploadService.uploadFile(file).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
-        if (res.body) {
-          this.profilePic = res?.body?.url;
-          this.creatProfile(this.registerForm.value);
-        }
-      },
-      error: (err) => {
-        this.spinner.hide();
-        this.profileImg = {
-          file: null,
-          url: '',
-        };
-        return 'Could not upload the file:' + file.name;
-      },
-    });
+    if (file) {
+      this.uploadService.uploadFile(file).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
+          if (res.body) {
+            this.profilePic = res?.body?.url;
+            this.creatProfile(this.registerForm.value);
+          }
+        },
+        error: (err) => {
+          this.spinner.hide();
+          this.profileImg = {
+            file: null,
+            url: '',
+          };
+          return 'Could not upload the file:' + file.name;
+        },
+      });
+    } else {
+      this.spinner.hide();
+      this.creatProfile(this.registerForm.value);
+    }
   }
 
   save() {
@@ -154,13 +158,13 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
     this.msg = '';
-    if (!this.profileImg?.file?.name) {
-      this.msg = 'Please upload profile picture';
-      this.scrollTop();
-    }
+    // if (!this.profileImg?.file?.name) {
+    //   this.msg = 'Please upload profile picture';
+    //   this.scrollTop();
+    // }
+    // this.profileImg?.file?.name &&
     if (
       this.registerForm.valid &&
-      this.profileImg?.file?.name &&
       this.registerForm.get('TermAndPolicy').value === true
     ) {
       if (!this.validatepassword()) {
@@ -251,7 +255,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       MobileNo: data?.MobileNo,
       UserID: window?.sessionStorage?.user_id,
       IsActive: 'N',
-      ProfilePicName: this.profilePic,
+      ProfilePicName: this.profilePic || null,
     };
     console.log(profile);
 
@@ -288,7 +292,11 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     });
   }
   onChangeTag(event) {
-    this.registerForm.get('Username').setValue(event.target.value.replaceAll(' ', '').replaceAll(/\s*,+\s*/g, ','));
+    this.registerForm
+      .get('Username')
+      .setValue(
+        event.target.value.replaceAll(' ', '').replaceAll(/\s*,+\s*/g, ',')
+      );
   }
 
   convertToUppercase(event: any) {

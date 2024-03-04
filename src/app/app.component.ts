@@ -1,4 +1,14 @@
-import { AfterViewInit, Component, EventEmitter, HostListener, Inject, OnDestroy, OnInit, Output, PLATFORM_ID } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  HostListener,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Output,
+  PLATFORM_ID,
+} from '@angular/core';
 import { SharedService } from './@shared/services/shared.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { isPlatformBrowser } from '@angular/common';
@@ -10,6 +20,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from './@shared/services/toast.service';
 import { Router } from '@angular/router';
 import { SoundControlService } from './@shared/services/sound-control.service';
+import { TokenStorageService } from './@shared/services/token-storage.service';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +28,8 @@ import { SoundControlService } from './@shared/services/sound-control.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Output('newRoomCreated') newRoomCreated: EventEmitter<any> = new EventEmitter<any>();
+  @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
+    new EventEmitter<any>();
   title = '2040-chat';
   showButton = false;
   tab: any;
@@ -35,15 +47,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private toasterService: ToastService,
     private router: Router,
     private soundControlService: SoundControlService,
+    private tokenService: TokenStorageService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.checkDocumentFocus();
     this.profileId = +localStorage.getItem('profileId');
   }
 
-
   ngOnInit(): void {
     this.socketService.socket?.emit('join', { room: this.profileId });
+    if (this.tokenService.getToken()) {
+      this.customerService.verifyToken(this.tokenService.getToken()).subscribe({
+        next: (res: any) => {
+          if (!res?.verifiedToken) {
+            this.tokenService.signOut();
+          }
+        },
+        error: (err) => {
+          this.toasterService.danger(err.message);
+          this.tokenService.signOut();
+        },
+      });
+    }
   }
 
   ngAfterViewInit(): void {
