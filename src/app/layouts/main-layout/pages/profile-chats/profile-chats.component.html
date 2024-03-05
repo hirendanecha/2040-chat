@@ -1,4 +1,4 @@
-<ng-container *ngIf="sharedService?.userData?.MediaApproved">
+<ng-container *ngIf="sharedService?.userData?.MediaApproved; else pendingApproval">
   <div class="d-block d-lg-none chat-list-btn">
     <button
       class="button profile-active mb-lg-0 d-flex align-items-center gap-2 m-3"
@@ -33,3 +33,14 @@
     </div>
   </div>
 </ng-container>
+<ng-template #pendingApproval>
+  <div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="pending-approval-container col-11 col-md-8 col-lg-6 rounded-3 h-260-px d-flex flex-column justify-content-center">
+      <h2 class="text-center">Your account is pending for activation.</h2>
+      <p class="text-danger text-center m-0">
+        If you are having technical issues, email
+        <a href="mailto:support@2040.chat">{{ "support@2040.chat" }}</a>
+      </p>
+    </div>
+  </div>
+</ng-template>
