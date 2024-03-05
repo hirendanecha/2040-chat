@@ -5,6 +5,7 @@ import { NgbActiveOffcanvas, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { ProfileChatsListComponent } from 'src/app/layouts/main-layout/pages/profile-chats/profile-chats-list/profile-chats-list.component';
 import { ProfileChatsSidebarComponent } from 'src/app/layouts/main-layout/pages/profile-chats/profile-chats-sidebar/profile-chats-sidebar.component';
 import { SharedService } from '../../services/shared.service';
+import { MessageService } from '../../services/message.service';
 
 declare var JitsiMeetExternalAPI: any;
 @Component({
@@ -23,7 +24,8 @@ export class AppointmentCallComponent implements OnInit {
   isRightSidebarOpen: boolean = false;
   selectedRoomId: number;
   isRoomCreated: boolean = false;
-  
+  openChatId: any = {};
+
   constructor(
     private route: ActivatedRoute,
     private sanitizer: DomSanitizer,
@@ -31,9 +33,18 @@ export class AppointmentCallComponent implements OnInit {
     private offcanvasService: NgbOffcanvas,
     private activeOffcanvas: NgbActiveOffcanvas,
     private sharedService: SharedService,
+    private messageService: MessageService
   ) {}
 
   ngOnInit() {
+    const stateData = window.history.state.chatDataPass;
+    console.log(stateData)
+    if (stateData) {
+      this.openChatId = {
+        roomId: stateData.roomId,
+        groupId: stateData.groupId,
+      };
+    }
     const appointmentURLCall =
       this.route.snapshot['_routerState'].url.split('/2040-call/')[1];
     this.options = {
@@ -61,6 +72,28 @@ export class AppointmentCallComponent implements OnInit {
         // console.log('opaaaaa');
       });
     });
+
+    this.initialChat()
+  }
+
+  initialChat() {
+    if (this.openChatId.roomId) {
+      this.messageService.getRoomById(this.openChatId.roomId).subscribe({
+        next: (res: any) => {
+          this.userChat = res.data[0];
+        },
+        error: () => {},
+      });
+    }
+    if (this.openChatId.groupId) {
+      this.messageService.getGroupById(this.openChatId.groupId).subscribe({
+        next: (res: any) => {
+          this.userChat = res.data;
+          this.userChat['isAccepted'] = 'Y';
+        },
+        error: () => {},
+      });
+    }
   }
 
   onChatPost(userName: any) {
