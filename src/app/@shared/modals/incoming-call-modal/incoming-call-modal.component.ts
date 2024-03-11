@@ -86,8 +86,13 @@ export class IncomingcallModalComponent
       console.log('incomin',this.calldata.link);
       // this.router.navigate([`/appointment-call/${this.calldata.link}`]);  
       const callId = this.calldata.link.replace('https://facetime.tube/', '');
-      this.router.navigate([`/2040-call/${callId}`]);
+      // this.router.navigate([`/2040-call/${callId}`]);
       this.sound?.stop();
+      const chatDataPass = {
+        roomId: this.calldata.roomId || null,
+        groupId: this.calldata.groupId || null
+      };
+      this.router.navigate([`/2040-call/${callId}`], { state: { chatDataPass } });  
     }
     this.activateModal.close('success');
 

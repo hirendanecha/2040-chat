@@ -658,6 +658,7 @@
               </li>
             </ng-container>
           </ul>
+          <app-inline-loader *ngIf="isFileUploadInProgress" />
           <ng-container
             *ngIf="
               userChat?.groupId || (userChat?.roomId && readMessageRoom === 'Y')
