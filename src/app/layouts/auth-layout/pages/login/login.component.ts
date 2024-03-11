@@ -62,8 +62,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-  }
+  ngAfterViewInit(): void {}
 
   onSubmit(): void {
     this.spinner.show();
@@ -79,19 +78,19 @@ export class LoginComponent implements OnInit, AfterViewInit {
           this.isLoginFailed = false;
           this.isLoggedIn = true;
           if (this.socketService.socket?.connected) {
-            this.socketService.socket.close()
+            this.socketService.socket.close();
           }
           this.socketService.connect();
           this.socketService.socket?.emit('online-users');
           this.socketService?.socket?.on('get-users', (data) => {
-            data.map(ele => {
+            data.map((ele) => {
               if (!this.sharedService.onlineUserList.includes(ele.userId)) {
-                this.sharedService.onlineUserList.push(ele.userId)
+                this.sharedService.onlineUserList.push(ele.userId);
               }
-            })
-          })
+            });
+          });
           this.toastService.success('Logged in successfully');
-          window.location.reload();
+          // window.location.reload();
           this.router.navigate(['/profile-chats']);
         } else {
           this.loginMessage = data.mesaage;
@@ -107,25 +106,23 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.errorMessage = err.error.message;
         this.isLoginFailed = true;
         this.errorCode = err.error.errorCode;
-      }
+      },
     });
   }
 
   resend() {
     this.authService
       .userVerificationResend({ username: this.loginForm.value.login_email })
-      .subscribe(
-        {
-          next: (result: any) => {
-            this.msg = result.message;
-            this.type = 'success';
-          },
-          error:
-            (error) => {
-              this.msg = error.message;
-              this.type = 'danger';
-            }
-        });
+      .subscribe({
+        next: (result: any) => {
+          this.msg = result.message;
+          this.type = 'success';
+        },
+        error: (error) => {
+          this.msg = error.message;
+          this.type = 'danger';
+        },
+      });
   }
 
   forgotPasswordOpen() {
@@ -137,10 +134,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
     modalRef.componentInstance.cancelButtonLabel = 'Cancel';
     modalRef.componentInstance.confirmButtonLabel = 'Submit';
     modalRef.componentInstance.closeIcon = true;
-    modalRef.result.then(res => {
+    modalRef.result.then((res) => {
       if (res === 'success') {
-        this.msg = 'If the entered email exists you will receive a email to change your password.'
-        this.type = 'success'
+        this.msg =
+          'If the entered email exists you will receive a email to change your password.';
+        this.type = 'success';
       }
     });
   }
