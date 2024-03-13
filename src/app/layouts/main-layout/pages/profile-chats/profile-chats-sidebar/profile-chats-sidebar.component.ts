@@ -196,7 +196,22 @@ export class ProfileChatsSidebarComponent
     this.activeOffcanvas?.dismiss();
   }
 
+  // onChat(item: any) {
+  //   this.selectedChatUser = item.roomId || item.groupId;
+  //   item.unReadMessage = 0;
+  //   if (item.groupId) {
+  //     item.isAccepted = 'Y';
+  //   }
+  //   // console.log(item);
+  //   // this.notificationNavigation()
+  //   this.onNewChat?.emit(item);
+  //   if (this.searchText) {
+  //     this.searchText = null;
+  //   }
+  // }
+
   onChat(item: any) {
+    console.log(item);
     this.selectedChatUser = item.roomId || item.groupId;
     item.unReadMessage = 0;
     if (item.groupId) {
@@ -207,7 +222,7 @@ export class ProfileChatsSidebarComponent
       ProfilePicName: item.ProfilePicName,
       Username: item.Username
     };
-    if (item.profileId) {
+    if (this.selectedButton === 'users') {
       this.onNewChat?.emit(data);
     } else {
       this.onNewChat?.emit(item);
