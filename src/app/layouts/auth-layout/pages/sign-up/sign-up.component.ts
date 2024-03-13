@@ -13,6 +13,10 @@ import { Customer } from 'src/app/@shared/constant/customer';
 import { CustomerService } from 'src/app/@shared/services/customer.service';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { UploadFilesService } from 'src/app/@shared/services/upload-files.service';
+import { environment } from 'src/environments/environment';
+
+declare var turnstile: any;
+
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
@@ -53,6 +57,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     County: new FormControl('', [Validators.required]),
     TermAndPolicy: new FormControl(false, Validators.required),
   });
+  theme = '';
 
   constructor(
     private spinner: NgxSpinnerService,
@@ -60,7 +65,9 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     private router: Router,
     private uploadService: UploadFilesService,
     private toastService: ToastService
-  ) {}
+  ) {
+    this.theme = localStorage.getItem('theme');
+  }
 
   ngOnInit(): void {
     this.getAllCountries();
@@ -75,6 +82,21 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     //       this.onZipChange(val);
     //     }
     //   });
+    this.loadCloudFlareWidget();
+  }
+  loadCloudFlareWidget() {
+    turnstile?.render('#captcha', {
+      sitekey: environment.siteKey,
+      theme: this.theme === 'dark' ? 'light' : 'dark',
+      callback: function (token) {
+        localStorage.setItem('captcha-token', token);
+        console.log(`Challenge Success ${token}`);
+        if (!token) {
+          this.msg = 'invalid captcha kindly try again!';
+          this.type = 'danger';
+        }
+      },
+    });
   }
 
   selectFiles(event) {

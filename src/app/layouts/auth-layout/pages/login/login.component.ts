@@ -9,6 +9,9 @@ import { AuthService } from 'src/app/@shared/services/auth.service';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
 import { SocketService } from 'src/app/@shared/services/socket.service';
+import { environment } from 'src/environments/environment';
+
+declare var turnstile: any;
 
 @Component({
   selector: 'app-login',
@@ -26,6 +29,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   loginMessage = '';
   msg = '';
   type = 'danger';
+  theme = '';
 
   constructor(
     private modalService: NgbModal,
@@ -48,6 +52,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       this.msg = 'Account activated';
       this.type = 'success';
     }
+    this.theme = localStorage.getItem('theme');
   }
 
   ngOnInit(): void {
@@ -62,7 +67,24 @@ export class LoginComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    this.loadCloudFlareWidget();
+  }
+
+  loadCloudFlareWidget() {
+    turnstile?.render('#captcha', {
+      sitekey: environment.siteKey,
+      theme: this.theme === 'dark' ? 'light' : 'dark',
+      callback: function (token) {
+        localStorage.setItem('captcha-token', token);
+        console.log(`Challenge Success ${token}`);
+        if (!token) {
+          this.msg = 'invalid captcha kindly try again!';
+          this.type = 'danger';
+        }
+      },
+    });
+  }
 
   onSubmit(): void {
     this.spinner.show();
