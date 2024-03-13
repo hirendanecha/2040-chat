@@ -61,18 +61,17 @@
     max-width: 40px;
   }
   .cus-scrollbar {
-    height: 52vh;
+    height: 44vh;
     // height: 39vh;
-    // @media (max-width: 992px) {
-    //   height: 42vh;
-    // }
+    @media (max-width: 992px) {
+      height: 42vh;
+    }
   }
   .cus-scrollbar-pending {
-    max-height: 228px;
-    // height: 25vh;
-    // @media (max-width: 992px) {
-    //   height: 26vh;
-    // }
+    height: 17vh;
+    @media (max-width: 992px) {
+      height: 26vh;
+    }
   }
 
   .dropdown-preferences {
@@ -94,6 +93,11 @@
     &::after {
       display: none;
     }
+  }
+
+  .approved-user-list{
+    overflow-y: auto;
+    max-height: calc(100vh - 210px);
   }
 }
 

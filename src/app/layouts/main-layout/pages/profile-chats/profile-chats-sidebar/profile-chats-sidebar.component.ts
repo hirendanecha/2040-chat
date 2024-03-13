@@ -28,7 +28,8 @@ import { ProfileMenusModalComponent } from '../../../components/profile-menus-mo
   styleUrls: ['./profile-chats-sidebar.component.scss'],
 })
 export class ProfileChatsSidebarComponent
-  implements AfterViewInit, OnChanges, OnInit {
+  implements AfterViewInit, OnChanges, OnInit
+{
   chatList: any = [];
   pendingChatList: any = [];
   groupList: any = [];
@@ -45,9 +46,12 @@ export class ProfileChatsSidebarComponent
   isChatLoader = false;
   selectedButton: string = 'chats';
   newChatList = [];
+  approvedUserPage = 1;
+  hasMoreUsers = false;
+  approvedUserData = [];
 
   userMenusOverlayDialog: any;
-  
+
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
   @Output('onNewChat') onNewChat: EventEmitter<any> = new EventEmitter<any>();
@@ -77,17 +81,18 @@ export class ProfileChatsSidebarComponent
     this.sharedService
       .getIsRoomCreatedObservable()
       .subscribe((isRoomCreated) => {
-        this.isRoomCreated = isRoomCreated
+        this.isRoomCreated = isRoomCreated;
         this.getChatList();
         this.getGroupList();
       });
-    this.selectedChatUser = this.selectedRoomId || null
+    this.selectedChatUser = this.selectedRoomId || null;
   }
 
   ngOnInit(): void {
     this.socketService.connect();
     this.getChatList();
     this.getGroupList();
+    // this.getApprovedUserList();
   }
 
   ngAfterViewInit(): void {
@@ -101,6 +106,43 @@ export class ProfileChatsSidebarComponent
         this.onChat(data);
         this.getChatList();
       }
+    });
+  }
+
+  loadMoreApprovedUsers() {
+    this.approvedUserPage = this.approvedUserPage + 1;
+    this.getApprovedUserList();
+  }
+
+  getApprovedUserList(): void {
+    const data = {
+      page: this.approvedUserPage,
+      size: 15,
+    };
+    this.customerService.getApprovedUserList(data).subscribe({
+      next: (res: any) => {
+        // this.spinner.hide();
+        if (res?.data) {
+          const filterUserProfile = res.data.filter((user: any) => user.Id !== this.sharedService?.userData?.UserID); 
+          const chatUserList = filterUserProfile.filter((user: any) =>
+            !this.chatList.some((chatUser: any) => chatUser.profileId === user.profileId) &&
+            !this.pendingChatList.some((chatUser: any) => chatUser.profileId === user.profileId))
+          if (this.approvedUserPage <= 1) {
+            this.approvedUserData = chatUserList;
+          } else {
+            this.approvedUserData = [...this.approvedUserData, ...chatUserList];
+          }
+          if (this.approvedUserPage < res.pagination.totalPages) {
+            this.hasMoreUsers = true;
+          } else {
+            this.hasMoreUsers = false;
+          }
+        }
+      },
+      error: (error) => {
+        // this.spinner.hide();
+        console.log(error);
+      },
     });
   }
 
@@ -150,7 +192,7 @@ export class ProfileChatsSidebarComponent
     return this.chatList;
   }
 
-  dismissSidebar(){
+  dismissSidebar() {
     this.activeOffcanvas?.dismiss();
   }
 
@@ -160,13 +202,20 @@ export class ProfileChatsSidebarComponent
     if (item.groupId) {
       item.isAccepted = 'Y';
     }
-    // console.log(item);
-    // this.notificationNavigation()
-    this.onNewChat?.emit(item);
-    if (this.searchText) {
-      this.searchText = null;
+    const data = {
+      Id: item.profileId,
+      ProfilePicName: item.ProfilePicName,
+      Username: item.Username
+    };
+    if (item.profileId) {
+      this.onNewChat?.emit(data);
+    } else {
+      this.onNewChat?.emit(item);
+      if (this.searchText) {
+        this.searchText = null;
+      }
     }
-  }
+  }  
 
   goToViewProfile(): void {
     this.router.navigate([`settings/view-profile/${this.profileId}`]);
