@@ -84,6 +84,7 @@ import {
   faRefresh,
   faReply,
   faUserTimes,
+  faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -156,6 +157,7 @@ export class SharedModule {
       faChevronDown,
       faChevronUp,
       faChevronRight,
+      faChevronLeft,
       faCirclePlus,
       faMagnifyingGlass,
       faDownload,
