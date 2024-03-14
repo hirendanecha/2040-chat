@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ForgotPasswordComponent } from '../forgot-password/forgot-password.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,6 +38,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
   type = 'danger';
   theme = '';
   captchaToken = '';
+  @ViewChild('captcha', { static: false }) captchaElement: ElementRef;
+
   constructor(
     private modalService: NgbModal,
     private router: Router,
@@ -65,13 +74,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
       Email: [null, [Validators.required]],
       Password: [null, [Validators.required]],
     });
+  }
+
+  ngAfterViewInit(): void {
     this.loadCloudFlareWidget();
   }
 
-  ngAfterViewInit(): void {}
-
   loadCloudFlareWidget() {
-    turnstile?.render('#captcha', {
+    turnstile?.render(this.captchaElement.nativeElement, {
       sitekey: environment.siteKey,
       theme: this.theme === 'dark' ? 'light' : 'dark',
       callback: function (token) {

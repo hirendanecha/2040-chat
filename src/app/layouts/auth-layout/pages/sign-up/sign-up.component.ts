@@ -59,6 +59,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     TermAndPolicy: new FormControl(false, Validators.required),
   });
   theme = '';
+  @ViewChild('captcha', { static: false }) captchaElement: ElementRef;
 
   constructor(
     private spinner: NgxSpinnerService,
@@ -86,7 +87,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     this.loadCloudFlareWidget();
   }
   loadCloudFlareWidget() {
-    turnstile?.render('#captcha', {
+    turnstile?.render(this.captchaElement.nativeElement, {
       sitekey: environment.siteKey,
       theme: this.theme === 'dark' ? 'light' : 'dark',
       callback: function (token) {
