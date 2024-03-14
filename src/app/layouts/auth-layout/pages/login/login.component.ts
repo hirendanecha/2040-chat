@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   msg = '';
   type = 'danger';
   theme = '';
-
+  captchaToken = '';
   constructor(
     private modalService: NgbModal,
     private router: Router,
@@ -65,18 +65,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
       Email: [null, [Validators.required]],
       Password: [null, [Validators.required]],
     });
-  }
-
-  ngAfterViewInit(): void {
     this.loadCloudFlareWidget();
   }
+
+  ngAfterViewInit(): void {}
 
   loadCloudFlareWidget() {
     turnstile?.render('#captcha', {
       sitekey: environment.siteKey,
       theme: this.theme === 'dark' ? 'light' : 'dark',
       callback: function (token) {
-        localStorage.setItem('captcha-token', token);
+        this.captchaToken = token;
         console.log(`Challenge Success ${token}`);
         if (!token) {
           this.msg = 'invalid captcha kindly try again!';
@@ -88,6 +87,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   onSubmit(): void {
     this.spinner.show();
+    if (!this.captchaToken) {
+      this.spinner.hide();
+      this.msg = 'Invalid captcha kindly try again!';
+      this.type = 'danger';
+      return;
+    }
     this.authService.customerlogin(this.loginForm.value).subscribe({
       next: (data: any) => {
         this.spinner.hide();
@@ -99,9 +104,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
           this.sharedService.getUserDetails();
           this.isLoginFailed = false;
           this.isLoggedIn = true;
-          if (this.socketService.socket?.connected) {
-            this.socketService.socket.close();
-          }
           this.socketService.connect();
           this.socketService.socket?.emit('online-users');
           this.socketService?.socket?.on('get-users', (data) => {

@@ -41,6 +41,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
   };
 
   @ViewChild('zipCode') zipCode: ElementRef;
+  captchaToken = '';
 
   registerForm = new FormGroup({
     FirstName: new FormControl(''),
@@ -89,7 +90,8 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       sitekey: environment.siteKey,
       theme: this.theme === 'dark' ? 'light' : 'dark',
       callback: function (token) {
-        localStorage.setItem('captcha-token', token);
+        // localStorage.setItem('captcha-token', token);
+        this.captchaToken = token;
         console.log(`Challenge Success ${token}`);
         if (!token) {
           this.msg = 'invalid captcha kindly try again!';
@@ -131,6 +133,13 @@ export class SignUpComponent implements OnInit, AfterViewInit {
 
   save() {
     this.spinner.show();
+    if (!this.captchaToken) {
+      this.spinner.hide();
+      this.msg = 'Invalid captcha kindly try again!';
+      this.type = 'danger';
+      this.scrollTop();
+      return;
+    }
     this.customerService.createCustomer(this.registerForm.value).subscribe({
       next: (data: any) => {
         this.spinner.hide();

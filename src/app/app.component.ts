@@ -165,11 +165,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               this.modalService.dismissAll();
               const chatDataPass = {
                 roomId: data.roomId || null,
-                groupId: data.groupId || null
+                groupId: data.groupId || null,
               };
               if (!window.document.hidden) {
                 // this.router.navigate([`/2040-call/${data.link}`]);
-                this.router.navigate([`/2040-call/${data.link}`], { state: { chatDataPass } });
+                this.router.navigate([`/2040-call/${data.link}`], {
+                  state: { chatDataPass },
+                });
               }
               // window.open(`appointment-call/${data.link}`, '_blank');
               // window?.open(data?.link, '_blank');

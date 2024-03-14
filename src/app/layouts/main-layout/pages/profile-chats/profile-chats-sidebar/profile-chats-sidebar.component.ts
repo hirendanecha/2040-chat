@@ -123,10 +123,18 @@ export class ProfileChatsSidebarComponent
       next: (res: any) => {
         // this.spinner.hide();
         if (res?.data) {
-          const filterUserProfile = res.data.filter((user: any) => user.Id !== this.sharedService?.userData?.UserID); 
-          const chatUserList = filterUserProfile.filter((user: any) =>
-            !this.chatList.some((chatUser: any) => chatUser.profileId === user.profileId) &&
-            !this.pendingChatList.some((chatUser: any) => chatUser.profileId === user.profileId))
+          const filterUserProfile = res.data.filter(
+            (user: any) => user.Id !== this.sharedService?.userData?.UserID
+          );
+          const chatUserList = filterUserProfile.filter(
+            (user: any) =>
+              !this.chatList.some(
+                (chatUser: any) => chatUser.profileId === user.profileId
+              ) &&
+              !this.pendingChatList.some(
+                (chatUser: any) => chatUser.profileId === user.profileId
+              )
+          );
           if (this.approvedUserPage <= 1) {
             this.approvedUserData = chatUserList;
           } else {
@@ -220,7 +228,7 @@ export class ProfileChatsSidebarComponent
     const data = {
       Id: item.profileId,
       ProfilePicName: item.ProfilePicName,
-      Username: item.Username
+      Username: item.Username,
     };
     if (this.selectedButton === 'users') {
       this.onNewChat?.emit(data);
@@ -230,7 +238,7 @@ export class ProfileChatsSidebarComponent
         this.searchText = null;
       }
     }
-  }  
+  }
 
   goToViewProfile(): void {
     this.router.navigate([`settings/view-profile/${this.profileId}`]);
