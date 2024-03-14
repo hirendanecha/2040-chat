@@ -171,52 +171,59 @@
       </ng-container>
 
       <ng-container *ngIf="selectedButton === 'users'">
-        <div class="approved-user-list">
-          <div
-            class="single-item messages-area"
-            *ngFor="let item of approvedUserData"
-          >
+        <ng-container *ngIf="approvedUserData.length > 0; else noNewUserFound">
+          <div class="approved-user-list">
             <div
-              class="text-start d-flex justify-content-between chat-single p-5"
-              [ngClass]="{
-                active: selectedChatUser === item?.Id
-              }"
-              (click)="onChat(item)"
+              class="single-item messages-area"
+              *ngFor="let item of approvedUserData"
             >
-              <div class="d-flex gap-2">
-                <div class="avatar">
-                  <img
-                    class="avatar-img h-40-px w-40-px max-un"
-                    src="{{ item?.ProfilePicName }}"
-                    [alt]="item?.Username"
-                    onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
-                  />
-                </div>
-                <div
-                  class="text-area d-flex justify-content-between sidebar-items align-items-center"
-                  (click)="dismissSidebar()"
-                >
-                  <div class="title-area position-relative d-grid">
-                    <h6 class="m-0 d-inline-flex sidebar-head-text">
-                      {{ item?.Username }}
-                    </h6>
+              <div
+                class="text-start d-flex justify-content-between chat-single p-5"
+                [ngClass]="{
+                  active: selectedChatUser === item?.Id
+                }"
+                (click)="onChat(item)"
+              >
+                <div class="d-flex gap-2">
+                  <div class="avatar">
+                    <img
+                      class="avatar-img h-40-px w-40-px max-un"
+                      src="{{ item?.ProfilePicName }}"
+                      [alt]="item?.Username"
+                      onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
+                    />
+                  </div>
+                  <div
+                    class="text-area d-flex justify-content-between sidebar-items align-items-center"
+                    (click)="dismissSidebar()"
+                  >
+                    <div class="title-area position-relative d-grid">
+                      <h6 class="m-0 d-inline-flex sidebar-head-text">
+                        {{ item?.Username }}
+                      </h6>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div
+              class="d-center m-3 text-white c-pointer"
+              (click)="loadMoreApprovedUsers()"
+              *ngIf="hasMoreUsers"
+            >
+              <fa-icon
+                [icon]="['fas', 'refresh']"
+                class="font-24-px me-2"
+              ></fa-icon>
+              <span>Loadmore</span>
+            </div>
           </div>
-          <div
-            class="d-center m-3 text-white c-pointer"
-            (click)="loadMoreApprovedUsers()"
-            *ngIf="hasMoreUsers"
-          >
-            <fa-icon
-              [icon]="['fas', 'refresh']"
-              class="font-24-px me-2"
-            ></fa-icon>
-            <span>Loadmore</span>
+        </ng-container>
+        <ng-template #noNewUserFound>
+          <div class="text-center">
+            <span>No New End Users</span>
           </div>
-        </div>
+        </ng-template>
       </ng-container>
 
       <!-- <ng-container>
