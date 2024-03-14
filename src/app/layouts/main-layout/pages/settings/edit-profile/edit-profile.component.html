@@ -1,4 +1,10 @@
-<div class="d-flex flex-column flex-lg-row w-100 gap-5 edit-profile">
+<div class="d-flex flex-column container flex-lg-row w-100 gap-5 edit-profile mt-10">
+  <div>
+    <button class="btn btn-primary d-flex gap-2" routerLink="/profile-chats">
+      <fa-icon [icon]="['fas', 'chevron-left']" />
+      Back
+    </button>
+  </div>
   <app-img-picker classes="w-300-px h-300-px" [url]="customer.ProfilePicName"
     (onFileChange)="onProfileImgChange($event)" />
 

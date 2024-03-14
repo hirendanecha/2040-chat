@@ -61,7 +61,7 @@
     max-width: 40px;
   }
   .cus-scrollbar {
-    height: 44vh;
+    height: 55vh;
     // height: 39vh;
     @media (max-width: 992px) {
       height: 42vh;
@@ -97,7 +97,8 @@
 
   .approved-user-list{
     overflow-y: auto;
-    max-height: calc(100vh - 210px);
+    max-height: calc(100vh - 150px);
+    // max-height: calc(100vh - 210px);
   }
 }
 

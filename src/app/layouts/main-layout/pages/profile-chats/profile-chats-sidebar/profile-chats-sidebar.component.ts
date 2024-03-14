@@ -124,7 +124,9 @@ export class ProfileChatsSidebarComponent
         // this.spinner.hide();
         if (res?.data) {
           const filterUserProfile = res.data.filter(
-            (user: any) => user.Id !== this.sharedService?.userData?.UserID
+            (user: any) =>
+              user.Id !== this.sharedService?.userData?.UserID &&
+              user.AccountType === 'user'
           );
           const chatUserList = filterUserProfile.filter(
             (user: any) =>
@@ -258,6 +260,9 @@ export class ProfileChatsSidebarComponent
   selectButton(buttonType: string): void {
     this.selectedButton =
       this.selectedButton === buttonType ? buttonType : buttonType;
+      if (buttonType === 'chats') {
+        this.onNewChat?.emit({});
+      }
   }
 
   getGroupList() {
