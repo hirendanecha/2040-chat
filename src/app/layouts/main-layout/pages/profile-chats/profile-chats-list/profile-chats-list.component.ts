@@ -432,6 +432,9 @@ export class ProfileChatsListComponent
             return element;
           }
         });
+        if (this.filteredMessageList.length > 0) {
+          this.chatContent.nativeElement.scrollTop = 48;
+        }
 
         const array = new MessageDatePipe().transform(this.messageList);
         // console.log(array);
