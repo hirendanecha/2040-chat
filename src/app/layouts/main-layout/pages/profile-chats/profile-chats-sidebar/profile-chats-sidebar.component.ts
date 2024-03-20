@@ -81,11 +81,14 @@ export class ProfileChatsSidebarComponent
     this.sharedService
       .getIsRoomCreatedObservable()
       .subscribe((isRoomCreated) => {
-        this.isRoomCreated = isRoomCreated;
-        this.getChatList();
-        this.getGroupList();
+        if (isRoomCreated) {
+          this.isRoomCreated = isRoomCreated;
+          this.getChatList();
+          this.getGroupList();
+        } else {
+          this.selectedChatUser = null;
+        }
       });
-    this.selectedChatUser = this.selectedRoomId || null;
   }
 
   ngOnInit(): void {
@@ -161,7 +164,9 @@ export class ProfileChatsSidebarComponent
       next: (res: any) => {
         if (res?.data?.length > 0) {
           this.userList = res.data.filter(
-            (user: any) => user.Id !== this.sharedService?.userData?.Id
+            (user: any) =>
+              user.Id !== this.sharedService?.userData?.Id &&
+              user.MediaApproved === 1
           );
           this.userList = this.userList.filter(
             (user: any) =>
@@ -260,9 +265,9 @@ export class ProfileChatsSidebarComponent
   selectButton(buttonType: string): void {
     this.selectedButton =
       this.selectedButton === buttonType ? buttonType : buttonType;
-      if (buttonType === 'chats') {
-        this.onNewChat?.emit({});
-      }
+    if (buttonType === 'chats') {
+      this.onNewChat?.emit({});
+    }
   }
 
   getGroupList() {
@@ -283,7 +288,16 @@ export class ProfileChatsSidebarComponent
         new Date(b.updatedDate).getTime() - new Date(a.updatedDate).getTime()
     );
     if (mergeChatList?.length) {
-      this.newChatList = mergeChatList;
+      this.newChatList = mergeChatList.filter((ele) => {
+        if (
+          ele?.roomId === this.selectedChatUser ||
+          ele?.groupId === this.selectedChatUser
+        ) {
+          ele.unReadMessage = 0;
+          this.selectedChatUser = ele?.roomId || ele?.groupId;
+          return ele;
+        } else return ele;
+      });
     }
   }
 
