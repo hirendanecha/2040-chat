@@ -101,6 +101,15 @@
             class="nav-icon cursor"
             data-toggle="tooltip"
             data-placement="bottom"
+            title="Media Gallery"
+            (click)="openMediaGallery()"
+            ><fa-icon [icon]="['fas', 'photo-film']" class="font-20-px m-1"
+          /></a>
+          <a
+            *ngIf="userChat.roomId"
+            class="nav-icon cursor"
+            data-toggle="tooltip"
+            data-placement="bottom"
             title="Create Group"
             (click)="createGroup()"
             ><fa-icon [icon]="['fas', 'users']" class="font-20-px m-1"
@@ -271,24 +280,24 @@
                             <span class="data-text-color">Reply</span>
                           </a>
                         </button>
-                        <button ngbDropdownItem  *ngIf="message?.messageMedia">
+                        <button ngbDropdownItem *ngIf="message?.messageMedia">
                           <a
-                          class="droplist d-flex align-items-center gap-2"
-                          [appCopyClipboard]="message.messageMedia"
-                        >
-                          <fa-icon [icon]="['fas', 'link']" />
-                          <span>Copy link</span>
-                        </a>
+                            class="droplist d-flex align-items-center gap-2"
+                            [appCopyClipboard]="message.messageMedia"
+                          >
+                            <fa-icon [icon]="['fas', 'link']" />
+                            <span>Copy link</span>
+                          </a>
                         </button>
-                        <button ngbDropdownItem  *ngIf="message?.messageMedia">
+                        <button ngbDropdownItem *ngIf="message?.messageMedia">
                           <a
-                          class="droplist d-flex align-items-center gap-2"
-                          (click)="downloadPdf(message.messageMedia)"
-                        >
-                          <fa-icon [icon]="['fas', 'download']" />
-                          <span>Download</span>
-                        </a>
-                      </button>
+                            class="droplist d-flex align-items-center gap-2"
+                            (click)="downloadPdf(message.messageMedia)"
+                          >
+                            <fa-icon [icon]="['fas', 'download']" />
+                            <span>Download</span>
+                          </a>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -469,14 +478,14 @@
                               <span class="data-text-color">Reply</span>
                             </a>
                           </button>
-                          <button ngbDropdownItem >
+                          <button ngbDropdownItem>
                             <a
-                            class="droplist d-flex align-items-center gap-2"
-                            [appCopyClipboard]="message.messageMedia"
-                          >
-                            <fa-icon [icon]="['fas', 'link']" />
-                            <span>Copy link</span>
-                          </a>
+                              class="droplist d-flex align-items-center gap-2"
+                              [appCopyClipboard]="message.messageMedia"
+                            >
+                              <fa-icon [icon]="['fas', 'link']" />
+                              <span>Copy link</span>
+                            </a>
                           </button>
                           <button
                             ngbDropdownItem
@@ -572,7 +581,7 @@
                             <span class="data-text-color">Reply</span>
                           </a>
                         </button>
-                       <button
+                        <button
                           ngbDropdownItem
                           (click)="editMsg(message)"
                           *ngIf="!message?.messageMedia"
@@ -588,7 +597,7 @@
                             <span class="data-text-color">Delete</span>
                           </a>
                         </button>
-                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -688,7 +697,9 @@
           <app-inline-loader *ngIf="isFileUploadInProgress" />
           <ng-container
             *ngIf="
-              userChat?.groupId || (userChat?.roomId && readMessageRoom === 'Y')
+              filteredMessageList.length &&
+              (userChat?.groupId ||
+                (userChat?.roomId && readMessageRoom === 'Y'))
             "
           >
             <div
