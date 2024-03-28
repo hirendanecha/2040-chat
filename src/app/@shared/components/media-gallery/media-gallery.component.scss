@@ -3,6 +3,11 @@
     .media-header {
       background: var(--box-1st-color);
     }
+    .c-icon-color {
+      svg path {
+        fill: var(--secondary-color);
+      }
+    }
     .media-content {
       .message-media {
         background: var(--box-1st-color);
@@ -10,7 +15,7 @@
       }
     }
     .cus-scrollbar-pending {
-      max-height: calc(100vh - 70px);
+      max-height: calc(100vh - 130px);
     }
 
     ::-webkit-scrollbar {
@@ -20,6 +25,12 @@
     ::-webkit-scrollbar-thumb {
       border-radius: 10px !important;
       background-color: var(--primary-color) !important;
+    }
+
+    .dropdown-toggle {
+      &::after {
+        display: none;
+      }
     }
   }
 }
