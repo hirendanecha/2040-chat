@@ -104,6 +104,7 @@ import { CreateGroupModalComponent } from './modals/create-group-modal/create-gr
 import { EditGroupModalComponent } from './modals/edit-group-modal/edit-group-modal.component';
 import { CommonModule } from '@angular/common';
 import { MediaGalleryComponent } from './components/media-gallery/media-gallery.component';
+import { GalleryImgPreviewComponent } from './components/gallery-img-preview/gallery-img-preview.component';
 
 const sharedComponents = [
   ConfirmationModalComponent,
@@ -119,6 +120,7 @@ const sharedComponents = [
   CreateGroupModalComponent,
   EditGroupModalComponent,
   MediaGalleryComponent,
+  GalleryImgPreviewComponent
 ];
 
 const sharedModules = [

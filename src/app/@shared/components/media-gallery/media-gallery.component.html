@@ -3,10 +3,12 @@
     class="media-header d-flex justify-content-between align-items-center p-3"
   >
     <h5>Gallery</h5>
-    <div class="d-flex flex-column justify-content-center align-items-center">
+    <div
+      class="d-flex flex-column justify-content-center align-items-center icon-container"
+    >
       <fa-icon
         [icon]="['fas', 'xmark']"
-        class="c-pointer close-icon font-32-px"
+        class="c-pointer close-icon font-32-px xmark-icon"
         (click)="activeOffCanvas.close()"
       />
     </div>
@@ -58,11 +60,22 @@
             </ng-container>
             <ng-template #imageMsg>
               <div class="replay-message-media">
-                <app-img-preview
-                  class="msgImage"
-                  classes="h-180-px"
-                  [src]="message?.messageMedia"
-                ></app-img-preview>
+                <div class="img-preview rounded-3 h-180-px">
+                  <img
+                    loading="lazy"
+                    data-src="{{ message?.messageMedia }}"
+                    class="w-100 h-100 rounded-3"
+                    alt="preview-img"
+                    onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
+                  />
+
+                  <div
+                    class="icon-eye d-flex flex-column justify-content-center align-items-center c-icon-color icon-container"
+                    (click)="openImagePreview(message?.messageMedia)"
+                  >
+                    <fa-icon [icon]="['fas', 'eye']" class="font-28-px" />
+                  </div>
+                </div>
               </div>
             </ng-template>
           </div>
@@ -78,6 +91,7 @@
       </div>
     </div>
   </ng-container>
+
   <ng-template #noMedia>
     <p class="text-center h5 mt-5">No media available</p>
   </ng-template>
