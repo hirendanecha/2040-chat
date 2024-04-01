@@ -576,7 +576,23 @@ export class ProfileChatsListComponent
     return FILE_EXTENSIONS.some((ext) => media.endsWith(ext));
   }
   isVideoFile(media: string): boolean {
-    const FILE_EXTENSIONS = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.mpeg', '.rmvb', '.m4v', '.3gp', '.webm', '.ogg', '.vob', '.ts', '.mpg'];
+    const FILE_EXTENSIONS = [
+      '.mp4',
+      '.avi',
+      '.mov',
+      '.wmv',
+      '.flv',
+      '.mkv',
+      '.mpeg',
+      '.rmvb',
+      '.m4v',
+      '.3gp',
+      '.webm',
+      '.ogg',
+      '.vob',
+      '.ts',
+      '.mpg',
+    ];
     return FILE_EXTENSIONS.some((ext) => media?.endsWith(ext));
   }
 
@@ -611,21 +627,15 @@ export class ProfileChatsListComponent
     this.replyMessage.msgText = msgObj.messageText;
     this.replyMessage.createdDate = msgObj.createdDate;
     this.replyMessage.Username = msgObj.Username;
-    const file = msgObj.messageMedia;
-    const fileType =
-      file.endsWith('.pdf') ||
-      file.endsWith('.doc') ||
-      file.endsWith('.docx') ||
-      file.endsWith('.xls') ||
-      file.endsWith('.xlsx') ||
-      file.endsWith('.zip');
-      if (!msgObj.messageText) {
-        if (fileType) {
-          this.pdfName = msgObj.messageMedia;
-        } else {
-          this.viewUrl = msgObj.messageMedia;
-        }
+    if (!msgObj.messageText) {
+      if (this.isFile(msgObj.messageMedia)) {
+        this.pdfName = msgObj.messageMedia;
+      } else if (this.isVideoFile(msgObj.messageMedia)) {
+        this.pdfName = msgObj.messageMedia;
+      } else {
+        this.viewUrl = msgObj.messageMedia;
       }
+    }
   }
 
   editMsg(msgObj): void {
