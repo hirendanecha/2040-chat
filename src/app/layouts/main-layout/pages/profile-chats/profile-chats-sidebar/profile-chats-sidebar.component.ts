@@ -11,9 +11,11 @@ import {
 } from '@angular/core';
 import { CustomerService } from 'src/app/@shared/services/customer.service';
 import {
+  NgbActiveModal,
   NgbActiveOffcanvas,
   NgbDropdown,
   NgbModal,
+  NgbOffcanvas,
 } from '@ng-bootstrap/ng-bootstrap';
 import { SocketService } from 'src/app/@shared/services/socket.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
@@ -21,6 +23,7 @@ import { Router } from '@angular/router';
 import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.service';
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
 import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
+import { NotificationsModalComponent } from '../../../components/notifications-modal/notifications-modal.component';
 
 @Component({
   selector: 'app-profile-chats-sidebar',
@@ -64,7 +67,9 @@ export class ProfileChatsSidebarComponent
     private activeOffcanvas: NgbActiveOffcanvas,
     private router: Router,
     public encryptDecryptService: EncryptDecryptService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private offcanvasService: NgbOffcanvas,
+    public activeOffCanvas: NgbActiveOffcanvas
   ) {
     this.profileId = +localStorage.getItem('profileId');
     const notificationSound =
@@ -348,5 +353,13 @@ export class ProfileChatsSidebarComponent
         modalDialogClass: 'profile-menus-modal',
       }
     );
+  }
+
+  openNotificationsMobileModal(): void {
+    this.activeOffCanvas?.close();
+    this.offcanvasService.open(NotificationsModalComponent, {
+      position: 'end',
+      panelClass: 'w-300-px',
+    });
   }
 }
