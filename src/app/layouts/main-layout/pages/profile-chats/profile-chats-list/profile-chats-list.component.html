@@ -125,7 +125,11 @@
         </div>
       </div>
 
-      <div [ngClass]="sidebarClass ? 'chat-content-sidepanel' : 'chat-content'" class="position-relative" #chatContent>
+      <div
+        [ngClass]="sidebarClass ? 'chat-content-sidepanel' : 'chat-content'"
+        class="position-relative"
+        #chatContent
+      >
         <!--
         ui
         first
@@ -338,23 +342,28 @@
                               </div>
                             </ng-container>
                             <ng-template #notGif>
-                              <ng-container *ngIf="isVideoFile(message?.messageMedia); else imageMessage">
+                              <ng-container
+                                *ngIf="
+                                  isVideoFile(message?.messageMedia);
+                                  else imageMessage
+                                "
+                              >
                                 <video
-                                class="w-100 h-200-px replay-message-media"
-                                [src]="message?.messageMedia"
-                                controls
+                                  class="w-100 h-200-px replay-message-media"
+                                  [src]="message?.messageMedia"
+                                  controls
                                 ></video>
                                 <!-- autoplay="autoplay" -->
                               </ng-container>
                               <ng-template #imageMessage>
-                                  <div class="replay-message-media">
+                                <div class="replay-message-media">
                                   <app-img-preview
                                     class="msgImage"
                                     classes="h-180-px"
                                     [src]="message?.messageMedia"
                                   ></app-img-preview>
                                 </div>
-                                </ng-template>
+                              </ng-template>
                             </ng-template>
                           </ng-template>
                         </div>
@@ -551,23 +560,28 @@
                           </div>
                         </ng-container>
                         <ng-template #notGif>
-                          <ng-container *ngIf="isVideoFile(message?.messageMedia); else imageMessage">
+                          <ng-container
+                            *ngIf="
+                              isVideoFile(message?.messageMedia);
+                              else imageMessage
+                            "
+                          >
                             <video
-                            class="w-100 h-200-px message-media"
-                            [src]="message?.messageMedia"
-                            controls
+                              class="w-100 h-200-px message-media"
+                              [src]="message?.messageMedia"
+                              controls
                             ></video>
                             <!-- autoplay="autoplay" -->
                           </ng-container>
                           <ng-template #imageMessage>
-                              <div class="message-media">
+                            <div class="message-media">
                               <app-img-preview
                                 class="msgImage"
                                 classes="h-180-px"
                                 [src]="message?.messageMedia"
                               ></app-img-preview>
                             </div>
-                            </ng-template>
+                          </ng-template>
                         </ng-template>
                       </ng-template>
                     </div>
@@ -696,8 +710,12 @@
                         class="m-0 message-text-custom"
                         [innerHTML]="
                           encryptDecryptService.decryptUsingAES256(
-                            message?.messageText
-                          )
+                            message.messageText
+                          ) === 'You have a missed call'
+                            ? 'No answer'
+                            : encryptDecryptService.decryptUsingAES256(
+                                message.messageText
+                              )
                         "
                       ></p>
                       <ng-container *ngIf="message?.metaData">
@@ -779,95 +797,101 @@
         class="text-end chat-footer position-relative w-100 px-sm-6 bg-color container"
         *ngIf="userChat.isAccepted === 'Y'"
       >
-      <ng-container *ngIf="viewUrl && !pdfName">
-        <div
-          class="position-absolute mt-5 p-3 preview-chat-media"
-        >
-        <fa-icon *ngIf="replyMessage.Username && replyMessage.createdDate" class="float-start me-2" [icon]="['fas', 'reply']" />
-          <img
-            loading="lazy"
-            data-src="{{ viewUrl }}"
-            class="w-100-px h-100-px rounded-4"
-            alt="icon"
-            onerror="this.onerror=null;"
-          />
-          <fa-icon
-            [icon]="['fas', 'xmark']"
-            class="position-absolute top-0 start-100 translate-middle badge bg-danger p-1 font-12-px c-pointer c-icon-color"
-            role="button"
-            (click)="removePostSelectedFile()"
-          />
-          <ng-container *ngIf="replyMessage.Username && replyMessage.createdDate">
-            <div class="d-flex">
-              <span class="font-12-px mt-2 replay-border"
-                >{{ replyMessage.Username }},
-                {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
-              >
-            </div>
-          </ng-container>
-        </div>
-      </ng-container>
-      <ng-container *ngIf="selectedFile?.type?.includes('video/')">
-        <div class="position-absolute mt-5 p-3 preview-chat-media">
-          <fa-icon
-            *ngIf="replyMessage.Username && replyMessage.createdDate"
-            class="float-start me-2"
-            [icon]="['fas', 'reply']"
-          />
-          <video
-          class="w-100 h-200-px"
-          src="{{ viewUrl }}"
-          controls
-          autoplay="autoplay"
-        ></video>
-          <fa-icon
-            [icon]="['fas', 'xmark']"
-            class="position-absolute top-0 start-100 translate-middle badge bg-danger p-1 font-12-px c-pointer c-icon-color"
-            role="button"
-            (click)="removePostSelectedFile()"
-          />
-          <ng-container
-            *ngIf="replyMessage.Username && replyMessage.createdDate"
-          >
-            <div class="d-flex">
-              <span class="font-12-px mt-2 replay-border"
-                >{{ replyMessage.Username }},
-                {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
-              >
-            </div>
-          </ng-container>
-        </div>
-      </ng-container>
-     
-      <ng-container *ngIf="pdfName">
-        <div class="position-absolute mt-5 p-3 preview-chat-media">
-          <fa-icon
-            *ngIf="replyMessage.Username && replyMessage.createdDate"
-            class="float-start me-2"
-            [icon]="['fas', 'reply']"
-          />
-            [icon]="['fas', 'file']"
-            class="c-pointer close-icon font-40-px"
-          />
-          <span class="c-pdf-show w-100-px" [title]="pdfName.replaceAll('%', ' ')">{{
-            pdfName.replaceAll("%", " ")
-          }}</span>
-          <fa-icon
-            [icon]="['fas', 'xmark']"
-            class="position-absolute top-0 translate-middle badge bg-danger p-1 font-12-px c-pointer c-icon-color"
-            role="button"
-            (click)="removePostSelectedFile()"
-          />
-          <ng-container *ngIf="replyMessage.Username && replyMessage.createdDate">
-            <div class="d-flex">
-              <span class="font-12-px replay-border"
-                >{{ replyMessage.Username }},
-                {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
-              >
-            </div>
-          </ng-container>
-        </div>
-      </ng-container>
+        <ng-container *ngIf="viewUrl && !pdfName">
+          <div class="position-absolute mt-5 p-3 preview-chat-media">
+            <fa-icon
+              *ngIf="replyMessage.Username && replyMessage.createdDate"
+              class="float-start me-2"
+              [icon]="['fas', 'reply']"
+            />
+            <img
+              loading="lazy"
+              data-src="{{ viewUrl }}"
+              class="w-100-px h-100-px rounded-4"
+              alt="icon"
+              onerror="this.onerror=null;"
+            />
+            <fa-icon
+              [icon]="['fas', 'xmark']"
+              class="position-absolute top-0 start-100 translate-middle badge bg-danger p-1 font-12-px c-pointer c-icon-color"
+              role="button"
+              (click)="removePostSelectedFile()"
+            />
+            <ng-container
+              *ngIf="replyMessage.Username && replyMessage.createdDate"
+            >
+              <div class="d-flex">
+                <span class="font-12-px mt-2 replay-border"
+                  >{{ replyMessage.Username }},
+                  {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
+                >
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="selectedFile?.type?.includes('video/')">
+          <div class="position-absolute mt-5 p-3 preview-chat-media">
+            <fa-icon
+              *ngIf="replyMessage.Username && replyMessage.createdDate"
+              class="float-start me-2"
+              [icon]="['fas', 'reply']"
+            />
+            <video
+              class="w-100 h-200-px"
+              src="{{ viewUrl }}"
+              controls
+              autoplay="autoplay"
+            ></video>
+            <fa-icon
+              [icon]="['fas', 'xmark']"
+              class="position-absolute top-0 start-100 translate-middle badge bg-danger p-1 font-12-px c-pointer c-icon-color"
+              role="button"
+              (click)="removePostSelectedFile()"
+            />
+            <ng-container
+              *ngIf="replyMessage.Username && replyMessage.createdDate"
+            >
+              <div class="d-flex">
+                <span class="font-12-px mt-2 replay-border"
+                  >{{ replyMessage.Username }},
+                  {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
+                >
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="pdfName">
+          <div class="position-absolute mt-5 p-3 preview-chat-media">
+            <fa-icon
+              *ngIf="replyMessage.Username && replyMessage.createdDate"
+              class="float-start me-2"
+              [icon]="['fas', 'reply']"
+            />
+            [icon]="['fas', 'file']" class="c-pointer close-icon font-40-px" />
+            <span
+              class="c-pdf-show w-100-px"
+              [title]="pdfName.replaceAll('%', ' ')"
+              >{{ pdfName.replaceAll("%", " ") }}</span
+            >
+            <fa-icon
+              [icon]="['fas', 'xmark']"
+              class="position-absolute top-0 translate-middle badge bg-danger p-1 font-12-px c-pointer c-icon-color"
+              role="button"
+              (click)="removePostSelectedFile()"
+            />
+            <ng-container
+              *ngIf="replyMessage.Username && replyMessage.createdDate"
+            >
+              <div class="d-flex">
+                <span class="font-12-px replay-border"
+                  >{{ replyMessage.Username }},
+                  {{ replyMessage.createdDate | date : "dd-MM-yyyy" }}</span
+                >
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
         <ng-container
           *ngIf="
             typingData?.isTyping &&
