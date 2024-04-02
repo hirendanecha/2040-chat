@@ -321,6 +321,23 @@
       }
     }
   }
+  li.you .message {
+    .message-text-custom {
+      a {
+        color: var(--para-2nd-color) !important;
+      }
+    }
+  }
+  li.me .message {
+    svg path {
+      fill: var(--secondary-color);
+    }
+    .message-text-custom {
+      a {
+        color: var(--secondary-color) !important;
+      }
+    }
+  }
   .message-text-custom{
     h1,
     h2,
@@ -349,7 +366,15 @@
       line-height: 22px !important;
       margin: unset !important;
       background-color: unset !important;
-      font-weight: 500 !important;
+      font-weight: 600 !important;
+    }
+  } 
+  app-tag-user-input {
+    .tag-input-div {
+      a {
+        color: var(--para-2nd-color) !important;
+        font-weight: 600 !important;
+      }
     }
   }
 }
