@@ -100,6 +100,11 @@
     max-height: calc(100vh - 150px);
     // max-height: calc(100vh - 210px);
   }
+  .info-area h6 {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 ::-webkit-scrollbar {
