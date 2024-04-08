@@ -105,6 +105,7 @@ import { EditGroupModalComponent } from './modals/edit-group-modal/edit-group-mo
 import { CommonModule } from '@angular/common';
 import { MediaGalleryComponent } from './components/media-gallery/media-gallery.component';
 import { GalleryImgPreviewComponent } from './components/gallery-img-preview/gallery-img-preview.component';
+import { QRCodeModule } from 'angularx-qrcode';
 
 const sharedComponents = [
   ConfirmationModalComponent,
@@ -138,6 +139,7 @@ const sharedModules = [
   FontAwesomeModule,
   PipeModule,
   MentionModule,
+  QRCodeModule
 ];
 
 @NgModule({
