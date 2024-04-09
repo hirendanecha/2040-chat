@@ -18,6 +18,7 @@ export class MediaGalleryComponent implements OnInit {
   activePage = 1;
   hasMoreData = false;
   filterMediaList = [];
+  isMediaLoader=false; 
   constructor(
     private messageService: MessageService,
     public activeOffCanvas: NgbActiveOffcanvas,
@@ -31,6 +32,7 @@ export class MediaGalleryComponent implements OnInit {
   }
 
   getMessageMedia(): void {
+    this.isMediaLoader = true;
     const data = {
       roomId: this.userChat?.roomId || null,
       groupId: this.userChat?.groupId || null,
@@ -39,6 +41,7 @@ export class MediaGalleryComponent implements OnInit {
     };
     this.messageService.getMessageMedia(data).subscribe({
       next: (res: any) => {
+        this.isMediaLoader = false;
         if (this.activePage < res?.pagination.totalPages) {
           this.hasMoreData = true;
         } else {
@@ -49,6 +52,7 @@ export class MediaGalleryComponent implements OnInit {
       },
       error: (error) => {
         console.log(error);
+        this.isMediaLoader = false;
       },
     });
   }
