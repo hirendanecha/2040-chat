@@ -290,6 +290,14 @@
         bottom: 0px;
       }
     }
+    .mobile-fileselect-drop{
+      .dropdown-menu.show {
+        display: flex;
+        flex-direction: column;
+        min-width: unset;
+        padding: 10px 4px;
+      }
+    }
   }
 
   .chat-meta {
