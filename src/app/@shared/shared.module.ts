@@ -108,6 +108,7 @@ import { MediaGalleryComponent } from './components/media-gallery/media-gallery.
 import { GalleryImgPreviewComponent } from './components/gallery-img-preview/gallery-img-preview.component';
 import { QRCodeModule } from 'angularx-qrcode';
 import { QrScanModalComponent } from './modals/qrscan-modal/qrscan-modal.component';
+import { ForwardChatModalComponent } from './modals/forward-chat-modal/forward-chat-modal.component';
 
 const sharedComponents = [
   ConfirmationModalComponent,
@@ -124,7 +125,8 @@ const sharedComponents = [
   EditGroupModalComponent,
   MediaGalleryComponent,
   GalleryImgPreviewComponent,
-  QrScanModalComponent
+  QrScanModalComponent,
+  ForwardChatModalComponent
 ];
 
 const sharedModules = [
