@@ -580,6 +580,10 @@ export class ProfileChatsListComponent
     window.open(pdfUrl);
   }
 
+  isFileOrVideo(media: any): boolean {
+    return this.isFile(media) || this.isVideoFile(media);
+  }
+
   isFile(media: string): boolean {
     const FILE_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip','.apk'];
     return FILE_EXTENSIONS.some((ext) => media.endsWith(ext));
@@ -654,7 +658,7 @@ export class ProfileChatsListComponent
     modalRef.componentInstance.data = msgObj;
     modalRef.result.then((res) => {
       if (res) {
-        this.getMessageList();
+        // this.getMessageList();
       }
     });
   }

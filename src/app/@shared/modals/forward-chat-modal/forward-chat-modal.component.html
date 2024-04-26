@@ -45,10 +45,8 @@
       <p
         *ngIf="message?.messageText !== null"
         class="m-0"
-        [innerHTML]="message?.messageText"
+        [innerHTML]="encryptDecryptService.decryptUsingAES256(message?.messageText)"
       ></p>
-      <!-- encryptDecryptService.decryptUsingAES256(
-      ) -->
       <span class="font-12-px">
         {{ message?.Username }},{{ message?.createdDate | date : "dd-MM-yyyy"}}
       </span>
