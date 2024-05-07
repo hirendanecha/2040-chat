@@ -86,6 +86,7 @@ import {
   faUserTimes,
   faChevronLeft,
   faPhotoFilm,
+  faEyeSlash,
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -223,7 +224,8 @@ export class SharedModule {
       faRefresh,
       faReply,
       faUserTimes,
-      faPhotoFilm
+      faPhotoFilm,
+      faEyeSlash,
     );
   }
 }
