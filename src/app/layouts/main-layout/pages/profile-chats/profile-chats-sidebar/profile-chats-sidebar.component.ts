@@ -27,6 +27,7 @@ import { NotificationsModalComponent } from '../../../components/notifications-m
 import * as moment from 'moment';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { MessageService } from 'src/app/@shared/services/message.service';
+import { AppQrModalComponent } from 'src/app/@shared/modals/app-qr-modal/app-qr-modal.component';
 
 @Component({
   selector: 'app-profile-chats-sidebar',
@@ -391,6 +392,11 @@ export class ProfileChatsSidebarComponent
         modalDialogClass: 'profile-menus-modal',
       }
     );
+  }
+  appQrmodal(){
+    const modalRef = this.modalService.open(AppQrModalComponent, {
+      centered: true,
+    });
   }
 
   openNotificationsMobileModal(): void {

@@ -33,6 +33,7 @@ import { MessageDatePipe } from 'src/app/@shared/pipe/message-date.pipe';
 import { error } from 'node:console';
 import { MediaGalleryComponent } from 'src/app/@shared/components/media-gallery/media-gallery.component';
 import { ForwardChatModalComponent } from 'src/app/@shared/modals/forward-chat-modal/forward-chat-modal.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-profile-chats-list',
@@ -84,6 +85,7 @@ export class ProfileChatsListComponent
   firstTimeScroll = false;
   activePage = 1;
   hasMoreData = false;
+  qrLink = '';
 
   typingData: any = {};
   isTyping = false;
@@ -117,7 +119,10 @@ export class ProfileChatsListComponent
     private customerService: CustomerService,
     private offcanvasService: NgbOffcanvas
   ) {
+    // this.userId = +this.route.snapshot.paramMap.get('id');
     this.profileId = +localStorage.getItem('profileId');
+    const authToken = localStorage.getItem('auth-token')
+    this.qrLink = `${environment.qrLink}${this.profileId}?token=${authToken}`;
   }
 
   ngOnInit(): void {
@@ -580,6 +585,10 @@ export class ProfileChatsListComponent
     window.open(pdfUrl);
   }
 
+  isFileOrVideo(media: any): boolean {
+    return this.isFile(media) || this.isVideoFile(media);
+  }
+
   isFile(media: string): boolean {
     const FILE_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip','.apk'];
     return FILE_EXTENSIONS.some((ext) => media.endsWith(ext));
@@ -654,7 +663,7 @@ export class ProfileChatsListComponent
     modalRef.componentInstance.data = msgObj;
     modalRef.result.then((res) => {
       if (res) {
-        this.getMessageList();
+        // this.getMessageList();
       }
     });
   }
