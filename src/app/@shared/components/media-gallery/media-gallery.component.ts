@@ -1,7 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MessageService } from '../../services/message.service';
 import * as moment from 'moment';
-import { NgbActiveOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveOffcanvas, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MessageDatePipe } from '../../pipe/message-date.pipe';
+
+import { GalleryImgPreviewComponent } from '../gallery-img-preview/gallery-img-preview.component';
 @Component({
   selector: 'app-media-gallery',
   templateUrl: './media-gallery.component.html',
@@ -12,9 +15,14 @@ export class MediaGalleryComponent implements OnInit {
   mediaList: any = [];
   fileName: string;
   profileId: number;
+  activePage = 1;
+  hasMoreData = false;
+  filterMediaList = [];
+  isMediaLoader=false; 
   constructor(
     private messageService: MessageService,
-    public activeOffCanvas: NgbActiveOffcanvas
+    public activeOffCanvas: NgbActiveOffcanvas,
+    private modelService:NgbModal
   ) {
     this.profileId = +localStorage.getItem('profileId');
   }
@@ -24,49 +32,62 @@ export class MediaGalleryComponent implements OnInit {
   }
 
   getMessageMedia(): void {
+    this.isMediaLoader = true;
     const data = {
       roomId: this.userChat?.roomId || null,
       groupId: this.userChat?.groupId || null,
+      size: 10,
+      page: this.activePage,
     };
     this.messageService.getMessageMedia(data).subscribe({
-      next: (res) => {
-        this.mediaList = res.data;
-        this.mediaList.filter((ele) => {
-          const messageDate = new Date(ele.createdDate);
-          const today = new Date();
-          const yesterday = new Date(today);
-          yesterday.setDate(today.getDate() - 1);
-          ele['createdTime'] = moment(ele.createdDate).format('h:mm A');
-          if (messageDate.toDateString() === today.toDateString()) {
-            ele.createdDate = 'Today';
-          } else if (messageDate.toDateString() === yesterday.toDateString()) {
-            ele.createdDate = 'Yesterday';
-          } else {
-            const date = moment.utc(messageDate).local().toLocaleString();
-            ele.createdDate = moment(date).format('DD-MMM-YYYY');
-          }
-        });
-        console.log(this.mediaList);
+      next: (res: any) => {
+        this.isMediaLoader = false;
+        if (this.activePage < res?.pagination.totalPages) {
+          this.hasMoreData = true;
+        } else {
+          this.hasMoreData = false;
+        }
+        this.mediaList = [...this.mediaList, ...res.data];
+        this.filterMediaList = new MessageDatePipe().transform(this.mediaList);
       },
       error: (error) => {
         console.log(error);
+        this.isMediaLoader = false;
       },
     });
   }
 
-  isPdf(media: string): boolean {
+  isFile(media: string): boolean {
     this.fileName = media?.split('/')[3]?.replaceAll('%', '-');
-    const fileType =
-      media.endsWith('.pdf') ||
-      media.endsWith('.doc') ||
-      media.endsWith('.docx') ||
-      media.endsWith('.xls') ||
-      media.endsWith('.xlsx') ||
-      media.endsWith('.zip');
-    return media && fileType;
+    const FILE_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip'];
+    return FILE_EXTENSIONS.some((ext) => media?.endsWith(ext));
+  }
+  isVideoFile(media: string): boolean {
+    const FILE_EXTENSIONS = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv', '.mpeg', '.rmvb', '.m4v', '.3gp', '.webm', '.ogg', '.vob', '.ts', '.mpg'];
+    return FILE_EXTENSIONS.some((ext) => media?.endsWith(ext));
   }
 
   pdfView(pdfUrl: string) {
     window.open(pdfUrl);
+  }
+
+  loadMoreMedia() {
+    this.activePage = this.activePage + 1;
+    this.getMessageMedia();
+  }
+
+  downloadPdf(data): void {
+    const pdfLink = document.createElement('a');
+    pdfLink.href = data;
+    pdfLink.click();
+  }
+  openImagePreview(src: string) {
+    const modalRef = this.modelService.open(GalleryImgPreviewComponent, {
+      backdrop: 'static',
+    });
+    modalRef.componentInstance.src = src;
+    modalRef.componentInstance.roomId = this.userChat?.roomId;
+    modalRef.componentInstance.groupId = this.userChat?.groupId;
+    modalRef.componentInstance.activePage = this.activePage;
   }
 }

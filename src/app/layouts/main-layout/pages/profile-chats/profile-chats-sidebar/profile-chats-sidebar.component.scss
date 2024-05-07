@@ -10,7 +10,8 @@
   //     border-top: 1px solid var(--bs-border-color) !important;
   //   }
   .sidebar-head-text {
-    max-width: 178px;
+    // max-width: 178px;
+    max-width: 143px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box !important;
@@ -95,10 +96,15 @@
     }
   }
 
-  .approved-user-list{
+  .approved-user-list {
     overflow-y: auto;
     max-height: calc(100vh - 150px);
     // max-height: calc(100vh - 210px);
+  }
+  .info-area h6 {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -109,6 +115,33 @@
 ::-webkit-scrollbar-thumb {
   border-radius: 10px !important;
   background-color: var(--primary-color) !important;
+}
+
+.chat-top {
+  .profile-area {
+    .icon-area {
+      width: 42px;
+      height: 42px;
+      background: var(--box-1st-color);
+      border-radius: 12px;
+      cursor: pointer;
+
+      .abs-area {
+        right: initial;
+        top: -4px;
+        left: 32px;
+        width: 15px;
+        height: 15px;
+        background: var(--highlight-color);
+        border-radius: 50%;
+        color: var(--bs-white);
+      }
+
+      i {
+        color: var(--para-3rd-color);
+      }
+    }
+  }
 }
 
 ::ng-deep {
@@ -128,6 +161,10 @@
       display: -webkit-box;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
+    }
+    a {
+      color: var(--para-2nd-color)!important;
+      font-weight: 600 !important;
     }
   }
 }

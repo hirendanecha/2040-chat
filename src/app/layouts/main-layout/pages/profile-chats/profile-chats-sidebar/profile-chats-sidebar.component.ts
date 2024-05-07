@@ -11,9 +11,11 @@ import {
 } from '@angular/core';
 import { CustomerService } from 'src/app/@shared/services/customer.service';
 import {
+  NgbActiveModal,
   NgbActiveOffcanvas,
   NgbDropdown,
   NgbModal,
+  NgbOffcanvas,
 } from '@ng-bootstrap/ng-bootstrap';
 import { SocketService } from 'src/app/@shared/services/socket.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
@@ -21,6 +23,11 @@ import { Router } from '@angular/router';
 import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.service';
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
 import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
+import { NotificationsModalComponent } from '../../../components/notifications-modal/notifications-modal.component';
+import * as moment from 'moment';
+import { ToastService } from 'src/app/@shared/services/toast.service';
+import { MessageService } from 'src/app/@shared/services/message.service';
+import { AppQrModalComponent } from 'src/app/@shared/modals/app-qr-modal/app-qr-modal.component';
 
 @Component({
   selector: 'app-profile-chats-sidebar',
@@ -57,15 +64,29 @@ export class ProfileChatsSidebarComponent
   @Output('onNewChat') onNewChat: EventEmitter<any> = new EventEmitter<any>();
   @Input('isRoomCreated') isRoomCreated: boolean = false;
   @Input('selectedRoomId') selectedRoomId: number = null;
+  originalFavicon: HTMLLinkElement;
   constructor(
     private customerService: CustomerService,
     private socketService: SocketService,
     public sharedService: SharedService,
+    public messageService: MessageService,
     private activeOffcanvas: NgbActiveOffcanvas,
     private router: Router,
+    private toasterService: ToastService,
+
     public encryptDecryptService: EncryptDecryptService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private offcanvasService: NgbOffcanvas,
+    public activeOffCanvas: NgbActiveOffcanvas
   ) {
+    this.originalFavicon = document.querySelector('link[rel="icon"]');
+    this.socketService?.socket?.on('isReadNotification_ack', (data) => {
+      if (data?.profileId) {
+        this.sharedService.isNotify = false;
+        localStorage.setItem('isRead', data?.isRead);
+        this.originalFavicon.href = '/assets/images/icon.jpg';
+      }
+    });
     this.profileId = +localStorage.getItem('profileId');
     const notificationSound =
       JSON.parse(localStorage.getItem('soundPreferences')) || {};
@@ -297,6 +318,7 @@ export class ProfileChatsSidebarComponent
           return ele;
         } else return ele;
       });
+      this.messageService.chatList.push(this.newChatList);
     }
   }
 
@@ -339,6 +361,28 @@ export class ProfileChatsSidebarComponent
       });
     }
   }
+  resendInvite(item) {
+    if (item) {
+      const date = moment(new Date()).utc();
+      const data = {
+        roomId: item.roomId,
+        profileId: item.profileId,
+        createdBy: item.createdBy,
+        date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
+      };
+
+      const hoursDifference = date.diff(item.createdDate, 'hours');
+      if (hoursDifference > 24) {
+        this.socketService?.resendChatInvite(data, (data: any) => {
+          this.toasterService.success('invitation sent successfully.');
+        });
+      } else {
+        this.toasterService.warring(
+          'Please wait 24 hours before sending invitations again.'
+        );
+      }
+    }
+  }
 
   openProfileMenuModal(): void {
     this.userMenusOverlayDialog = this.modalService.open(
@@ -348,5 +392,18 @@ export class ProfileChatsSidebarComponent
         modalDialogClass: 'profile-menus-modal',
       }
     );
+  }
+  appQrmodal(){
+    const modalRef = this.modalService.open(AppQrModalComponent, {
+      centered: true,
+    });
+  }
+
+  openNotificationsMobileModal(): void {
+    this.activeOffCanvas?.close();
+    this.offcanvasService.open(NotificationsModalComponent, {
+      position: 'end',
+      panelClass: 'w-300-px',
+    });
   }
 }

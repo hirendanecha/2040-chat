@@ -22,6 +22,16 @@
             <h6 class="m-0">{{ sharedService?.userData?.Username }}</h6>
           </div>
         </div>
+        <div
+          class="icon-area d-center position-relative ms-7 c-pointer"
+          (click)="openNotificationsMobileModal()"
+        >
+          <span
+            *ngIf="sharedService.isNotify"
+            class="abs-area position-absolute d-center smtxt"
+          ></span>
+          <fa-icon [icon]="['fas', 'bell']" class="font-20-px" />
+        </div>
         <div class="btn-group cus-dropdown d-flex gap-3">
           <div ngbDropdown class="d-inline-block">
             <button class="dropdown-btn" ngbDropdownToggle>
@@ -89,15 +99,32 @@
                       </div>
                     </div>
                   </div>
+                  <div
+                  class="c-pointer d-flex align-items-baseline mt-3"
+                  (click)="appQrmodal()"
+                >
+                <fa-icon
+                [icon]="['fas', 'mobile']"
+                class="font-20-px me-2"
+              />
+                  <h6 class="d-flex">Buzz Ring App</h6>
+                </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <span class="m-1 border-bottom" *ngIf="selectedButton === 'users'">Click on end user to invite to chat</span>
-      <span class="m-1" *ngIf="selectedButton === 'chats'">Search for end users to message:</span>
-      <div class="input-area py-2 d-flex align-items-center" *ngIf="selectedButton === 'chats'">
+      <span class="m-1 border-bottom" *ngIf="selectedButton === 'users'"
+        >Click on end user to invite to chat</span
+      >
+      <span class="m-1" *ngIf="selectedButton === 'chats'"
+        >Search for end users to message:</span
+      >
+      <div
+        class="input-area py-2 d-flex align-items-center"
+        *ngIf="selectedButton === 'chats'"
+      >
         <fa-icon [icon]="['fas', 'search']" class="font-20-px m-1" />
         <input
           type="text"
@@ -492,6 +519,13 @@
                   class="dropdown-menu"
                   (mouseleave)="editPopup.close()"
                 >
+                <button *ngIf="item?.roomId" ngbDropdownItem (click)="resendInvite(item)">
+                  <a class="droplist d-flex align-items-center gap-2">
+                    <fa-icon [icon]="['fas', 'repeat']"
+                    />
+                    <span class="data-text-color">Resend</span>
+                  </a>
+                </button>
                   <button ngbDropdownItem (click)="deleteOrLeaveChat(item)">
                     <a class="droplist d-flex align-items-center gap-2">
                       <fa-icon

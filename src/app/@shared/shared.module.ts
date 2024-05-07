@@ -87,6 +87,8 @@ import {
   faChevronLeft,
   faPhotoFilm,
   faEyeSlash,
+  faRepeat,
+  faMobile,
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -105,6 +107,11 @@ import { CreateGroupModalComponent } from './modals/create-group-modal/create-gr
 import { EditGroupModalComponent } from './modals/edit-group-modal/edit-group-modal.component';
 import { CommonModule } from '@angular/common';
 import { MediaGalleryComponent } from './components/media-gallery/media-gallery.component';
+import { GalleryImgPreviewComponent } from './components/gallery-img-preview/gallery-img-preview.component';
+import { QRCodeModule } from 'angularx-qrcode';
+import { QrScanModalComponent } from './modals/qrscan-modal/qrscan-modal.component';
+import { ForwardChatModalComponent } from './modals/forward-chat-modal/forward-chat-modal.component';
+import { AppQrModalComponent } from './modals/app-qr-modal/app-qr-modal.component';
 
 const sharedComponents = [
   ConfirmationModalComponent,
@@ -120,6 +127,10 @@ const sharedComponents = [
   CreateGroupModalComponent,
   EditGroupModalComponent,
   MediaGalleryComponent,
+  GalleryImgPreviewComponent,
+  QrScanModalComponent,
+  ForwardChatModalComponent,
+  AppQrModalComponent
 ];
 
 const sharedModules = [
@@ -137,6 +148,7 @@ const sharedModules = [
   FontAwesomeModule,
   PipeModule,
   MentionModule,
+  QRCodeModule
 ];
 
 @NgModule({
@@ -226,6 +238,8 @@ export class SharedModule {
       faUserTimes,
       faPhotoFilm,
       faEyeSlash,
+      faRepeat,
+      faMobile
     );
   }
 }

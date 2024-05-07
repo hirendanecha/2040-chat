@@ -89,9 +89,10 @@ export class CustomerService {
     return this.http.post(`${this.baseUrl}`, data);
   }
 
-  getNotificationList(id: number): Observable<any> {
-    return this.http.get(
-      `${this.baseUrl}/get-notification/${id}?q=${Date.now()}`
+  getNotificationList(id: number, data = {}): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/get-notification/${id}?q=${Date.now()}`,
+      data
     );
   }
 
@@ -122,5 +123,9 @@ export class CustomerService {
 
   verifyToken(token): Observable<any> {
     return this.http.get(`${this.baseUrl}/verify-token/${token}`);
+  }
+  startCallToBuzzRing(callerData: Object): Observable<any>{
+    const url = 'https://ring-dev-api.freedom.buzz/api/customers/call-notification';
+    return this.http.post(url, callerData);
   }
 }

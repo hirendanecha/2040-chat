@@ -16,6 +16,9 @@ import { SharedService } from 'src/app/@shared/services/shared.service';
 import { TokenStorageService } from 'src/app/@shared/services/token-storage.service';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { UploadFilesService } from 'src/app/@shared/services/upload-files.service';
+import { environment } from 'src/environments/environment';
+import { QrScanModalComponent } from 'src/app/@shared/modals/qrscan-modal/qrscan-modal.component';
+
 
 @Component({
   selector: 'app-edit-profile',
@@ -27,7 +30,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   allCountryData: any;
   confirm_password = '';
   msg = '';
-  userId = '';
+  userId : number;
   userMail: string;
   profilePic: any = {};
   coverPic: any = {};
@@ -45,6 +48,8 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     url: ''
   };
   isNotificationSoundEnabled: boolean = true;
+  authToken: string;
+  qrLink = '';
 
   constructor(
     private modalService: NgbModal,
@@ -58,15 +63,15 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     private uploadService: UploadFilesService,
   ) {
     this.userlocalId = +localStorage.getItem('user_id');
-    this.userId = this.route.snapshot.paramMap.get('id');
+    this.userId = +this.route.snapshot.paramMap.get('id');
     this.profileId = +localStorage.getItem('profileId');
     this.userMail = JSON.parse(localStorage.getItem('auth-user'))?.Email;
     if (this.profileId) {
       this.getProfile(this.profileId);
+      this.authToken = localStorage.getItem('auth-token');
     }
-    // else {
-    //   this.getUserDetails(this.userId);
-    // }
+    this.qrLink = `${environment.qrLink}${this.userId}?token=${this.authToken}`;
+
   }
 
   ngOnInit(): void {
@@ -324,5 +329,18 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     let inputValue = inputElement.value;
     inputValue = inputValue.replace(/\s/g, '');
     inputElement.value = inputValue.toUpperCase();
+  }
+  openAppQR(store: string){
+    const modalRef = this.modalService.open(QrScanModalComponent, {
+      centered: true,
+      size: 'sm',
+    });
+    if (store === 'googlePlay') {
+      modalRef.componentInstance.store = 'https://play.google.com/store/apps/';
+      modalRef.componentInstance.image = '/assets/images/logos/googlePlay.png';
+    } else {
+      modalRef.componentInstance.store = 'https://apps.apple.com/us/app/apple-store/id375380948';
+      modalRef.componentInstance.image = '/assets/images/logos/appStore.png';
+    }
   }
 }
