@@ -102,6 +102,6 @@ export class OutGoingCallModalComponent
   }
 
   ngOnDestroy(): void {
-    this.soundEnabledSubscription.unsubscribe();
+    this.soundEnabledSubscription?.unsubscribe();
   }
 }

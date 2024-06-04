@@ -125,7 +125,11 @@ export class CustomerService {
     return this.http.get(`${this.baseUrl}/verify-token/${token}`);
   }
   startCallToBuzzRing(callerData: Object): Observable<any>{
-    const url = 'https://ring-dev-api.freedom.buzz/api/customers/call-notification';
+    const url = 'https://ring-api.2040.chat/api/v1/customers/call-notification';
+    return this.http.post(url, callerData);
+  }
+  startGroupCallToBuzzRing(callerData: Object): Observable<any>{
+    const url = 'https://ring-api.2040.chat/api/v1/customers/group-call-notification';
     return this.http.post(url, callerData);
   }
 }

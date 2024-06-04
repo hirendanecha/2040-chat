@@ -45,7 +45,7 @@
         </div>
       </div>
     </div>
-    <div class="d-center flex-column p-3">
+    <!-- <div class="d-center flex-column p-3">
       <span class="mb-2">Scan the QR code with your device</span>
       <qrcode
         [qrdata]="qrLink"
@@ -53,7 +53,7 @@
         [errorCorrectionLevel]="'Q'"
       >
     </qrcode>
-    </div>
+    </div> -->
   </ng-container>
   <ng-container *ngIf="userChat.roomId || userChat.groupId">
     <div class="main">
@@ -96,15 +96,24 @@
             </div>
             <fa-icon
               [icon]="['fas', 'gear']"
-              class="font-20-px m-1 ms-3"
+              class="font-20-px m-1 ms-3  d-none d-sm-flex"
               *ngIf="userChat.groupId"
             />
+            
           </div>
         </div>
         <div
           class="d-flex gap-3 align-items-center"
           *ngIf="userChat.isAccepted === 'Y'"
         >
+        <a (click)="groupEditDetails(groupData)">
+          <fa-icon
+          [icon]="['fas', 'gear']"
+          class="font-20-px m-1 ms-3 d-sm-none d-flex"
+          *ngIf="userChat.groupId"
+        />
+          </a> 
+          <div class="gap-3  d-flex flex-column flex-sm-row"> 
           <a
             *ngIf="userChat.roomId || userChat.groupId"
             class="nav-icon cursor"
@@ -132,6 +141,7 @@
             ><fa-icon [icon]="['fas', 'video']" class="font-20-px m-1"
           /></a>
         </div>
+      </div>
       </div>
 
       <div
@@ -975,7 +985,8 @@
 
         <form class="py-3 pt-2 px-3 message-content">
           <div [ngClass]="sidebarClass ? 'd-block' : 'd-block d-sm-none'" class="file-upload mobile-fileselect-drop">
-            <div class="d-flex ms-11 select-emaojies">
+            <!-- <div class="d-flex ms-11 select-emaojies"> -->
+              <div class="d-center gap-10 ms-11 select-emaojies">
               <label class="file">
                 <input type="file" [(ngModel)]="chatObj.msgMedia" name="doc" accept="application/*" (change)="onPostFileSelect($event)" />
                 <span class="file-custom border-0 m-1 d-grid text-center">

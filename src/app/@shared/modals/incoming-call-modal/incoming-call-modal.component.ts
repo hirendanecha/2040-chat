@@ -14,6 +14,7 @@ import { EncryptDecryptService } from '../../services/encrypt-decrypt.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { SoundControlService } from '../../services/sound-control.service';
+import { CustomerService } from '../../services/customer.service';
 
 @Component({
   selector: 'app-incoming-call-modal',
@@ -39,6 +40,7 @@ export class IncomingcallModalComponent
     public encryptDecryptService: EncryptDecryptService,
     private soundControlService: SoundControlService,
     private router: Router,
+    private customerService:CustomerService
   ) {
     this.profileId = +localStorage.getItem('profileId');
   }
@@ -105,6 +107,21 @@ export class IncomingcallModalComponent
         this.calldata.notificationToProfileId || this.profileId,
       link: this.calldata.link,
     };
+
+    
+    const buzzRingData = {
+      actionType: 'DC',
+      notificationByProfileId: this.profileId,
+      notificationDesc: 'decline call...',
+      notificationToProfileId: this.calldata.notificationToProfileId,
+      domain: 'freedom.buzz',
+    };
+    this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
+      // next: (data: any) => {},
+      error: (err) => {
+        console.log(err);
+      },
+    });
     this.socketService?.pickUpCall(data, (data: any) => {
       return;
     });
@@ -126,8 +143,8 @@ export class IncomingcallModalComponent
         const message = `Call declined`;
         this.sendMessage(message);
       } else {
-        const message = `You have a missed call.`;
-        this.sendMessage(message);
+        // const message = `You have a missed call.`;
+        // this.sendMessage(message);
       }
       this.activateModal.close('cancel');
     });
@@ -148,6 +165,6 @@ export class IncomingcallModalComponent
   }
 
   ngOnDestroy(): void {
-    this.soundEnabledSubscription.unsubscribe();
+    this.soundEnabledSubscription?.unsubscribe();
   }
 }
