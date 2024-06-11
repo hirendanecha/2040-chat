@@ -62,6 +62,10 @@ export class CustomerService {
     );
   }
 
+  getStateData(country: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/states?countryCode=${country}`);
+  }
+
   createProfile(data: Object): Observable<Object> {
     return this.http.post(`${this.baseUrl}/profile`, data);
   }
@@ -124,8 +128,9 @@ export class CustomerService {
   verifyToken(token): Observable<any> {
     return this.http.get(`${this.baseUrl}/verify-token/${token}`);
   }
-  startCallToBuzzRing(callerData: Object): Observable<any>{
-    const url = 'https://ring-dev-api.freedom.buzz/api/customers/call-notification';
+  startCallToBuzzRing(callerData: Object): Observable<any> {
+    const url =
+      'https://ring-dev-api.freedom.buzz/api/customers/call-notification';
     return this.http.post(url, callerData);
   }
 }

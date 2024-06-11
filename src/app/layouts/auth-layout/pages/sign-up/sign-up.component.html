@@ -140,7 +140,11 @@
               autocomplete="new-password"
               #passwordInput
             />
-            <fa-icon [icon]="passwordHidden ? ['fas', 'eye'] : ['fas', 'eye-slash']" class="font-20-px position-absolute" (click)="togglePasswordVisibility(passwordInput)"></fa-icon>
+            <fa-icon
+              [icon]="passwordHidden ? ['fas', 'eye'] : ['fas', 'eye-slash']"
+              class="font-20-px position-absolute"
+              (click)="togglePasswordVisibility(passwordInput)"
+            ></fa-icon>
           </div>
           <div
             class="text-danger"
@@ -212,6 +216,7 @@
             name="Country"
             class="input-area w-100"
             formControlName="Country"
+            (change)="onCountryChange($event)"
           >
             <option [value]="defaultCountry">United states</option>
             <option
@@ -252,14 +257,17 @@
           <label class="form-label"
             >State<span class="text-danger">*</span></label
           >
-          <input
-            type="text"
-            class="input-area"
+          <select
+            id="State"
             required
-            placeholder="Enter your state"
             name="State"
+            class="input-area w-100"
             formControlName="State"
-          />
+          >
+            <option *ngFor="let item of allStateData">
+              {{ item.state }}
+            </option>
+          </select>
           <div
             class="text-danger"
             *ngIf="

@@ -39,6 +39,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     file: null,
     url: '',
   };
+  allStateData: any;
 
   @ViewChild('zipCode') zipCode: ElementRef;
   captchaToken = '';
@@ -104,7 +105,8 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     });
   }
   togglePasswordVisibility(passwordInput: HTMLInputElement) {
-    passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+    passwordInput.type =
+      passwordInput.type === 'password' ? 'text' : 'password';
     this.passwordHidden = !this.passwordHidden;
   }
 
@@ -234,6 +236,25 @@ export class SignUpComponent implements OnInit, AfterViewInit {
         this.spinner.hide();
         this.allCountryData = result;
         this.registerForm.get('Zip').enable();
+      },
+      error: (error) => {
+        this.spinner.hide();
+        console.log(error);
+      },
+    });
+  }
+
+  onCountryChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.getAllState(target.value);
+  }
+
+  getAllState(selectCountry) {
+    // this.spinner.show();
+    this.customerService.getStateData(selectCountry).subscribe({
+      next: (result) => {
+        this.spinner.hide();
+        this.allStateData = result;
       },
       error: (error) => {
         this.spinner.hide();
