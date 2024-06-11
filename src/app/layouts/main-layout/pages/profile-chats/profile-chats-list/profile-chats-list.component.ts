@@ -34,6 +34,7 @@ import { error } from 'node:console';
 import { MediaGalleryComponent } from 'src/app/@shared/components/media-gallery/media-gallery.component';
 import { ForwardChatModalComponent } from 'src/app/@shared/modals/forward-chat-modal/forward-chat-modal.component';
 import { environment } from 'src/environments/environment';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-profile-chats-list',
@@ -80,6 +81,7 @@ export class ProfileChatsListComponent
 
   pdfName: string = '';
   viewUrl: string;
+  userId: number;
   pdfmsg: string;
   messageInputValue: string = '';
   firstTimeScroll = false;
@@ -106,6 +108,8 @@ export class ProfileChatsListComponent
   ];
   originalFavicon: HTMLLinkElement;
   isGallerySidebarOpen: boolean = false;
+  userStatus: string;
+  isOnline = false;
 
   // messageList: any = [];
   constructor(
@@ -117,12 +121,13 @@ export class ProfileChatsListComponent
     private modalService: NgbModal,
     private uploadService: UploadFilesService,
     private customerService: CustomerService,
-    private offcanvasService: NgbOffcanvas
+    private offcanvasService: NgbOffcanvas,
+    private route:ActivatedRoute,
   ) {
-    // this.userId = +this.route.snapshot.paramMap.get('id');
+    this.userId = +this.route.snapshot.paramMap.get('id');
     this.profileId = +localStorage.getItem('profileId');
-    const authToken = localStorage.getItem('auth-token')
-    this.qrLink = `${environment.qrLink}${this.profileId}?token=${authToken}`;
+    // const authToken = localStorage.getItem('auth-token')
+    // this.qrLink = `${environment.qrLink}${this.profileId}?token=${authToken}`;
   }
 
   ngOnInit(): void {
@@ -190,12 +195,20 @@ export class ProfileChatsListComponent
     this.socketService.socket.on('seen-room-message', (data) => {
       this.readMessageRoom = 'Y';
     });
+
     this.socketService.socket?.on('get-users', (data) => {
-      data.map((ele) => {
-        if (!this.sharedService?.onlineUserList.includes(ele.userId)) {
-          this.sharedService.onlineUserList.push(ele.userId);
-        }
+      const index = data.findIndex((ele) => {
+        return ele.userId === this.profileId;
       });
+      if (!this.sharedService.onlineUserList[index]) {
+        data.map((ele) => {
+          this.sharedService.onlineUserList.push({
+            userId: ele.userId,
+            status: ele.status,
+          });
+        });
+      }
+      console.log(this.sharedService.onlineUserList);
     });
     this.socketService.socket?.emit('online-users');
     this.socketService.socket?.on('typing', (data) => {
@@ -226,16 +239,25 @@ export class ProfileChatsListComponent
     if (this.userChat?.roomId || this.userChat?.groupId) {
       this.activePage = 1;
       this.messageList = [];
+      this.filteredMessageList = [];
       this.resetData();
       this.getMessageList();
       this.hasMoreData = false;
-      this.socketService.socket.on('get-users', (data) => {
-        data.map((ele) => {
-          if (!this.sharedService?.onlineUserList.includes(ele.userId)) {
-            this.sharedService.onlineUserList.push(ele.userId);
-          }
+      this.socketService.socket?.on('get-users', (data) => {
+        const index = data.findIndex((ele) => {
+          return ele.userId === this.profileId;
         });
+        if (!this.sharedService.onlineUserList[index]) {
+          data.map((ele) => {
+            this.sharedService.onlineUserList.push({
+              userId: ele.userId,
+              status: ele.status,
+            });
+          });
+        }
+        console.log(this.sharedService.onlineUserList);
       });
+      this.findUserStatus(this.userChat.profileId);
     }
   }
 
@@ -978,5 +1000,12 @@ export class ProfileChatsListComponent
       // panelClass: 'w-400-px',
     });
     offcanvasRef.componentInstance.userChat = this.userChat;
+  }
+  
+  findUserStatus(id) {
+    const index = this.sharedService.onlineUserList.findIndex(
+      (ele) => ele.userId === id
+    );
+    this.isOnline = this.sharedService.onlineUserList[index] ? true : false;
   }
 }

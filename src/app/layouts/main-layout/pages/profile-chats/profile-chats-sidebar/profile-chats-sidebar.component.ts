@@ -28,6 +28,7 @@ import * as moment from 'moment';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { MessageService } from 'src/app/@shared/services/message.service';
 import { AppQrModalComponent } from 'src/app/@shared/modals/app-qr-modal/app-qr-modal.component';
+import { ConferenceLinkComponent } from 'src/app/@shared/modals/create-conference-link/conference-link-modal.component';
 
 @Component({
   selector: 'app-profile-chats-sidebar',
@@ -64,6 +65,7 @@ export class ProfileChatsSidebarComponent
   @Output('onNewChat') onNewChat: EventEmitter<any> = new EventEmitter<any>();
   @Input('isRoomCreated') isRoomCreated: boolean = false;
   @Input('selectedRoomId') selectedRoomId: number = null;
+  userStatus: string;
   originalFavicon: HTMLLinkElement;
   constructor(
     private customerService: CustomerService,
@@ -337,6 +339,17 @@ export class ProfileChatsSidebarComponent
       }
     });
   }
+  appQrmodal(){
+    const modalRef = this.modalService.open(AppQrModalComponent, {
+      centered: true,
+    });
+  }
+  uniqueLink(){
+    const modalRef = this.modalService.open(ConferenceLinkComponent, {
+      centered: true,
+    });
+  }
+  
 
   deleteOrLeaveChat(item) {
     if (item.roomId) {
@@ -393,17 +406,28 @@ export class ProfileChatsSidebarComponent
       }
     );
   }
-  appQrmodal(){
-    const modalRef = this.modalService.open(AppQrModalComponent, {
-      centered: true,
-    });
-  }
 
-  openNotificationsMobileModal(): void {
+    openNotificationsMobileModal(): void {
     this.activeOffCanvas?.close();
     this.offcanvasService.open(NotificationsModalComponent, {
       position: 'end',
       panelClass: 'w-300-px',
     });
+  }
+  profileStatus(status: string) {
+    const data = {
+      status: status,
+      id: this.profileId,
+    };
+    this.socketService.switchOnlineStatus(data, (res) => {
+      this.sharedService.userData.userStatus = res.status
+    });
+  }
+  findUserStatus(id: string): string {
+    const user = this.sharedService.onlineUserList.find(
+      (ele) => ele.userId === id
+    );
+    const status = user?.status;
+    return status;
   }
 }

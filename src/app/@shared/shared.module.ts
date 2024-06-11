@@ -89,6 +89,7 @@ import {
   faRepeat,
   faMobile,
   faEyeSlash,
+  faSquarePlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -112,6 +113,7 @@ import { QRCodeModule } from 'angularx-qrcode';
 import { QrScanModalComponent } from './modals/qrscan-modal/qrscan-modal.component';
 import { ForwardChatModalComponent } from './modals/forward-chat-modal/forward-chat-modal.component';
 import { AppQrModalComponent } from './modals/app-qr-modal/app-qr-modal.component';
+import { ConferenceLinkComponent } from './modals/create-conference-link/conference-link-modal.component';
 
 const sharedComponents = [
   ConfirmationModalComponent,
@@ -123,6 +125,7 @@ const sharedComponents = [
   CopyClipboardDirective,
   ForgotPasswordComponent,
   IncomingcallModalComponent,
+  ConferenceLinkComponent,
   OutGoingCallModalComponent,
   CreateGroupModalComponent,
   EditGroupModalComponent,
@@ -240,6 +243,7 @@ export class SharedModule {
       faRepeat,
       faMobile,
       faEyeSlash,
+      faSquarePlus
     );
   }
 }
