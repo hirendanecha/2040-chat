@@ -96,52 +96,133 @@
             </div>
             <fa-icon
               [icon]="['fas', 'gear']"
-              class="font-20-px m-1 ms-3  d-none d-sm-flex"
+              class="font-20-px m-1 ms-3 d-none d-sm-flex"
               *ngIf="userChat.groupId"
             />
-            
           </div>
         </div>
         <div
           class="d-flex gap-3 align-items-center"
           *ngIf="userChat.isAccepted === 'Y'"
         >
-        <a (click)="groupEditDetails(groupData)">
-          <fa-icon
-          [icon]="['fas', 'gear']"
-          class="font-20-px m-1 ms-3 d-sm-none d-flex"
-          *ngIf="userChat.groupId"
-        />
-          </a> 
-          <div class="gap-3  d-flex flex-column flex-sm-row"> 
-          <a
-            *ngIf="userChat.roomId || userChat.groupId"
-            class="nav-icon cursor"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Media Gallery"
-            (click)="openMediaGallery()"
-            ><fa-icon [icon]="['fas', 'photo-film']" class="font-20-px m-1"
-          /></a>
-          <a
-            *ngIf="userChat.roomId"
-            class="nav-icon cursor"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Create Group"
-            (click)="createGroup()"
-            ><fa-icon [icon]="['fas', 'users']" class="font-20-px m-1"
-          /></a>
-          <a
-            class="nav-icon cursor"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            title="Video Call"
-            (click)="startCall()"
-            ><fa-icon [icon]="['fas', 'video']" class="font-20-px m-1"
-          /></a>
+          <div ngbDropdown class="avatar-item online-status d-none d-md-block">
+            <!--  -->
+            <button
+              ngbDropdownToggle
+              class="abs-activity d-center smtxt"
+              [ngClass]="{
+                'abs-active ': sharedService.userData.userStatus === 'active',
+                'abs-away': sharedService.userData.userStatus === 'away',
+                'abs-dnd': sharedService.userData.userStatus === 'dnd',
+                'abs-invisible':
+                  sharedService.userData.userStatus === 'invisible'
+              }"
+            ></button>
+            <div ngbDropdownMenu class="dropdown-menu">
+              <div class="dropdown-preferences">
+                <div class="d-flex flex-column">
+                  <div class="c-pointer d-flex justify-content-between">
+                    <h6
+                      ngbDropdownItem
+                      class="d-flex w-100"
+                      (click)="profileStatus('active')"
+                    >
+                      Active
+                    </h6>
+                    <fa-icon
+                      [icon]="['fas', 'check']"
+                      class="font-20-px"
+                      *ngIf="sharedService.userData.userStatus === 'active'"
+                    />
+                  </div>
+                  <div
+                    class="c-pointer d-flex align-items-baseline justify-content-between"
+                  >
+                    <h6
+                      ngbDropdownItem
+                      class="d-flex w-100"
+                      (click)="profileStatus('away')"
+                    >
+                      Away
+                    </h6>
+                    <fa-icon
+                      [icon]="['fas', 'check']"
+                      class="font-20-px"
+                      *ngIf="sharedService.userData.userStatus === 'away'"
+                    />
+                  </div>
+                  <div
+                    class="c-pointer d-flex align-items-baseline justify-content-between"
+                  >
+                    <h6
+                      ngbDropdownItem
+                      class="d-flex w-100"
+                      (click)="profileStatus('dnd')"
+                    >
+                      Do not disturb
+                    </h6>
+                    <fa-icon
+                      [icon]="['fas', 'check']"
+                      class="font-20-px"
+                      *ngIf="sharedService.userData.userStatus === 'dnd'"
+                    />
+                  </div>
+                  <div
+                    class="c-pointer d-flex align-items-baseline justify-content-between"
+                  >
+                    <h6
+                      ngbDropdownItem
+                      class="d-flex w-100"
+                      (click)="profileStatus('invisible')"
+                    >
+                      Invisible
+                    </h6>
+                    <fa-icon
+                      [icon]="['fas', 'check']"
+                      class="font-20-px"
+                      *ngIf="sharedService.userData.userStatus === 'invisible'"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <a (click)="groupEditDetails(groupData)">
+            <fa-icon
+              [icon]="['fas', 'gear']"
+              class="font-20-px m-1 ms-3 d-sm-none d-flex"
+              *ngIf="userChat.groupId"
+            />
+          </a>
+          <div class="gap-3 d-flex flex-column flex-sm-row">
+            <a
+              *ngIf="userChat.roomId || userChat.groupId"
+              class="nav-icon cursor"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Media Gallery"
+              (click)="openMediaGallery()"
+              ><fa-icon [icon]="['fas', 'photo-film']" class="font-20-px m-1"
+            /></a>
+            <a
+              *ngIf="userChat.roomId"
+              class="nav-icon cursor"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Create Group"
+              (click)="createGroup()"
+              ><fa-icon [icon]="['fas', 'users']" class="font-20-px m-1"
+            /></a>
+            <a
+              class="nav-icon cursor"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title="Video Call"
+              (click)="startCall()"
+              ><fa-icon [icon]="['fas', 'video']" class="font-20-px m-1"
+            /></a>
+          </div>
         </div>
-      </div>
       </div>
 
       <div
@@ -282,7 +363,7 @@
                 <div class="d-flex drop-options">
                   <div class="btn-group d-flex options me-2">
                     <div
-                    *ngIf="message?.messageMedia || message?.messageText"
+                      *ngIf="message?.messageMedia || message?.messageText"
                       ngbDropdown
                       #editPopup="ngbDropdown"
                       class="d-inline-block"
@@ -304,9 +385,16 @@
                             <span class="data-text-color">Reply</span>
                           </a>
                         </button>
-                        <button ngbDropdownItem (click)="forwardMsg(message)" *ngIf="message?.messageMedia || message?.messageText">
+                        <button
+                          ngbDropdownItem
+                          (click)="forwardMsg(message)"
+                          *ngIf="message?.messageMedia || message?.messageText"
+                        >
                           <a class="droplist d-flex align-items-center gap-2">
-                            <fa-icon class="forward-msg" [icon]="['fas', 'reply']" />
+                            <fa-icon
+                              class="forward-msg"
+                              [icon]="['fas', 'reply']"
+                            />
                             <span class="data-text-color">Forward</span>
                           </a>
                         </button>
@@ -390,14 +478,16 @@
                                   ></app-img-preview>
                                 </div>
                               </ng-template>
-                              
                             </ng-template>
                           </ng-template>
                         </div>
                       </ng-container>
                     </div>
                     <div
-                    *ngIf="message?.messageText !== null || message?.parentMessageId"
+                      *ngIf="
+                        message?.messageText !== null ||
+                        message?.parentMessageId
+                      "
                       class="message d-flex gap-3 flex-column"
                     >
                       <ng-container *ngIf="message.parentMessageId">
@@ -408,14 +498,16 @@
                           >
                             <ng-container
                               *ngIf="
-                                !isFileOrVideo(message.parentMessage.messageMedia);
+                                !isFileOrVideo(
+                                  message.parentMessage.messageMedia
+                                );
                                 else fileReplay
                               "
                             >
                               <div class="w-100-px h-100-px">
                                 <app-img-preview
-                                classes="h-100-px"
-                                [src]="message?.parentMessage?.messageMedia"
+                                  classes="h-100-px"
+                                  [src]="message?.parentMessage?.messageMedia"
                                 ></app-img-preview>
                                 <!-- <img
                                   loading="lazy"
@@ -522,15 +614,30 @@
                           class="dropdown-menu"
                           (mouseleave)="editPopup.close()"
                         >
-                        <button ngbDropdownItem (click)="replyMsg(message)" *ngIf="message?.messageMedia || message?.messageText">
-                          <a class="droplist d-flex align-items-center gap-2">
+                          <button
+                            ngbDropdownItem
+                            (click)="replyMsg(message)"
+                            *ngIf="
+                              message?.messageMedia || message?.messageText
+                            "
+                          >
+                            <a class="droplist d-flex align-items-center gap-2">
                               <fa-icon [icon]="['fas', 'reply']" />
                               <span class="data-text-color">Reply</span>
                             </a>
                           </button>
-                          <button ngbDropdownItem (click)="forwardMsg(message)" *ngIf="message?.messageMedia || message?.messageText">
+                          <button
+                            ngbDropdownItem
+                            (click)="forwardMsg(message)"
+                            *ngIf="
+                              message?.messageMedia || message?.messageText
+                            "
+                          >
                             <a class="droplist d-flex align-items-center gap-2">
-                              <fa-icon class="forward-msg" [icon]="['fas', 'reply']" />
+                              <fa-icon
+                                class="forward-msg"
+                                [icon]="['fas', 'reply']"
+                              />
                               <span class="data-text-color">Forward</span>
                             </a>
                           </button>
@@ -627,7 +734,9 @@
 
                 <div
                   class="d-flex flex-row-reverse gap-2 drop-options"
-                  *ngIf="message?.messageText !== null || message?.parentMessageId"
+                  *ngIf="
+                    message?.messageText !== null || message?.parentMessageId
+                  "
                 >
                   <div class="btn-group d-flex options">
                     <div
@@ -646,15 +755,26 @@
                         class="dropdown-menu"
                         (mouseleave)="editPopup.close()"
                       >
-                      <button ngbDropdownItem (click)="replyMsg(message)" *ngIf="message?.messageMedia || message?.messageText">
+                        <button
+                          ngbDropdownItem
+                          (click)="replyMsg(message)"
+                          *ngIf="message?.messageMedia || message?.messageText"
+                        >
                           <a class="droplist d-flex align-items-center gap-2">
                             <fa-icon [icon]="['fas', 'reply']" />
                             <span class="data-text-color">Reply</span>
                           </a>
                         </button>
-                        <button ngbDropdownItem (click)="forwardMsg(message)" *ngIf="message?.messageMedia || message?.messageText">
+                        <button
+                          ngbDropdownItem
+                          (click)="forwardMsg(message)"
+                          *ngIf="message?.messageMedia || message?.messageText"
+                        >
                           <a class="droplist d-flex align-items-center gap-2">
-                            <fa-icon class="forward-msg" [icon]="['fas', 'reply']" />
+                            <fa-icon
+                              class="forward-msg"
+                              [icon]="['fas', 'reply']"
+                            />
                             <span class="data-text-color">Forward</span>
                           </a>
                         </button>
@@ -687,16 +807,18 @@
                         >
                           <ng-container
                             *ngIf="
-                              !isFileOrVideo(message.parentMessage.messageMedia);
+                              !isFileOrVideo(
+                                message.parentMessage.messageMedia
+                              );
                               else fileReplay
                             "
                           >
                             <div class="w-100-px h-100-px">
                               <app-img-preview
-                              class="msgImage"
-                              classes="h-100-px"
-                              [src]="message.parentMessage.messageMedia"
-                            ></app-img-preview>
+                                class="msgImage"
+                                classes="h-100-px"
+                                [src]="message.parentMessage.messageMedia"
+                              ></app-img-preview>
                               <!-- <img
                                 loading="lazy"
                                 data-src="{{
@@ -916,7 +1038,7 @@
               class="float-start me-2"
               [icon]="['fas', 'reply']"
             />
-             <fa-icon
+            <fa-icon
               [icon]="['fas', 'file']"
               class="c-pointer close-icon font-40-px"
             />
@@ -984,25 +1106,55 @@
         </ng-container>
 
         <form class="py-3 pt-2 px-3 message-content">
-          <div [ngClass]="sidebarClass ? 'd-block' : 'd-block d-sm-none'" class="file-upload mobile-fileselect-drop">
+          <div
+            [ngClass]="sidebarClass ? 'd-block' : 'd-block d-sm-none'"
+            class="file-upload mobile-fileselect-drop"
+          >
             <!-- <div class="d-flex ms-11 select-emaojies"> -->
-              <div class="d-center gap-10 ms-11 select-emaojies">
+            <div class="d-center gap-10 ms-11 select-emaojies">
               <label class="file">
-                <input type="file" [(ngModel)]="chatObj.msgMedia" name="doc" accept="application/*" (change)="onPostFileSelect($event)" />
+                <input
+                  type="file"
+                  [(ngModel)]="chatObj.msgMedia"
+                  name="doc"
+                  accept="application/*"
+                  (change)="onPostFileSelect($event)"
+                />
                 <span class="file-custom border-0 m-1 d-grid text-center">
-                  <fa-icon [icon]="['fas', 'paperclip']" class="font-24-px"></fa-icon>
+                  <fa-icon
+                    [icon]="['fas', 'paperclip']"
+                    class="font-24-px"
+                  ></fa-icon>
                 </span>
               </label>
               <label class="file">
-                <input type="file" [(ngModel)]="chatObj.msgMedia" name="image" accept="image/*" (change)="onPostFileSelect($event)" />
+                <input
+                  type="file"
+                  [(ngModel)]="chatObj.msgMedia"
+                  name="image"
+                  accept="image/*"
+                  (change)="onPostFileSelect($event)"
+                />
                 <span class="file-custom border-0 m-1 d-grid text-center">
-                  <fa-icon [icon]="['fas', 'image']" class="font-24-px"></fa-icon>
+                  <fa-icon
+                    [icon]="['fas', 'image']"
+                    class="font-24-px"
+                  ></fa-icon>
                 </span>
               </label>
               <label class="file">
-                <input type="file" [(ngModel)]="chatObj.msgMedia" id="fileInput" (change)="onPostFileSelect($event)" accept="video/*" />
+                <input
+                  type="file"
+                  [(ngModel)]="chatObj.msgMedia"
+                  id="fileInput"
+                  (change)="onPostFileSelect($event)"
+                  accept="video/*"
+                />
                 <span class="file-custom border-0 m-1 d-grid text-center">
-                  <fa-icon [icon]="['fas', 'video']" class="font-24-px"></fa-icon>
+                  <fa-icon
+                    [icon]="['fas', 'video']"
+                    class="font-24-px"
+                  ></fa-icon>
                 </span>
               </label>
             </div>
@@ -1010,8 +1162,11 @@
           <div
             class="d-flex align-items-sm-center align-items-end flex-column flex-sm-row mt-2 gap-3"
           >
-          <div class="form-content p-0 d-flex gap-2 align-items-center w-100">
-              <div [ngClass]="sidebarClass ? 'd-none' : 'd-sm-flex'" class="file-input d-flex d-none gap-1 gap-md-2">
+            <div class="form-content p-0 d-flex gap-2 align-items-center w-100">
+              <div
+                [ngClass]="sidebarClass ? 'd-none' : 'd-sm-flex'"
+                class="file-input d-flex d-none gap-1 gap-md-2"
+              >
                 <div class="file-upload">
                   <label class="file">
                     <input
@@ -1128,11 +1283,13 @@
                 >
                   <!-- [disabled]="!chatObj.msgText && !selectedFile" -->
                   <fa-icon
-                  [ngClass]="sidebarClass ? '' : 'd-sm-none'"
-                  class="c-icon-color"
-                  [icon]="['fas', 'paper-plane']"
-                ></fa-icon>
-                  <div [ngClass]="sidebarClass ? 'd-none' : 'd-none d-sm-flex'">Send</div>
+                    [ngClass]="sidebarClass ? '' : 'd-sm-none'"
+                    class="c-icon-color"
+                    [icon]="['fas', 'paper-plane']"
+                  ></fa-icon>
+                  <div [ngClass]="sidebarClass ? 'd-none' : 'd-none d-sm-flex'">
+                    Send
+                  </div>
                 </button>
               </div>
             </div>

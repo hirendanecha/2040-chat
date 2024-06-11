@@ -122,7 +122,7 @@ export class ProfileChatsListComponent
     private uploadService: UploadFilesService,
     private customerService: CustomerService,
     private offcanvasService: NgbOffcanvas,
-    private route:ActivatedRoute,
+    private route: ActivatedRoute
   ) {
     this.userId = +this.route.snapshot.paramMap.get('id');
     this.profileId = +localStorage.getItem('profileId');
@@ -298,17 +298,21 @@ export class ProfileChatsListComponent
   }
 
   prepareMessage(text: string): string | null {
-    const regex = /<img\s+[^>]*src="data:image\/.*?;base64,[^\s]*"[^>]*>|<img\s+[^>]*src=""[^>]*>/g;
+    const regex =
+      /<img\s+[^>]*src="data:image\/.*?;base64,[^\s]*"[^>]*>|<img\s+[^>]*src=""[^>]*>/g;
     let cleanedText = text.replace(regex, '');
     const divregex = /<div\s*>\s*<\/div>/g;
     if (cleanedText.replace(divregex, '').trim() === '') return null;
     return this.encryptDecryptService?.encryptUsingAES256(cleanedText);
   }
-  
+
   // send btn
   sendMessage(): void {
     if (this.chatObj.id) {
-      const message = this.chatObj.msgText !== null ? this.prepareMessage(this.chatObj.msgText) : null;
+      const message =
+        this.chatObj.msgText !== null
+          ? this.prepareMessage(this.chatObj.msgText)
+          : null;
       const data = {
         id: this.chatObj.id,
         messageText: message,
@@ -335,7 +339,10 @@ export class ProfileChatsListComponent
         this.resetData();
       });
     } else {
-      const message = this.chatObj.msgText !== null ? this.prepareMessage(this.chatObj.msgText) : null;
+      const message =
+        this.chatObj.msgText !== null
+          ? this.prepareMessage(this.chatObj.msgText)
+          : null;
       const data = {
         messageText: message,
         roomId: this.userChat?.roomId || null,
@@ -387,7 +394,9 @@ export class ProfileChatsListComponent
 
   // getMessages
   getMessageList(): void {
-    const tagUserInput = document.querySelector("app-tag-user-input .tag-input-div") as HTMLInputElement;
+    const tagUserInput = document.querySelector(
+      'app-tag-user-input .tag-input-div'
+    ) as HTMLInputElement;
     if (tagUserInput) {
       tagUserInput.focus();
     }
@@ -509,10 +518,10 @@ export class ProfileChatsListComponent
       this.selectedFile = file;
       this.viewUrl = URL.createObjectURL(file);
     }
-    document.addEventListener('keyup',this.onKeyUp);
+    document.addEventListener('keyup', this.onKeyUp);
   }
-  onKeyUp = (event:KeyboardEvent) => {
-    if(event.key === 'Enter' && !event.shiftKey) {
+  onKeyUp = (event: KeyboardEvent) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
       this.uploadPostFileAndCreatePost();
     }
   };
@@ -532,7 +541,9 @@ export class ProfileChatsListComponent
   }
 
   onTagUserInputChangeEvent(data: any): void {
-    this.chatObj.msgText = this.extractImageUrlFromContent(data?.html.replace(/<div>\s*<br\s*\/?>\s*<\/div>\s*$/, ''));
+    this.chatObj.msgText = this.extractImageUrlFromContent(
+      data?.html.replace(/<div>\s*<br\s*\/?>\s*<\/div>\s*$/, '')
+    );
     if (data.html === '') {
       this.resetData();
     }
@@ -569,7 +580,7 @@ export class ProfileChatsListComponent
   }
 
   resetData(): void {
-    document.removeEventListener('keyup',this.onKeyUp);
+    document.removeEventListener('keyup', this.onKeyUp);
     this.chatObj['id'] = null;
     this.chatObj.parentMessageId = null;
     this.replyMessage.msgText = null;
@@ -602,7 +613,7 @@ export class ProfileChatsListComponent
       media.endsWith('.xls') ||
       media.endsWith('.xlsx') ||
       media.endsWith('.zip') ||
-      media.endsWith('.apk')
+      media.endsWith('.apk');
     return media && fileType;
     // return media && media.endsWith('.pdf');
   }
@@ -616,7 +627,15 @@ export class ProfileChatsListComponent
   }
 
   isFile(media: string): boolean {
-    const FILE_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.zip','.apk'];
+    const FILE_EXTENSIONS = [
+      '.pdf',
+      '.doc',
+      '.docx',
+      '.xls',
+      '.xlsx',
+      '.zip',
+      '.apk',
+    ];
     return FILE_EXTENSIONS.some((ext) => media.endsWith(ext));
   }
   isVideoFile(media: string): boolean {
@@ -666,7 +685,9 @@ export class ProfileChatsListComponent
   }
 
   replyMsg(msgObj): void {
-    const tagUserInput = document.querySelector("app-tag-user-input .tag-input-div") as HTMLInputElement;
+    const tagUserInput = document.querySelector(
+      'app-tag-user-input .tag-input-div'
+    ) as HTMLInputElement;
     if (tagUserInput) {
       tagUserInput.focus();
     }
@@ -828,20 +849,25 @@ export class ProfileChatsListComponent
 
     if (this.sharedService?.onlineUserList.includes(this.userChat?.profileId)) {
       this.socketService?.startCall(data, (data: any) => {});
-    } else  {
+    } else {
       const buzzRingData = {
-        ProfilePicName: this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
+        ProfilePicName:
+          this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
         Username: this.groupData?.groupName || this?.userChat.Username,
-        actionType: "VC",
+        actionType: 'VC',
         notificationByProfileId: this.profileId,
         link: `https://facetime.tube/${originUrl}`,
-        notificationDesc: this.groupData?.groupName || this?.userChat.Username + "incoming call...",
+        notificationDesc:
+          this.groupData?.groupName ||
+          this?.userChat.Username + 'incoming call...',
         notificationToProfileId: this.userChat.profileId,
-        domain: "goodday.chat"
+        domain: 'goodday.chat',
       };
       this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
         // next: (data: any) => {},
-        error: (err) => {console.log(err)}
+        error: (err) => {
+          console.log(err);
+        },
       });
     }
     modalRef.result.then((res) => {
@@ -849,19 +875,28 @@ export class ProfileChatsListComponent
         if (res === 'missCalled') {
           this.chatObj.msgText = 'You have a missed call';
           this.sendMessage();
-          if (!this.sharedService?.onlineUserList.includes(this.userChat?.profileId)) {
+          if (
+            !this.sharedService?.onlineUserList.includes(
+              this.userChat?.profileId
+            )
+          ) {
             const buzzRingData = {
-              ProfilePicName: this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
+              ProfilePicName:
+                this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
               Username: this.groupData?.groupName || this?.userChat.Username,
-              actionType: "DC",
+              actionType: 'DC',
               notificationByProfileId: this.profileId,
-              notificationDesc: this.groupData?.groupName || this?.userChat.Username + "incoming call...",
+              notificationDesc:
+                this.groupData?.groupName ||
+                this?.userChat.Username + 'incoming call...',
               notificationToProfileId: this.userChat.profileId,
-              domain: "goodday.chat"
+              domain: 'goodday.chat',
             };
             this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
               // next: (data: any) => {},
-              error: (err) => {console.log(err)}
+              error: (err) => {
+                console.log(err);
+              },
             });
           }
         }
@@ -1001,11 +1036,24 @@ export class ProfileChatsListComponent
     });
     offcanvasRef.componentInstance.userChat = this.userChat;
   }
-  
+
   findUserStatus(id) {
     const index = this.sharedService.onlineUserList.findIndex(
       (ele) => ele.userId === id
     );
     this.isOnline = this.sharedService.onlineUserList[index] ? true : false;
+  }
+
+  profileStatus(status: string) {
+    const data = {
+      status: status,
+      id: this.profileId,
+    };
+    const localUserData = JSON.parse(localStorage.getItem('userData'));
+    this.socketService.switchOnlineStatus(data, (res) => {
+      this.sharedService.userData.userStatus = res.status;
+      localUserData.userStatus = res.status;
+      localStorage.setItem('userData', JSON.stringify(localUserData));
+    });
   }
 }
