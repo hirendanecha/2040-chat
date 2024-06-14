@@ -51,6 +51,7 @@ export class ProfileChatsSidebarComponent
 
   isMessageSoundEnabled: boolean = true;
   isCallSoundEnabled: boolean = true;
+  backCanvas: boolean = true;
   isChatLoader = false;
   selectedButton: string = 'chats';
   newChatList = [];
@@ -75,6 +76,7 @@ export class ProfileChatsSidebarComponent
     private activeOffcanvas: NgbActiveOffcanvas,
     private router: Router,
     private toasterService: ToastService,
+    private activeCanvas: NgbOffcanvas,
 
     public encryptDecryptService: EncryptDecryptService,
     private modalService: NgbModal,
@@ -119,6 +121,7 @@ export class ProfileChatsSidebarComponent
     this.getChatList();
     this.getGroupList();
     // this.getApprovedUserList();
+    this.backCanvas =this.activeCanvas.hasOpenOffcanvas();
   }
 
   ngAfterViewInit(): void {

@@ -243,7 +243,8 @@ export class SharedModule {
       faRepeat,
       faMobile,
       faEyeSlash,
-      faSquarePlus
+      faSquarePlus,
+      faChevronLeft,
     );
   }
 }
