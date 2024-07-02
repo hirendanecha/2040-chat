@@ -90,6 +90,11 @@ import {
   faMobile,
   faEyeSlash,
   faSquarePlus,
+  faPhoneFlip,
+  faVoicemail,
+  faPhoneVolume,
+  faCircleChevronUp,
+  faCircleChevronDown,
 } from '@fortawesome/free-solid-svg-icons';
 import { PipeModule } from './pipe/pipe.module';
 import { ForgotPasswordComponent } from '../layouts/auth-layout/pages/forgot-password/forgot-password.component';
@@ -245,6 +250,11 @@ export class SharedModule {
       faEyeSlash,
       faSquarePlus,
       faChevronLeft,
+      faPhoneFlip,
+      faVoicemail,
+      faPhoneVolume,
+      faCircleChevronUp,
+      faCircleChevronDown
     );
   }
 }

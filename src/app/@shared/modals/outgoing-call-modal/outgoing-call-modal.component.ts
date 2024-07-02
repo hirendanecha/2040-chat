@@ -46,7 +46,7 @@ export class OutGoingCallModalComponent
     }
     if (window.document.hidden) {
       this.soundEnabledSubscription =
-        this.soundControlService.soundEnabled$.subscribe((soundEnabled) => {
+      this.soundControlService.soundEnabled$.subscribe((soundEnabled) => {
           console.log(soundEnabled);
           if (soundEnabled === false) {
             this.sound?.stop();
@@ -55,7 +55,8 @@ export class OutGoingCallModalComponent
     }
     if (!this.hangUpTimeout) {
       this.hangUpTimeout = setTimeout(() => {
-        this.hangUpCall();
+        this.hangUpCall('You have missed call');
+        // this.hangUpCall();
         // this.activateModal.close('missCalled');
       }, 60000);
     }
@@ -86,7 +87,7 @@ export class OutGoingCallModalComponent
     this.activateModal.close('success');
   }
 
-  hangUpCall(): void {
+  hangUpCall(msg = ''): void {
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     const data = {
@@ -94,6 +95,7 @@ export class OutGoingCallModalComponent
       roomId: this.calldata?.roomId,
       groupId: this.calldata?.groupId,
       notificationByProfileId: this.calldata.notificationByProfileId,
+      message: msg || 'Call declined',
     };
     this.socketService?.hangUpCall(data, (data: any) => {
       return;

@@ -6,13 +6,13 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Howl } from 'howler';
 import { SocketService } from '../../services/socket.service';
 import { EncryptDecryptService } from '../../services/encrypt-decrypt.service';
 
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SoundControlService } from '../../services/sound-control.service';
 import { CustomerService } from '../../services/customer.service';
 
@@ -33,6 +33,7 @@ export class IncomingcallModalComponent
   currentURL: any = [];
   profileId: number;
   soundEnabledSubscription: Subscription;
+  isOnCall = false;
 
   constructor(
     public activateModal: NgbActiveModal,
@@ -40,9 +41,12 @@ export class IncomingcallModalComponent
     public encryptDecryptService: EncryptDecryptService,
     private soundControlService: SoundControlService,
     private router: Router,
-    private customerService:CustomerService
+    private customerService:CustomerService,
+    private modalService:NgbModal,
+    private route: ActivatedRoute
   ) {
     this.profileId = +localStorage.getItem('profileId');
+    this.isOnCall = this.router.url.includes('/2040-call/') || false;
   }
 
   ngAfterViewInit(): void {
@@ -65,7 +69,7 @@ export class IncomingcallModalComponent
     }
     if (!this.hangUpTimeout) {
       this.hangUpTimeout = setTimeout(() => {
-        this.hangUpCall(false);
+        this.hangUpCall(false, '');
       }, 60000);
     }
     this.socketService.socket?.on('notification', (data: any) => {
@@ -76,25 +80,48 @@ export class IncomingcallModalComponent
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.socketService.socket?.on('notification', (data: any) => {
+      if (data?.actionType === 'SC') {
+        this.sound?.stop();
+        this.modalService.dismissAll();
+        clearTimeout(this.hangUpTimeout);
+      }
+    });
+   }
 
-  pickUpCall(): void {
+   pickUpCall(): void {
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     if (!this.currentURL.includes(this.calldata?.link)) {
       this.currentURL.push(this.calldata.link);
       // window.open(this.calldata.link, '_blank');
 
-      console.log('incomin',this.calldata.link);
-      // this.router.navigate([`/appointment-call/${this.calldata.link}`]);  
-      const callId = this.calldata.link.replace('https://facetime.tube/', '');
-      // this.router.navigate([`/2040-call/${callId}`]);
-      this.sound?.stop();
-      const chatDataPass = {
+      // console.log('incomin', this.calldata.link);
+      // this.router.navigate([`/appointment-call/${this.calldata.link}`]);
+      let chatDataPass = {
         roomId: this.calldata.roomId || null,
-        groupId: this.calldata.groupId || null
+        groupId: this.calldata.groupId || null,
       };
-      this.router.navigate([`/2040-call/${callId}`], { state: { chatDataPass } });  
+      if (this.calldata?.roomId) {
+        localStorage.setItem('callRoomId', this.calldata?.roomId);
+      }
+      if (this.isOnCall) {
+        // const url = window.location.href;
+        const parts = window.location.href.split('/');
+        const callId = parts[parts.length - 1];
+        this.calldata.link = callId;
+        this.router.navigate([`/2040-call/${callId}`], {
+          state: { chatDataPass },
+        });
+      } else {
+        const callId = this.calldata.link.replace('https://facetime.tube/', '');
+        this.router.navigate([`/2040-call/${callId}`], {
+          state: { chatDataPass },
+        });
+      }
+      // this.router.navigate([`/freedom-call/${callId}`]);
+      this.sound?.stop();
     }
     this.activateModal.close('success');
 
@@ -127,7 +154,7 @@ export class IncomingcallModalComponent
     });
   }
 
-  hangUpCall(isCallCut): void {
+  hangUpCall(isCallCut, messageText): void {
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     const data = {
@@ -137,11 +164,12 @@ export class IncomingcallModalComponent
       groupId: this.calldata?.groupId,
       notificationByProfileId:
         this.calldata.notificationToProfileId || this.profileId,
+        message: isCallCut ? 'Call declined' : 'Not answered.',
     };
     this.socketService?.hangUpCall(data, (data: any) => {
-      if (isCallCut) {
-        const message = `Call declined`;
-        this.sendMessage(message);
+      if (isCallCut && messageText) {
+        // const message = `Call declined`;
+        this.sendMessage(messageText);
       } else {
         // const message = `You have a missed call.`;
         // this.sendMessage(message);
