@@ -15,6 +15,7 @@ import { BreakpointService } from 'src/app/@shared/services/breakpoint.service';
 import { take } from 'rxjs';
 import * as moment from 'moment';
 import { AppQrModalComponent } from 'src/app/@shared/modals/app-qr-modal/app-qr-modal.component';
+import { ConferenceLinkComponent } from 'src/app/@shared/modals/create-conference-link/conference-link-modal.component';
 import { Router } from '@angular/router';
 
 @Component({
@@ -40,14 +41,14 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
     isShowRightSideBar: true,
     isShowResearchLeftSideBar: false,
     isShowChatListSideBar: true,
-   
-
   };
   oldChat: any = {};
+
   isMessageSoundEnabled: boolean = true;
   isCallSoundEnabled: boolean = true;
   isInnerWidthSmall: boolean;
   isSidebarOpen: boolean = false;
+
   constructor(
     private renderer: Renderer2,
     private el: ElementRef,
@@ -75,12 +76,19 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
         }
       });
     }
+
     this.isInnerWidthSmall = window.innerWidth < 576;
     if (this.isInnerWidthSmall && !this.isSidebarOpen && this.router.url === '/profile-chats') {
       this.openChatListSidebar();
     }
     this.ngZone.runOutsideAngular(() => {
       window.addEventListener('resize', this.onResize.bind(this));
+    });
+  }
+
+  onResize() {
+    this.ngZone.run(() => {
+      this.isInnerWidthSmall = window.innerWidth < 576;
     });
   }
 
@@ -91,6 +99,24 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
       'overflow',
       'hidden'
     );
+  }
+
+  toggleSoundPreference(property: string, ngModelValue: boolean): void {
+    const soundPreferences =
+      JSON.parse(localStorage.getItem('soundPreferences')) || {};
+    soundPreferences[property] = ngModelValue ? 'Y' : 'N';
+    localStorage.setItem('soundPreferences', JSON.stringify(soundPreferences));
+  }
+
+  appQrmodal(){
+    const modalRef = this.modalService.open(AppQrModalComponent, {
+      centered: true,
+    });
+  }
+  uniqueLink(){
+    const modalRef = this.modalService.open(ConferenceLinkComponent ,{
+      centered: true,
+    });
   }
 
   onChatPost(userName: any) {
@@ -116,14 +142,6 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
   onSelectChat(id) {
     this.selectedRoomId = id;
   }
-  onResize() {
-    this.ngZone.run(() => {
-      this.isInnerWidthSmall = window.innerWidth < 576;
-      // if (this.isInnerWidthSmall && !this.isSidebarOpen && this.router.url === '/profile-chats') {
-      //   this.openChatListSidebar();
-      // }
-    });
-  }
 
   openChatListSidebar() {
     this.isSidebarOpen = true;
@@ -134,6 +152,9 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
     offcanvasRef.componentInstance.onNewChat.subscribe((emittedData: any) => {
       this.onChatPost(emittedData);
     });
+    offcanvasRef.result.then((result) => {}).catch((reason) => {
+      this.isSidebarOpen = false;
+  });
   }
 
   mobileShortCutPopup() {
@@ -150,7 +171,7 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
         const modalRef = this.modalService.open(ConfirmationModalComponent, {
           centered: true,
         });
-        modalRef.componentInstance.title = 'Add 2040.chats on home';
+        modalRef.componentInstance.title = 'Add 2040 chats on home';
         modalRef.componentInstance.confirmButtonLabel = 'Do not display again';
         modalRef.componentInstance.cancelButtonLabel = 'Close';
         modalRef.componentInstance.message =
@@ -161,18 +182,6 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
           }
         });
       }
-    });
-  }
-  toggleSoundPreference(property: string, ngModelValue: boolean): void {
-    const soundPreferences =
-      JSON.parse(localStorage.getItem('soundPreferences')) || {};
-    soundPreferences[property] = ngModelValue ? 'Y' : 'N';
-    localStorage.setItem('soundPreferences', JSON.stringify(soundPreferences));
-  }
-
-  appQrmodal(){
-    const modalRef = this.modalService.open(AppQrModalComponent, {
-      centered: true,
     });
   }
 
