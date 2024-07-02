@@ -141,7 +141,7 @@ export class IncomingcallModalComponent
       notificationByProfileId: this.profileId,
       notificationDesc: 'decline call...',
       notificationToProfileId: this.calldata.notificationToProfileId,
-      domain: 'freedom.buzz',
+      domain: '2040.chat',
     };
     this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
       // next: (data: any) => {},
