@@ -95,7 +95,7 @@ export class PostService {
     files: File,
     params?: any
   ): Observable<HttpEvent<any>> {
-    const url = `${environment.serverUrl}posts/upload`;
+    const url = `${environment.serverUrl}utils/image-upload`;
     const formData: FormData = new FormData();
     formData.append('file', files);
     let queryParams = new HttpParams();

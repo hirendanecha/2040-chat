@@ -375,8 +375,8 @@ export class ProfileChatsListComponent
       const data = {
         id: this.chatObj.id,
         messageText: message,
-        roomId: this.uploadTo.roomId ?? this.userChat?.roomId ?? null,
-        groupId: this.uploadTo.groupId ?? this.userChat?.groupId ?? null,
+        roomId: this.userChat?.roomId,
+        groupId: this.userChat?.groupId,
         sentBy: this.profileId,
         messageMedia: this.chatObj?.msgMedia,
         profileId: this.userChat.profileId,
@@ -404,8 +404,8 @@ export class ProfileChatsListComponent
           : null;
       const data = {
         messageText: message,
-        roomId: this.uploadTo.roomId ? this.uploadTo.roomId : this.userChat?.roomId || null,
-        groupId: this.uploadTo.groupId ? this.uploadTo.groupId : this.userChat?.groupId || null,
+        roomId: this.uploadTo.roomId ?? this.userChat?.roomId ?? null,
+        groupId: this.uploadTo.groupId ?? this.userChat?.groupId ?? null,
         sentBy: this.profileId,
         messageMedia: this.chatObj?.msgMedia,
         profileId: this.userChat.profileId,
