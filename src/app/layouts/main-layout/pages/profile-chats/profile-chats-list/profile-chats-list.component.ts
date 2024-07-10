@@ -42,6 +42,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FILE_EXTENSIONS, FILE_EXTENSIONS_Video } from 'src/app/@shared/constant/file-extensions';
 import { PostService } from 'src/app/@shared/services/post.service';
 import { HttpEventType } from '@angular/common/http';
+import { v4 as uuid } from 'uuid';
 
 @Component({
   selector: 'app-profile-chats-list',
@@ -101,7 +102,7 @@ export class ProfileChatsListComponent
   activePage = 1;
   hasMoreData = false;
   qrLink = '';
-
+  webUrl = environment.webUrl;
   typingData: any = {};
   isTyping = false;
   typingTimeout: any;
@@ -919,21 +920,19 @@ export class ProfileChatsListComponent
       size: 'sm',
       backdrop: 'static',
     });
-    // const originUrl =
-    //   'https://facetime.tube/' + `callId-${new Date().getTime()}`;
     const originUrl = `callId-${new Date().getTime()}`;
     const parts = window.location.href.split('/');
     const lastParam = parts[parts.length - 1];
     const data = {
       ProfilePicName:
-        this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
+        this.groupData?.profileImage || this.userChat?.ProfilePicName,
       Username: this.groupData?.groupName || this?.userChat.Username,
       roomId: this.userChat?.roomId || null,
       groupId: this.userChat?.groupId || null,
       notificationByProfileId: this.profileId,
       link: this.isOnCall ? lastParam : originUrl,
     };
-    localStorage.setItem('callRoomId', this.userChat?.roomId);
+    localStorage.setItem('callRoomId', data?.roomId || data.groupId);
     if (!data?.groupId) {
       data['notificationToProfileId'] = this.userChat.profileId;
     }
@@ -947,21 +946,30 @@ export class ProfileChatsListComponent
     modalRef.componentInstance.sound = callSound;
     modalRef.componentInstance.title = 'RINGING...';
 
-    if (this.sharedService?.onlineUserList.includes(this.userChat?.profileId)) {
-      this.socketService?.startCall(data, (data: any) => {});
-    } else {
+    this.socketService?.startCall(data, (data: any) => {});
+    // if (this.sharedService?.onlineUserList.includes(this.userChat?.profileId)) {
+    // } else {
+    // }
+    let uuId = uuid();
+    localStorage.setItem('uuId', uuId);
+    if (this.userChat?.roomId) {
       const buzzRingData = {
         ProfilePicName:
-          this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
-        Username: this.groupData?.groupName || this?.userChat.Username,
+          this.groupData?.profileImage ||
+          this.sharedService?.userData?.ProfilePicName,
+        Username:
+          this.groupData?.groupName || this.sharedService?.userData?.Username,
         actionType: 'VC',
         notificationByProfileId: this.profileId,
-        link: `https://facetime.tube/${originUrl}`,
+        link: `${this.webUrl}2040-call/${originUrl}`,
+        roomId: this.userChat?.roomId || null,
+        groupId: this.userChat?.groupId || null,
         notificationDesc:
           this.groupData?.groupName ||
-          this?.userChat.Username + 'incoming call...',
+          this.sharedService?.userData?.Username + ' incoming call...',
         notificationToProfileId: this.userChat.profileId,
-        domain: 'goodday.chat',
+        domain: '2040.chat',
+        uuId: uuId,
       };
       this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
         // next: (data: any) => {},
@@ -969,36 +977,63 @@ export class ProfileChatsListComponent
           console.log(err);
         },
       });
+    } else if (this.userChat?.groupId) {
+      let groupMembers = this.groupData?.memberList
+        ?.filter((item) => item.profileId !== this.profileId)
+        ?.map((item) => item.profileId);
+      const buzzRingGroupData = {
+        ProfilePicName:
+          this.groupData?.profileImage ||
+          this.sharedService?.userData?.ProfilePicName,
+        Username:
+          this.groupData?.groupName || this.sharedService?.userData?.Username,
+        actionType: 'VC',
+        notificationByProfileId: this.profileId,
+        link: `${this.webUrl}2040-call/${originUrl}`,
+        roomId: this.userChat?.roomId || null,
+        groupId: this.userChat?.groupId || null,
+        notificationDesc:
+          this.groupData?.groupName ||
+          this.sharedService?.userData?.Username + ' incoming call...',
+        notificationToProfileIds: groupMembers,
+        domain: '2040.chat',
+        uuId: uuId,
+      };
+      this.customerService
+        .startGroupCallToBuzzRing(buzzRingGroupData)
+        .subscribe({
+          // next: (data: any) => {},
+          error: (err) => {
+            console.log(err);
+          },
+        });
     }
+
     modalRef.result.then((res) => {
       if (!window.document.hidden) {
         if (res === 'missCalled') {
           this.chatObj.msgText = 'You have a missed call';
           this.sendMessage();
-          if (
-            !this.sharedService?.onlineUserList.includes(
-              this.userChat?.profileId
-            )
-          ) {
-            const buzzRingData = {
-              ProfilePicName:
-                this.groupData?.ProfileImage || this.userChat?.ProfilePicName,
-              Username: this.groupData?.groupName || this?.userChat.Username,
-              actionType: 'DC',
-              notificationByProfileId: this.profileId,
-              notificationDesc:
-                this.groupData?.groupName ||
-                this?.userChat.Username + 'incoming call...',
-              notificationToProfileId: this.userChat.profileId,
-              domain: 'goodday.chat',
-            };
-            this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
-              // next: (data: any) => {},
-              error: (err) => {
-                console.log(err);
-              },
-            });
-          }
+          const uuId = localStorage.getItem('uuId');
+          const buzzRingData = {
+            ProfilePicName:
+              this.groupData?.profileImage || this.userChat?.ProfilePicName,
+            Username: this.groupData?.groupName || this?.userChat.Username,
+            actionType: 'DC',
+            notificationByProfileId: this.profileId,
+            notificationDesc:
+              this.groupData?.groupName ||
+              this?.userChat.Username + 'incoming call...',
+            notificationToProfileId: this.userChat.profileId,
+            domain: '2040.chat',
+            uuId: uuId,
+          };
+          this.customerService.startCallToBuzzRing(buzzRingData).subscribe({
+            // next: (data: any) => {},
+            error: (err) => {
+              console.log(err);
+            },
+          });
         }
       }
     });

@@ -124,6 +124,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               src: [
                 'https://s3.us-east-1.wasabisys.com/freedom-social/messageTone.mp3',
               ],
+              volume: 0.5,
             });
             const messageSoundOct = JSON.parse(
               localStorage.getItem('soundPreferences')
@@ -173,10 +174,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                 groupId: data.groupId || null,
               };
               if (!window.document.hidden) {
-                // this.router.navigate([`/2040-call/${data.link}`]);
-                this.router.navigate([`/2040-call/${data.link}`], {
+                const callIdMatch = data.link.match(/callId-\d+/);
+                const callId = callIdMatch ? callIdMatch[0] : data.link;
+                this.router.navigate([`/2040-call/${callId}`], {
                   state: { chatDataPass },
                 });
+                // this.router.navigate([`/freedom-call/${data.link}`]);
               }
               // window.open(`appointment-call/${data.link}`, '_blank');
               // window?.open(data?.link, '_blank');
