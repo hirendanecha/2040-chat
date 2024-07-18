@@ -43,6 +43,7 @@ import { FILE_EXTENSIONS, FILE_EXTENSIONS_Video } from 'src/app/@shared/constant
 import { PostService } from 'src/app/@shared/services/post.service';
 import { HttpEventType } from '@angular/common/http';
 import { v4 as uuid } from 'uuid';
+import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
 
 @Component({
   selector: 'app-profile-chats-list',
@@ -131,6 +132,7 @@ export class ProfileChatsListComponent
   isOnCall = false;
   isLoading: boolean = false;
   callRoomId: number;
+  userMenusOverlayDialog: any;
 
   // messageList: any = [];
   @ViewChildren('message') messageElements: QueryList<ElementRef>;
@@ -1293,5 +1295,14 @@ export class ProfileChatsListComponent
     if (element.scrollTop < 100 && this.hasMoreData && !this.isLoading) {
       this.loadMoreChats();
     }
+  }
+  openProfileMenuModal(){
+    this.userMenusOverlayDialog = this.modalService.open(
+      ProfileMenusModalComponent,
+      {
+        keyboard: true,
+        modalDialogClass: 'profile-menus-modal',
+      }
+    );
   }
 }

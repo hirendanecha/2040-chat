@@ -4,12 +4,12 @@
     // right: 315px;
     // top: 50px;
     top: 30px;
-    left: 25px;
+    right: 30px;
     display: flex;
     bottom: unset !important;
     min-width: 280px;
     max-width: 80vw;
-
+  }
     // @media (max-width: 1024px) {
     //   right: 40px !important;
     // }
@@ -41,7 +41,6 @@
     // @media (min-width: 2641px) {
     //   right: 23% !important;
     // }
-  }
 }
 
 .main-area {
