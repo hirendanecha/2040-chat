@@ -51,16 +51,17 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     Email: new FormControl('', [Validators.required]),
     Password: new FormControl('', [Validators.required]),
     confirm_password: new FormControl('', [Validators.required]),
-    MobileNo: new FormControl('', [Validators.required]),
+    MobileNo: new FormControl(''),
     Country: new FormControl('US', [Validators.required]),
     Zip: new FormControl('', [Validators.required]),
     State: new FormControl('', [Validators.required]),
-    City: new FormControl('', [Validators.required]),
-    County: new FormControl('', [Validators.required]),
+    City: new FormControl(''),
+    County: new FormControl(''),
     TermAndPolicy: new FormControl(false, Validators.required),
   });
   theme = '';
   passwordHidden: boolean = true;
+  confirmPasswordHidden: boolean = true;
 
   @ViewChild('captcha', { static: false }) captchaElement: ElementRef;
 
@@ -108,6 +109,12 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     passwordInput.type =
       passwordInput.type === 'password' ? 'text' : 'password';
     this.passwordHidden = !this.passwordHidden;
+  }
+
+  toggleConfirmPasswordVisibility(confirmPasswordInput: HTMLInputElement) {
+    confirmPasswordInput.type =
+      confirmPasswordInput.type === 'password' ? 'text' : 'password';
+    this.confirmPasswordHidden = !this.confirmPasswordHidden;
   }
 
   selectFiles(event) {
@@ -211,10 +218,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       if (!this.validatepassword()) {
         return;
       }
-      if (this.userId) {
-      } else {
-        this.save();
-      }
+      this.save();
     } else {
       this.msg = 'Please enter mandatory fields(*) data.';
       this.scrollTop();

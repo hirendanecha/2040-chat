@@ -65,8 +65,9 @@
 
         <div class="col-12 col-md-6 mb-3 d-flex flex-column">
           <label class="form-label"
-            >Profile Picture<span class="text-danger"></span
-          ></label>
+            >Profile Picture
+            <!-- <span class="text-danger"></span> -->
+          </label>
           <app-img-picker (onFileChange)="selectFiles($event)" />
         </div>
 
@@ -161,18 +162,28 @@
           <label class="form-label"
             >Confirm Password<span class="text-danger">*</span></label
           >
-          <input
-            type="password"
-            class="input-area"
-            required
-            name="confirmPassword"
-            placeholder="Enter confirm password"
-            (focusout)="validatepassword()"
-            (input)="changetopassword($event)"
-            (keyup)="changetopassword($event)"
-            formControlName="confirm_password"
-            autocomplete="new-password"
-          />
+          <div class="d-flex custom-input-area position-relative">
+            <input
+              type="password"
+              class="input-area"
+              required
+              name="confirmPassword"
+              placeholder="Enter confirm password"
+              (focusout)="validatepassword()"
+              (input)="changetopassword($event)"
+              (keyup)="changetopassword($event)"
+              formControlName="confirm_password"
+              autocomplete="new-password"
+              #confirmPasswordInput
+            />
+            <fa-icon
+              [icon]="
+                confirmPasswordHidden ? ['fas', 'eye'] : ['fas', 'eye-slash']
+              "
+              class="font-20-px position-absolute"
+              (click)="toggleConfirmPasswordVisibility(confirmPasswordInput)"
+            ></fa-icon>
+          </div>
           <div
             class="text-danger"
             *ngIf="
@@ -186,8 +197,9 @@
 
         <div class="col-12 col-md-6 mb-3">
           <label class="form-label"
-            >Mobile<span class="text-danger">*</span></label
-          >
+            >Mobile
+            <!-- <span class="text-danger">*</span> -->
+          </label>
           <input
             type="number"
             class="input-area"
@@ -195,7 +207,7 @@
             placeholder="Enter your mobile number"
             formControlName="MobileNo"
           />
-          <div
+          <!-- <div
             class="text-danger"
             *ngIf="
               registerForm.get('MobileNo').hasError('required') &&
@@ -203,7 +215,7 @@
             "
           >
             Mobile number is required.
-          </div>
+          </div> -->
         </div>
 
         <div class="col-12 col-md-6 mb-3">
@@ -281,17 +293,17 @@
 
         <div class="col-12 col-md-6 mb-3">
           <label class="form-label"
-            >City<span class="text-danger">*</span></label
-          >
+            >City
+            <!-- <span class="text-danger">*</span> -->
+          </label>
           <input
             type="text"
             class="input-area"
-            required
             name="City"
             placeholder="Enter your city"
             formControlName="City"
           />
-          <div
+          <!-- <div
             class="text-danger"
             *ngIf="
               registerForm.get('City').hasError('required') &&
@@ -299,22 +311,22 @@
             "
           >
             City is required.
-          </div>
+          </div> -->
         </div>
 
         <div class="col-12 col-md-6 mb-3">
           <label class="form-label"
-            >County<span class="text-danger">*</span></label
-          >
+            >County
+            <!-- <span class="text-danger">*</span> -->
+          </label>
           <input
             type="text"
             class="input-area"
-            required
             name="County"
             placeholder="Enter your County"
             formControlName="County"
           />
-          <div
+          <!-- <div
             class="text-danger"
             *ngIf="
               registerForm.get('County').hasError('required') &&
@@ -322,7 +334,7 @@
             "
           >
             County is required.
-          </div>
+          </div> -->
         </div>
       </div>
 
