@@ -48,10 +48,11 @@ export class IncomingcallModalComponent
     private sharedService: SharedService
   ) {
     this.profileId = +localStorage.getItem('profileId');
-    this.isOnCall = this.router.url.includes('/2040-call/') || false;
+    // this.isOnCall = this.router.url.includes('/2040-call/') || false;
   }
-
+  
   ngAfterViewInit(): void {
+    this.isOnCall = this.calldata.isOnCall === 'Y' || false;
     this.soundControlService.initStorageListener();
     // this.sound?.close();
     this.soundEnabledSubscription =

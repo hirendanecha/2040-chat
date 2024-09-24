@@ -73,6 +73,20 @@
           ></span>
           <fa-icon [icon]="['fas', 'bell']" class="font-20-px" />
         </div>
+        <!-- <div
+        class="single-item"
+        *ngIf="sharedService.callId && !hideOngoingCallButton"
+      >
+        <div class="ongoing-call d-center position-relative">
+          <a
+            routerLinkActive="active"
+            [routerLink]="['/2040-call/' + sharedService.callId]"
+          >
+            <fa-icon [icon]="['fas', 'phone-volume']" class="font-20-px" />
+          </a>
+        </div>
+      </div> -->
+
         <div class="btn-group cus-dropdown d-flex gap-3">
           <div ngbDropdown class="d-inline-block">
             <button class="dropdown-btn" ngbDropdownToggle>
@@ -619,7 +633,7 @@
         <h6 class="text-center">No Pending Invites</h6>
       </ng-template>
       <div *ngIf="backCanvas">
-        <button class="btn btn-primary float-end me-3 btn-sm" (click)="dismissSidebar()">
+        <button class="btn btn-primary float-end me-3 btn-sm d-sm-none" (click)="dismissSidebar()">
           <fa-icon [icon]="['fas', 'chevron-left']" />Back
         </button>
       </div>

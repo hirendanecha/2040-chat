@@ -19,7 +19,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { SocketService } from 'src/app/@shared/services/socket.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.service';
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
 import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
@@ -62,6 +62,7 @@ export class ProfileChatsSidebarComponent
   approvedUserData = [];
 
   userMenusOverlayDialog: any;
+  hideOngoingCallButton: boolean = false;
 
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
@@ -104,6 +105,12 @@ export class ProfileChatsSidebarComponent
     // if (notificationSound?.callSoundEnabled === 'N') {
     //   this.isCallSoundEnabled = false;
     // }
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.hideOngoingCallButton = this.router.url.includes('2040-call');
+        this.sharedService.callId = sessionStorage.getItem('callId') || null;
+      }
+    });
     this.sharedService.loginUserInfo.subscribe((user) => {
       this.isCallSoundEnabled =
         user?.callNotificationSound === 'Y' ? true : false;
