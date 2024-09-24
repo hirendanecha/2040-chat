@@ -5,7 +5,6 @@ import {
   NgbModal,
 } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerService } from '../../services/customer.service';
-import { Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 import { SharedService } from '../../services/shared.service';
@@ -66,18 +65,15 @@ export class EditGroupModalComponent implements OnInit {
     this.customerService.getProfileList(this.searchText).subscribe({
       next: (res: any) => {
         if (res?.data?.length > 0) {
-          // this.userList = res.data;
           this.userList = res.data.filter((user: any) => {
             return (
-              user.Id !== this.sharedService?.userData?.Id &&
+              user.Id !== this.sharedService?.userData?.profileId &&
               !this.addedInvitesList.some((invite) => invite.Id === user.Id) &&
               !this.data.memberList.some(
                 (member) => member.profileId === user.Id
               )
             );
           });
-          console.log(this.data.memberList);
-
           this.userSearchNgbDropdown.open();
         } else {
           this.userList = [];
@@ -144,27 +140,27 @@ export class EditGroupModalComponent implements OnInit {
       this.changeGroupName !== this.data.groupName ||
       this.profileImg.file
     ) {
-    let groupMembers =
-      this.addedInvitesList?.length > 0
-        ? this.addedInvitesList.map((item) => item.Id)
-        : this.data?.memberList?.map((item) => {
-            return item.profileId;
-          });
-        const isUpdate = this.addedInvitesList.length ? true : false;
-    const groupData = {
-      profileId: this.profileId,
-      profileImage: this.profileImg.url,
-      groupName: this.changeGroupName,
-      profileIds: groupMembers,
-      groupId: this.groupId,
-      isUpdate: isUpdate,
-    };
-    console.log(groupData);
-    console.log(this.addedInvitesList);
-    this.activateModal.close(groupData);
-  } else {
-    this.activateModal.close(this.data);
-  }
+      let groupMembers =
+        this.addedInvitesList?.length > 0
+          ? this.addedInvitesList.map((item) => item.Id)
+          : this.data?.memberList?.map((item) => {
+              return item.profileId;
+            });
+      const isUpdate = this.addedInvitesList.length ? true : false;
+      const groupData = {
+        profileId: this.profileId,
+        profileImage: this.profileImg.url,
+        groupName: this.changeGroupName,
+        profileIds: groupMembers,
+        groupId: this.groupId,
+        isUpdate: isUpdate,
+      };
+      console.log(groupData);
+      console.log(this.addedInvitesList);
+      this.activateModal.close(groupData);
+    } else {
+      this.activateModal.close(this.data);
+    }
   }
 
   removeGroupUser(id) {
