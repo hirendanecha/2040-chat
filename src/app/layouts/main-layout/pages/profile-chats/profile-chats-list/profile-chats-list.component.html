@@ -58,7 +58,7 @@
           (click)="userChat.groupId ? groupEditDetails(groupData) : ''"
         >
           <img
-            [src]="userChat?.profileImage || userChat?.ProfilePicName"
+            [src]="userChat?.profileImage || userChat?.ProfilePicName || '/assets/images/avtar/placeholder-user.png'"
             class="rounded-circle header-image"
             alt="image"
             onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
@@ -409,6 +409,7 @@
                 [src]="userChat.ProfilePicName"
                 class="w-60-px h-60-px"
                 alt="image"
+                onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
               />
               <h5>{{ userChat.Username }} wants to connect with you</h5>
               <div>
