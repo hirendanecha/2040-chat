@@ -135,7 +135,8 @@ export class ProfileChatsListComponent
   isLoading: boolean = false;
   callRoomId: number;
   userMenusOverlayDialog: any;
-
+  unreadMessage: any = {};
+  relevantMembers: any = [];
   // messageList: any = [];
   @ViewChildren('message') messageElements: QueryList<ElementRef>;
   constructor(
@@ -281,6 +282,7 @@ export class ProfileChatsListComponent
     });
     this.socketService.socket.on('seen-room-message', (data) => {
       this.readMessageRoom = 'Y';
+      this.unreadMessage = {};
     });
 
     this.socketService.socket?.on('get-users', (data) => {
@@ -601,6 +603,49 @@ export class ProfileChatsListComponent
     const array = new MessageDatePipe().transform(this.messageList);
     // console.log(array);
     this.filteredMessageList = array;
+    if (this.userChat?.roomId) {
+      this.unreadMessage = {};
+      for (let group of this.filteredMessageList) {
+        const unreadMessage = group.messages.find(
+          (message: any) => message.isRead === 'N'
+        );
+        if (unreadMessage) {
+          this.unreadMessage = { date: group.date, message: unreadMessage };
+          break;
+        }
+      }
+    }
+    if (this.userChat?.groupId) {
+      // console.log('relevant', this.relevantMembers);
+      for (let group of this.filteredMessageList) {
+        this.groupData?.memberList?.forEach((member) => {
+          const matchingMessage = group.messages.find(
+            (msg) =>
+              member?.switchDate < msg.createdDate &&
+              member?.profileId !== this.profileId &&
+              msg.sentBy == this.profileId
+          );
+
+          if (matchingMessage) {
+            member['message'] = matchingMessage;
+            const existUser = this.relevantMembers.find(
+              (e) => e?.profileId === member?.profileId
+            );
+            console.log(existUser);
+            if (existUser) {
+              this.readMessagesBy = this.readMessagesBy.filter((e) => {
+                return e.ID !== existUser?.profileId;
+              });
+            }
+            if (!existUser) {
+              this.relevantMembers.push(member);
+            }
+          }
+        });
+      }
+      // console.log('relevant', this.relevantMembers);
+      // console.log('readBy', this.readMessagesBy);
+    }
   }
 
   scrollToBottom() {

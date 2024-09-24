@@ -728,6 +728,49 @@
               [class.highlighted]="i === currentHighlightedIndex"
             >
               <ng-container *ngIf="message?.sentBy === this.profileId">
+                <ng-container *ngIf="userChat?.roomId">
+                  <div
+                    class="d-flex flex-row-reverse pb-2 gap-1"
+                    *ngIf="
+                      message?.id === unreadMessage?.message?.id &&
+                      msg?.date === unreadMessage?.date
+                    "
+                  >
+                    <div
+                      class="c-pointer"
+                      [title]="userChat.Username || userChat.FirstName"
+                    >
+                      <img
+                        loading="lazy"
+                        data-src="{{ userChat.ProfilePicName }}"
+                        class="rounded-circle h-20-px w-20-px"
+                        draggable="false"
+                        onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
+                      />
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="userChat?.groupId">
+                  <ng-container *ngFor="let member of relevantMembers">
+                    <div
+                      class="d-flex flex-row-reverse pb-2 gap-1"
+                      *ngIf="message?.id === member?.message?.id"
+                    >
+                      <div
+                        class="c-pointer"
+                        [title]="member.Username || member.FirstName"
+                      >
+                        <img
+                          loading="lazy"
+                          data-src="{{ member.ProfilePicName }}"
+                          class="rounded-circle h-20-px w-20-px"
+                          draggable="false"
+                          onerror="this.onerror=null;this.src='/assets/images/avtar/placeholder-user.png';"
+                        />
+                      </div>
+                    </div>
+                  </ng-container>
+                </ng-container>
                 <span class="font-12-px data-text-color me-3">{{
                   displayLocalTime(message?.createdDate)
                 }}</span>
