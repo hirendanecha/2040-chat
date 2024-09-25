@@ -70,6 +70,10 @@ export class NotificationsComponent {
           res.message || 'Notification delete successfully'
         );
         this.notificationList = this.notificationList.filter(notification => notification.id !== id);
+        if (this.notificationList.length <= 6 && this.hasMoreData) {
+          this.notificationList = [];
+          this.loadMoreNotification();
+        }
       },
     });
   }

@@ -14,7 +14,7 @@
         <div
           class="notification-single d-center p-5 gap-5 justify-content-between"
         >
-          <a [routerLink]="'/post/' + notification.postId">
+          <a routerLink="/profile-chats">
             <div class="d-flex top-review-wrapper gap-3 align-items-center">
               <div class="avatar-item">
                 <img
@@ -85,6 +85,14 @@
           </div>
         </div>
       </ng-container>
+    <div
+      class="d-center m-3 text-white c-pointer"
+      (click)="loadMoreNotification()"
+      *ngIf="hasMoreData"
+    >
+      <fa-icon [icon]="['fas', 'refresh']" class="font-24-px me-2"></fa-icon>
+      <span>Loadmore</span>
+    </div>
     </ng-container>
 
     <ng-container *ngIf="notificationList.length === 0">
