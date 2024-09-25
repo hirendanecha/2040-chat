@@ -192,6 +192,7 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.message =
       'Would you like to add a 2040.chat icon to your mobile Home screen?';
     modalRef.result.then((res) => {
+      localStorage.setItem('isMobilePopShow', 'N');
       if (res === 'success') {
         const modalRef = this.modalService.open(ConfirmationModalComponent, {
           centered: true,
@@ -200,12 +201,12 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
         modalRef.componentInstance.confirmButtonLabel = 'Do not display again';
         modalRef.componentInstance.cancelButtonLabel = 'Close';
         modalRef.componentInstance.message =
-          'On your browser click on browser menu, then click Add to Home Screen';
-        modalRef.result.then((res) => {
-          if (res === 'success') {
-            localStorage.setItem('isMobilePopShow', 'N');
-          }
-        });
+        'On your browser click on browser menu, then click Add to Home Screen';
+        // modalRef.result.then((res) => {
+        //   if (res === 'success') {
+        //     localStorage.setItem('isMobilePopShow', 'N');
+        //   }
+        // });
       }
     });
   }

@@ -111,6 +111,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                   src: [
                     'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-notification.mp3',
                   ],
+                  volume: 0.8,
+                  html5: true,
                 });
                 if (sound) {
                   sound?.play();
@@ -138,7 +140,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
                   src: [
                     'https://s3.us-east-1.wasabisys.com/freedom-social/messageTone.mp3',
                   ],
-                  volume: 0.5,
+                  volume: 0.8,
+                  html5: true,
                 });
                 if (sound) {
                   sound?.play();

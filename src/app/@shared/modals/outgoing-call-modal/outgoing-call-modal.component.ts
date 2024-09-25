@@ -1,9 +1,11 @@
 import {
   AfterViewInit,
   Component,
+  ElementRef,
   Input,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SocketService } from '../../services/socket.service';
@@ -25,6 +27,7 @@ export class OutGoingCallModalComponent
   @Input() title: string = 'Outgoing call...';
   @Input() calldata: any;
   @Input() sound: any;
+  @ViewChild('focusElement') focusElement!: ElementRef;
 
   hangUpTimeout: any;
   soundEnabledSubscription: Subscription;
@@ -77,6 +80,9 @@ export class OutGoingCallModalComponent
         this.activateModal.close('cancel');
       }
     });
+    if (this.focusElement) {
+      this.focusElement.nativeElement.click();
+    }
   }
 
   ngOnInit(): void {
@@ -102,10 +108,10 @@ export class OutGoingCallModalComponent
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     const data = {
-      notificationToProfileId: this.calldata.notificationToProfileId,
+      notificationToProfileId: this.calldata?.notificationToProfileId,
       roomId: this.calldata?.roomId,
       groupId: this.calldata?.groupId,
-      notificationByProfileId: this.calldata.notificationByProfileId,
+      notificationByProfileId: this.calldata?.notificationByProfileId,
       message: msg || 'Call declined',
     };
     this.socketService?.hangUpCall(data, (data: any) => {
@@ -116,5 +122,7 @@ export class OutGoingCallModalComponent
 
   ngOnDestroy(): void {
     this.soundEnabledSubscription?.unsubscribe();
+    this.calldata = null;
+    this.sound = null;
   }
 }
