@@ -155,8 +155,8 @@ export class EditGroupModalComponent implements OnInit {
         groupId: this.groupId,
         isUpdate: isUpdate,
       };
-      console.log(groupData);
-      console.log(this.addedInvitesList);
+      // console.log(groupData);
+      // console.log(this.addedInvitesList);
       this.activateModal.close(groupData);
     } else {
       this.activateModal.close(this.data);
@@ -186,7 +186,7 @@ export class EditGroupModalComponent implements OnInit {
         };
         this.socketService.removeGroupMember(data, (res) => {
           this.data = { ...res };
-          console.log(this.data);
+          // console.log(this.data);
         });
         if (id === this.profileId) {
           this.activateModal.close('cancel');

@@ -58,7 +58,7 @@ export class ProfileMenusModalComponent {
 
   logout(): void {
     this.socketService?.socket?.emit('offline', (data) => {
-      console.log('user=>', data)
+      // console.log('user=>', data)
     })
     this.socketService?.socket?.on('get-users', (data) => {
       data.map(ele => {
@@ -70,7 +70,7 @@ export class ProfileMenusModalComponent {
     this.customerService.logout().subscribe({
       next: (res => {
         this.tokenStorageService.signOut();
-        console.log(res)
+        // console.log(res)
       }),
       error(err) {
         if (err.status === 401) {

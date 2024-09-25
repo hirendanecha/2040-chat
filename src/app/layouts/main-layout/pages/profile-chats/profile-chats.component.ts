@@ -153,7 +153,7 @@ export class ProfileChartsComponent implements OnInit, OnDestroy {
         date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
       };
       this.socketService.switchChat(this.oldChat, (data) => {
-        console.log(data);
+        // console.log(data);
       });
     }
     this.userChat = userName;

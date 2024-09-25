@@ -60,7 +60,7 @@ export class OutGoingCallModalComponent
     if (window.document.hidden) {
       this.soundEnabledSubscription =
       this.soundControlService.soundEnabled$.subscribe((soundEnabled) => {
-          console.log(soundEnabled);
+          // console.log(soundEnabled);
           if (soundEnabled === false) {
             this.sound?.stop();
           }

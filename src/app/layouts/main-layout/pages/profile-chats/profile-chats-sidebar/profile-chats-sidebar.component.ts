@@ -268,7 +268,7 @@ export class ProfileChatsSidebarComponent
   // }
 
   onChat(item: any) {
-    console.log(item);
+    // console.log(item);
     this.selectedChatUser = item.roomId || item.groupId;
     item.unReadMessage = 0;
     if (item.groupId) {
@@ -304,7 +304,7 @@ export class ProfileChatsSidebarComponent
     };
     this.customerService.updateNotificationSound(soundObj).subscribe({
       next: (res) => {
-        console.log(res);
+        // console.log(res);
         this.toasterService.success(res.message);
         this.sharedService.getUserDetails();
       },
@@ -466,7 +466,7 @@ export class ProfileChatsSidebarComponent
   }
   logout(): void {
     this.socketService?.socket?.emit('offline', (data) => {
-      console.log('user=>', data)
+      // console.log('user=>', data)
     })
     this.socketService?.socket?.on('get-users', (data) => {
       data.map(ele => {
@@ -478,7 +478,7 @@ export class ProfileChatsSidebarComponent
     this.customerService.logout().subscribe({
       next: (res => {
         this.tokenStorageService.signOut();
-        console.log(res)
+        // console.log(res)
       })
     });
   }

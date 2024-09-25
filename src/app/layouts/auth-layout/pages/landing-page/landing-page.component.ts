@@ -31,11 +31,11 @@ export class LandingPageComponent {
     } else if (this.tokenStorageService.getToken()) {
       this.router.navigate(['/profile-chat']);
     }
-    console.log('Constructor');
+    // console.log('Constructor');
   }
 
   openLoginPage(): void {
-    console.log('Login Clicked!');
+    // console.log('Login Clicked!');
 
     this.closeMenu();
     this.router.navigate(['/login']);
@@ -63,7 +63,7 @@ export class LandingPageComponent {
   logout(): void {
     this.spinner.show();
     this.socketService?.socket?.emit('offline', (data) => {
-      console.log('user=>', data)
+      // console.log('user=>', data)
     })
     this.socketService?.socket?.on('get-users', (data) => {
       data.map(ele => {

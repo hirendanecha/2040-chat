@@ -97,7 +97,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       callback: function (token) {
         localStorage.setItem('captcha-token', token);
         this.captchaToken = token;
-        console.log(`Challenge Success ${token}`);
+        // console.log(`Challenge Success ${token}`);
         if (!token) {
           this.msg = 'invalid captcha kindly try again!';
           this.type = 'danger';
@@ -321,7 +321,7 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       IsActive: 'N',
       ProfilePicName: this.profilePic || null,
     };
-    console.log(profile);
+    // console.log(profile);
 
     this.customerService.createProfile(profile).subscribe({
       next: (data: any) => {

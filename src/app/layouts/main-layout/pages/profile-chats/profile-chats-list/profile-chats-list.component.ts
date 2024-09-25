@@ -256,7 +256,7 @@ export class ProfileChatsListComponent
                 date: moment(date).format('YYYY-MM-DD HH:mm:ss'),
               };
               this.socketService.switchChat(oldChat, (data) => {
-                console.log(data);
+                // console.log(data);
               });
             }
             this.socketService.readGroupMessage(data, (readUsers) => {
@@ -297,7 +297,7 @@ export class ProfileChatsListComponent
           });
         });
       }
-      console.log(this.sharedService.onlineUserList);
+      // console.log(this.sharedService.onlineUserList);
     });
     this.socketService.socket?.emit('online-users');
     if (this.userChat.groupId) {
@@ -340,7 +340,7 @@ export class ProfileChatsListComponent
             });
           });
         }
-        console.log(this.sharedService.onlineUserList);
+        // console.log(this.sharedService.onlineUserList);
       });
       this.findUserStatus(this.userChat.profileId);
     }
@@ -631,7 +631,7 @@ export class ProfileChatsListComponent
             const existUser = this.relevantMembers.find(
               (e) => e?.profileId === member?.profileId
             );
-            console.log(existUser);
+            // console.log(existUser);
             if (existUser) {
               this.readMessagesBy = this.readMessagesBy.filter((e) => {
                 return e.ID !== existUser?.profileId;
@@ -1204,7 +1204,7 @@ export class ProfileChatsListComponent
     modalRef.componentInstance.groupId = this.userChat?.groupId;
     modalRef.result.then((res) => {
       if (res !== 'cancel') {
-        console.log(res);
+        // console.log(res);
         if (Object.keys(res).includes('isUpdate')) {
           this.socketService?.createGroup(res, (data: any) => {
             this.groupData = data;
@@ -1325,7 +1325,7 @@ export class ProfileChatsListComponent
 
   onSearch(event): void {
     // this.searchQuery = event.target.value;
-    console.log(event.target.value);
+    // console.log(event.target.value);
     if (event.target.value) {
       this.scrollToHighlighted(this.currentHighlightedIndex);
     } else {
@@ -1345,7 +1345,7 @@ export class ProfileChatsListComponent
       this.currentHighlightedIndex =
       (this.currentHighlightedIndex - 1 + highlightedElements.length) %
       highlightedElements.length;
-      console.log(this.currentHighlightedIndex);
+      // console.log(this.currentHighlightedIndex);
 
       this.scrollToHighlighted(this.currentHighlightedIndex);
     }

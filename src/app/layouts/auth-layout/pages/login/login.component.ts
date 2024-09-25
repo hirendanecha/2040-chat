@@ -88,7 +88,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       callback: function (token) {
         localStorage.setItem('captcha-token', token);
         this.captchaToken = token;
-        console.log(`Challenge Success ${token}`);
+        // console.log(`Challenge Success ${token}`);
         if (!token) {
           this.msg = 'invalid captcha kindly try again!';
           this.type = 'danger';

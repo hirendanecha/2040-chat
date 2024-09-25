@@ -31,7 +31,7 @@ export class ForgotPasswordComponent {
   ) {
     this.userEmail = JSON.parse(localStorage.getItem('auth-user'))?.Email;
 
-    console.log('userEmail', this.userEmail)
+    // console.log('userEmail', this.userEmail)
   }
 
   // verifyEmailSend(form: NgForm) {
