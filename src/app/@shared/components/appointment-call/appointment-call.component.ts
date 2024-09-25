@@ -33,6 +33,7 @@ export class AppointmentCallComponent implements OnInit {
   isMobileScreen: boolean;
   screenSubscription!: Subscription;
   profileId: number;
+  hasCredentials: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,6 +58,7 @@ export class AppointmentCallComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.hasCredentials = !!this.tokenService.getCredentials();
     const stateData = window.history.state.chatDataPass;
     if (stateData) {
       this.openChatId = {
