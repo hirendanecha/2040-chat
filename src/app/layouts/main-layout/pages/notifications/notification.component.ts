@@ -69,16 +69,16 @@ export class NotificationsComponent {
         this.toastService.success(
           res.message || 'Notification delete successfully'
         );
-        this.getNotificationList();
+        this.notificationList = this.notificationList.filter(notification => notification.id !== id);
       },
     });
   }
 
-  readUnreadNotification(id, isRead): void {
-    this.customerService.readUnreadNotification(id, isRead).subscribe({
+  readUnreadNotification(notification, isRead): void {
+    this.customerService.readUnreadNotification(notification.id, isRead).subscribe({
       next: (res) => {
         this.toastService.success(res.message);
-        this.getNotificationList();
+        notification.isRead = isRead;
       },
     });
   }
