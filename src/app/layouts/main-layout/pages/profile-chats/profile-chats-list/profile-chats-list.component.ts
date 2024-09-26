@@ -196,6 +196,16 @@ export class ProfileChatsListComponent
           modalRef.componentInstance.calldata = callData;
           modalRef.componentInstance.sound = callSound;
           modalRef.componentInstance.title = 'Join existing call...';
+          modalRef.result.then((res) => {
+            if (res === 'cancel') {
+              const callLogData = {
+                profileId: this.profileId,
+                roomId: callData?.roomId,
+                groupId: callData?.groupId,
+              }
+              this.socketService?.endCall(callLogData);
+            }
+          })
         }
       });
     }
@@ -1114,6 +1124,12 @@ export class ProfileChatsListComponent
               console.log(err);
             },
           });
+          const callLogData = {
+            profileId: this.profileId,
+            roomId: this.userChat?.roomId,
+            groupId: this.userChat?.groupId,
+          }
+          this.socketService?.endCall(callLogData);
         }
       }
     });
