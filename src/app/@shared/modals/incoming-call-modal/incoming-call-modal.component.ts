@@ -39,6 +39,7 @@ export class IncomingcallModalComponent
   profileId: number;
   soundEnabledSubscription: Subscription;
   isOnCall = false;
+  soundTrigger: string;
 
   constructor(
     public activateModal: NgbActiveModal,
@@ -46,15 +47,15 @@ export class IncomingcallModalComponent
     public encryptDecryptService: EncryptDecryptService,
     private soundControlService: SoundControlService,
     private router: Router,
-    private customerService:CustomerService,
-    private modalService:NgbModal,
+    private customerService: CustomerService,
+    private modalService: NgbModal,
     private route: ActivatedRoute,
     private sharedService: SharedService
   ) {
     this.profileId = +localStorage.getItem('profileId');
     // this.isOnCall = this.router.url.includes('/2040-call/') || false;
   }
-  
+
   ngAfterViewInit(): void {
     this.isOnCall = this.calldata?.isOnCall === 'Y' || false;
     this.soundControlService.initStorageListener();
@@ -75,13 +76,13 @@ export class IncomingcallModalComponent
     //   }
     // }
     this.sharedService.loginUserInfo.subscribe((user) => {
-      const callNotificationSound = user.callNotificationSound;
-      if (callNotificationSound === 'Y') {
-        if (this.sound) {
-          this.sound?.play();
-        }
-      }
+      this.soundTrigger = user.callNotificationSound;
     });
+    if (this.soundTrigger === 'Y' && this.calldata.id) {
+      if (this.sound) {
+        this.sound?.play();
+      }
+    }
     if (!this.hangUpTimeout) {
       this.hangUpTimeout = setTimeout(() => {
         this.hangUpCall(false, '');
@@ -106,9 +107,9 @@ export class IncomingcallModalComponent
         clearTimeout(this.hangUpTimeout);
       }
     });
-   }
+  }
 
-   pickUpCall(): void {
+  pickUpCall(): void {
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     if (!this.currentURL.includes(this.calldata?.link)) {
@@ -133,7 +134,10 @@ export class IncomingcallModalComponent
           state: { chatDataPass },
         });
       } else {
-        const callId = this.calldata.link.replace('https://meet.facetime.tube/', '');
+        const callId = this.calldata.link.replace(
+          'https://meet.facetime.tube/',
+          ''
+        );
         this.router.navigate([`/2040-call/${callId}`], {
           state: { chatDataPass },
         });
@@ -153,7 +157,6 @@ export class IncomingcallModalComponent
       link: this.calldata.link,
     };
 
-    
     const buzzRingData = {
       actionType: 'DC',
       notificationByProfileId: this.profileId,
@@ -182,7 +185,7 @@ export class IncomingcallModalComponent
       groupId: this.calldata?.groupId,
       notificationByProfileId:
         this.calldata.notificationToProfileId || this.profileId,
-        message: isCallCut ? 'Call declined' : 'Not answered.',
+      message: isCallCut ? 'Call declined' : 'Not answered.',
     };
     this.socketService?.hangUpCall(data, (data: any) => {
       if (isCallCut && messageText) {
@@ -206,7 +209,7 @@ export class IncomingcallModalComponent
       profileId: this.calldata.notificationByProfileId || this.profileId,
     };
     if (!window.document.hidden) {
-      this.socketService.sendMessage(data, async (data: any) => { });
+      this.socketService.sendMessage(data, async (data: any) => {});
     }
   }
 

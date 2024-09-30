@@ -31,6 +31,7 @@ export class OutGoingCallModalComponent
 
   hangUpTimeout: any;
   soundEnabledSubscription: Subscription;
+  soundTrigger: string;
 
   constructor(
     public activateModal: NgbActiveModal,
@@ -50,16 +51,16 @@ export class OutGoingCallModalComponent
     //   }
     // }
     this.sharedService.loginUserInfo.subscribe((user) => {
-      const callNotificationSound = user.callNotificationSound;
-      if (callNotificationSound === 'Y') {
-        if (this.sound) {
-          this.sound?.play();
-        }
-      }
+      this.soundTrigger = user.callNotificationSound;
     });
+    if (this.soundTrigger === 'Y' && this.calldata.id) {
+      if (this.sound) {
+        this.sound?.play();
+      }
+    }
     if (window.document.hidden) {
       this.soundEnabledSubscription =
-      this.soundControlService.soundEnabled$.subscribe((soundEnabled) => {
+        this.soundControlService.soundEnabled$.subscribe((soundEnabled) => {
           // console.log(soundEnabled);
           if (soundEnabled === false) {
             this.sound?.stop();
@@ -91,16 +92,19 @@ export class OutGoingCallModalComponent
       if (data?.actionType === 'SC') {
         this.sound?.stop();
       }
-    })
+    });
   }
 
   pickUpCall(): void {
     this.sound?.stop();
     clearTimeout(this.hangUpTimeout);
     // this.router.navigate([`/appointment-call/${this.calldata.link}`]);
-    const callId = this.calldata.link.replace('https://meet.facetime.tube/', '');
+    const callId = this.calldata.link.replace(
+      'https://meet.facetime.tube/',
+      ''
+    );
     this.router.navigate([`/2040-call/${callId}`]);
-    // window.open(this.calldata.link, '_blank');    
+    // window.open(this.calldata.link, '_blank');
     this.activateModal.close('success');
   }
 
