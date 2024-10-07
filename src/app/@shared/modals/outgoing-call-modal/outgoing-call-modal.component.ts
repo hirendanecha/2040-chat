@@ -53,7 +53,7 @@ export class OutGoingCallModalComponent
     this.sharedService.loginUserInfo.subscribe((user) => {
       this.soundTrigger = user.callNotificationSound;
     });
-    if (this.soundTrigger === 'Y' && this.calldata.id) {
+    if (this.soundTrigger === 'Y' && this.calldata.link) {
       if (this.sound) {
         this.sound?.play();
       }
@@ -103,7 +103,7 @@ export class OutGoingCallModalComponent
       'https://meet.facetime.tube/',
       ''
     );
-    this.router.navigate([`/2040-call/${callId}`]);
+    this.router.navigate([`/facetime/${callId}`]);
     // window.open(this.calldata.link, '_blank');
     this.activateModal.close('success');
   }

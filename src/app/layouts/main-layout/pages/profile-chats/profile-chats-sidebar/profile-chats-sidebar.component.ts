@@ -107,7 +107,7 @@ export class ProfileChatsSidebarComponent
     // }
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.hideOngoingCallButton = this.router.url.includes('2040-call');
+        this.hideOngoingCallButton = this.router.url.includes('facetime');
         this.sharedService.callId = sessionStorage.getItem('callId') || null;
       }
     });
