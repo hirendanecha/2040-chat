@@ -890,7 +890,9 @@ export class ProfileChatsListComponent
   }
   editMsg(msgObj): void {
     this.chatObj['id'] = msgObj?.id;
-    this.messageInputValue = msgObj.messageText;
+    this.messageInputValue = this.encryptDecryptService?.decryptUsingAES256(
+      msgObj.messageText
+    );
     this.chatObj.msgMedia = msgObj.messageMedia;
     this.chatObj.parentMessageId = msgObj?.parentMessageId || null;
     const tagUserInput = document.querySelector(
