@@ -30,7 +30,6 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   allCountryData: any;
   confirm_password = '';
   msg = '';
-  userId : number;
   userMail: string;
   profilePic: any = {};
   coverPic: any = {};
@@ -49,7 +48,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   };
   isNotificationSoundEnabled: boolean = true;
   authToken: string;
-  qrLink = '';
+  // qrLink = '';
 
   constructor(
     private modalService: NgbModal,
@@ -61,18 +60,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     public sharedService: SharedService,
     private toastService: ToastService,
     private uploadService: UploadFilesService,
-  ) {
-    this.userlocalId = +localStorage.getItem('user_id');
-    this.userId = +this.route.snapshot.paramMap.get('id');
-    this.profileId = +localStorage.getItem('profileId');
-    this.userMail = JSON.parse(localStorage.getItem('auth-user'))?.Email;
-    if (this.profileId) {
-      this.getProfile(this.profileId);
-      this.authToken = localStorage.getItem('auth-token');
-    }
-    this.qrLink = `${environment.qrLink}${this.userId}?token=${this.authToken}`;
-
-  }
+  ) {}
 
   ngOnInit(): void {
     if (!this.tokenStorage.getToken()) {
@@ -85,6 +73,14 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
     // }
     this.sharedService.loginUserInfo.subscribe((user) => {
       this.isNotificationSoundEnabled = user?.tagNotificationSound === 'Y' ? true : false;
+      this.userlocalId = +user.UserID;
+      this.profileId = +user.Id;
+      this.userMail = user.Email;
+      if (this.profileId) {
+        this.getProfile(this.profileId);
+        this.authToken = localStorage.getItem('auth-token');
+      }
+      // this.qrLink = `${environment.qrLink}${this.userlocalId}?token=${this.authToken}`;
     });
   }
 
@@ -262,7 +258,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
       this.customer.ProfilePicName = this.profileImg?.url || this.customer.ProfilePicName;
       this.customer.CoverPicName = this.profileCoverImg?.url || this.customer.CoverPicName;
       this.customer.IsActive = 'Y';
-      this.customer.UserID = +this.userId;
+      this.customer.UserID = this.userlocalId;
       // console.log('update', this.customer)
       this.customerService.updateProfile(this.profileId, this.customer).subscribe({
         next: (res: any) => {
