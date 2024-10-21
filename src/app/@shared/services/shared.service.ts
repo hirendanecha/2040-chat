@@ -34,7 +34,7 @@ export class SharedService {
       this.changeLightUi();
     }
     this.bc.onmessage = (event) => {
-      this.getLoginUserDetails(event.data);
+      this.loginUserInfo.next(event.data);
     };
   }
 
@@ -78,7 +78,7 @@ export class SharedService {
           if (data) {
             this.userData = data;
             // localStorage.setItem('userData', JSON.stringify(this.userData));
-            // this.getLoginUserDetails(data);
+            this.getLoginUserDetails(data);
             this.bc.postMessage(data);
           }
         },
