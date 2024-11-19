@@ -30,6 +30,7 @@ import { MessageService } from 'src/app/@shared/services/message.service';
 import { AppQrModalComponent } from 'src/app/@shared/modals/app-qr-modal/app-qr-modal.component';
 import { ConferenceLinkComponent } from 'src/app/@shared/modals/create-conference-link/conference-link-modal.component';
 import { TokenStorageService } from 'src/app/@shared/services/token-storage.service';
+import { InvitePeopleForChatModalComponent } from 'src/app/@shared/modals/invite-people-for-chat/invite-people-for-chat-modal.component';
 
 @Component({
   selector: 'app-profile-chats-sidebar',
@@ -138,6 +139,10 @@ export class ProfileChatsSidebarComponent
         user?.callNotificationSound === 'Y' ? true : false;
       this.isMessageSoundEnabled =
         user?.messageNotificationSound === 'Y' ? true : false;
+    });
+
+    this.sharedService.openModal$.subscribe(() => {
+      this.invitePeople();
     });
   }
 
@@ -484,5 +489,21 @@ export class ProfileChatsSidebarComponent
   }
   goToSetting() {
     this.router.navigate([`settings/edit-profile/${this.userId}`]);
+  }
+
+  invitePeople(): void {
+    const modalRef = this.modalService.open(InvitePeopleForChatModalComponent, {
+      centered: true,
+      size: 'md',
+    });
+    modalRef.componentInstance.chatList = this.chatList;
+    modalRef.componentInstance.pendingChatList = this.pendingChatList;
+
+    modalRef.result.then((res) => {
+      if (res !== 'cancel') {
+        this.onChat(res);
+        console.log(res);
+      }
+    });
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveOffcanvas, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
@@ -69,6 +69,11 @@ export class AppointmentCallComponent implements OnInit {
     const appointmentURLCall =
       this.route.snapshot['_routerState'].url.split('/facetime/')[1];
     sessionStorage.setItem('callId', appointmentURLCall);
+    window.history.pushState(null, '', window.location.href);
+    window.history.replaceState(null, '', window.location.href);
+    window.onpopstate = () => {
+      window.history.go(1);
+    };
     this.screenSubscription = this.breakpointService?.screen.subscribe(
       (screen) => {
         this.isMobileScreen = screen.md?.lessThen ?? false;
@@ -86,6 +91,9 @@ export class AppointmentCallComponent implements OnInit {
       enableNoisyMicDetection: true,
       interfaceConfigOverwrite: {
         TOOLBAR_ALWAYS_VISIBLE: this.isMobileScreen ? true : false,
+        TOOLBAR_BUTTONS: this.isMobileScreen ? [
+          'microphone', 'camera', 'tileview', 'hangup', 'settings', 'videoquality',
+        ] : '',
       },
     };
 
@@ -178,5 +186,13 @@ export class AppointmentCallComponent implements OnInit {
     if (this.screenSubscription) {
       this.screenSubscription.unsubscribe();
     }
+    sessionStorage.removeItem('callId');
+    this.sharedService.callId = null;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadHandler(event: Event) {
+    sessionStorage.removeItem('callId');
+    this.sharedService.callId = null;
   }
 }

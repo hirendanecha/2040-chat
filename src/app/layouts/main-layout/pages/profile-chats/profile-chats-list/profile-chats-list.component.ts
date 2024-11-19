@@ -137,6 +137,7 @@ export class ProfileChatsListComponent
   userMenusOverlayDialog: any;
   unreadMessage: any = {};
   relevantMembers: any = [];
+  showButton = true;
   // messageList: any = [];
   @ViewChildren('message') messageElements: QueryList<ElementRef>;
   constructor(
@@ -168,47 +169,47 @@ export class ProfileChatsListComponent
       this.callRoomId = null
     }
 
-    if (!this.sidebarClass) {      
-      const reqObj = {
-        profileId: this.profileId,
-      };
-      this.socketService?.checkCall(reqObj, (data: any) => {
-        if (data?.isOnCall === 'Y' && data?.callLink) {
-          var callSound = new Howl({
-            src: [
-              'https://s3.us-east-1.wasabisys.com/freedom-social/famous_ringtone.mp3',
-            ],
-            loop: true,
-          });
-          this.soundControlService.initTabId();
-          const modalRef = this.modalService.open(IncomingcallModalComponent, {
-            centered: true,
-            size: 'sm',
-            backdrop: 'static',
-          });
-          const callData = {
-            Username: '',
-            link: data?.callLink,
-            roomId: data.roomId,
-            groupId: data.groupId,
-            ProfilePicName: this.sharedService?.userData?.ProfilePicName,
-          };
-          modalRef.componentInstance.calldata = callData;
-          modalRef.componentInstance.sound = callSound;
-          modalRef.componentInstance.title = 'Join existing call...';
-          modalRef.result.then((res) => {
-            if (res === 'cancel') {
-              const callLogData = {
-                profileId: this.profileId,
-                roomId: callData?.roomId,
-                groupId: callData?.groupId,
-              }
-              this.socketService?.endCall(callLogData);
-            }
-          })
-        }
-      });
-    }
+    // if (!this.sidebarClass) {      
+    //   const reqObj = {
+    //     profileId: this.profileId,
+    //   };
+    //   this.socketService?.checkCall(reqObj, (data: any) => {
+    //     if (data?.isOnCall === 'Y' && data?.callLink) {
+    //       var callSound = new Howl({
+    //         src: [
+    //           'https://s3.us-east-1.wasabisys.com/freedom-social/famous_ringtone.mp3',
+    //         ],
+    //         loop: true,
+    //       });
+    //       this.soundControlService.initTabId();
+    //       const modalRef = this.modalService.open(IncomingcallModalComponent, {
+    //         centered: true,
+    //         size: 'sm',
+    //         backdrop: 'static',
+    //       });
+    //       const callData = {
+    //         Username: '',
+    //         link: data?.callLink,
+    //         roomId: data.roomId,
+    //         groupId: data.groupId,
+    //         ProfilePicName: this.sharedService?.userData?.ProfilePicName,
+    //       };
+    //       modalRef.componentInstance.calldata = callData;
+    //       modalRef.componentInstance.sound = callSound;
+    //       modalRef.componentInstance.title = 'Join existing call...';
+    //       modalRef.result.then((res) => {
+    //         if (res === 'cancel') {
+    //           const callLogData = {
+    //             profileId: this.profileId,
+    //             roomId: callData?.roomId,
+    //             groupId: callData?.groupId,
+    //           }
+    //           this.socketService?.endCall(callLogData);
+    //         }
+    //       })
+    //     }
+    //   });
+    // }
   }
 
   ngOnInit(): void {
@@ -721,6 +722,10 @@ export class ProfileChatsListComponent
             groupId: this.userChat?.groupId,
           };
           this.scrollToBottom();
+          if (this.chatObj?.msgText) {
+            this.chatObj.msgMedia = '';
+            this.sendMessage();
+          };
           this.postService
             .uploadFile(this.selectedFile, param)
             .pipe(takeUntil(this.cancelUpload$))
@@ -735,7 +740,8 @@ export class ProfileChatsListComponent
                 } else if (event.type === HttpEventType.Response) {
                   if (event?.body?.roomId !== this.userChat?.roomId) {
                     this.uploadTo.roomId = event.body.roomId;
-                  } else if (event?.body?.groupId !== this.userChat?.groupId) {
+                  }
+                  if (event?.body?.groupId !== this.userChat?.groupId) {
                     this.uploadTo.groupId = event.body.groupId;
                   }
                   this.isFileUploadInProgress = false;
@@ -1399,6 +1405,11 @@ export class ProfileChatsListComponent
     const element = event.target;
     if (element.scrollTop < 100 && this.hasMoreData && !this.isLoading) {
       this.loadMoreChats();
+    }
+    if (element.scrollTop < element.scrollHeight - element.clientHeight - 200) {
+      this.showButton = true;
+    } else{
+      this.showButton = false;
     }
   }
   openProfileMenuModal(){

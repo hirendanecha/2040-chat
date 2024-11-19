@@ -184,8 +184,19 @@ export class SignUpComponent implements OnInit, AfterViewInit {
     });
   }
 
+  validateEmail() {
+    const emailControl = this.registerForm.get('Email');
+    const emailError = Validators.email(emailControl);
+    if (emailError) {
+      this.msg = 'Please enter a valid email address.';
+      this.scrollTop();
+      return false;
+    }
+    return true;
+  }
+
   validatepassword(): boolean {
-    const pattern = '[a-zA-Z0-9]{5,}';
+    const pattern = '.{5,}';
     if (!this.registerForm.get('Password').value.match(pattern)) {
       this.msg = 'Password must be a minimum of 5 characters';
       this.scrollTop();
@@ -215,6 +226,9 @@ export class SignUpComponent implements OnInit, AfterViewInit {
       this.registerForm.valid &&
       this.registerForm.get('TermAndPolicy').value === true
     ) {
+      if (!this.validateEmail()) {
+        return;
+      }
       if (!this.validatepassword()) {
         return;
       }

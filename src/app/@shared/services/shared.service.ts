@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CustomerService } from './customer.service';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +21,10 @@ export class SharedService {
   loginUserInfo = new BehaviorSubject<any>(null);
   loggedInUser$ = this.loginUserInfo.asObservable();
   callId: string;
+
+  //trigger invite to chat modal
+  private openModalSubject = new Subject<void>();
+  openModal$ = this.openModalSubject.asObservable();
 
   constructor(
     public modalService: NgbModal,
@@ -136,5 +140,9 @@ export class SharedService {
       return true;
     }
     return false;
+  }
+
+  triggerOpenModal() {
+    this.openModalSubject.next();
   }
 }
