@@ -19,7 +19,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { SocketService } from 'src/app/@shared/services/socket.service';
 import { SharedService } from 'src/app/@shared/services/shared.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.service';
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
 import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
@@ -43,7 +43,7 @@ export class ProfileChatsSidebarComponent
   chatList: any = [];
   pendingChatList: any = [];
   groupList: any = [];
-  userId:number;
+  userId: number;
 
   @ViewChild('userSearchDropdownRef', { static: false, read: NgbDropdown })
   userSearchNgbDropdown: NgbDropdown;
@@ -64,6 +64,7 @@ export class ProfileChatsSidebarComponent
 
   userMenusOverlayDialog: any;
   hideOngoingCallButton: boolean = false;
+  chatData: any = [];
 
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
     new EventEmitter<any>();
@@ -86,7 +87,8 @@ export class ProfileChatsSidebarComponent
     private modalService: NgbModal,
     private offcanvasService: NgbOffcanvas,
     public activeOffCanvas: NgbActiveOffcanvas,
-    private tokenStorageService:TokenStorageService
+    private tokenStorageService: TokenStorageService,
+    private route: ActivatedRoute
   ) {
     this.userId = +localStorage.getItem('user_id');
     this.originalFavicon = document.querySelector('link[rel="icon"]');
@@ -133,14 +135,24 @@ export class ProfileChatsSidebarComponent
     this.getChatList();
     this.getGroupList();
     // this.getApprovedUserList();
-    this.backCanvas =this.activeCanvas.hasOpenOffcanvas();
+    this.backCanvas = this.activeCanvas.hasOpenOffcanvas();
     this.sharedService.loginUserInfo.subscribe((user) => {
       this.isCallSoundEnabled =
         user?.callNotificationSound === 'Y' ? true : false;
       this.isMessageSoundEnabled =
         user?.messageNotificationSound === 'Y' ? true : false;
     });
-
+    this.route.queryParams.subscribe((params) => {
+      if (params['chatUserData']) {
+        this.chatData = JSON.parse(decodeURIComponent(params['chatUserData']));
+        this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+      }
+    });
+    this.socketService.connect();
+    this.backCanvas = this.activeCanvas.hasOpenOffcanvas();
+    if (this.chatData && !this.backCanvas) {
+      this.checkRoom();
+    }
     this.sharedService.openModal$.subscribe(() => {
       this.invitePeople();
     });
@@ -320,14 +332,15 @@ export class ProfileChatsSidebarComponent
   }
 
   clearChatList() {
-    this.onNewChat?.emit({});
+    this.onNewChat?.emit(null);
+    this.selectedChatUser = null;
   }
 
   selectButton(buttonType: string): void {
     this.selectedButton =
       this.selectedButton === buttonType ? buttonType : buttonType;
     if (buttonType === 'chats') {
-      this.onNewChat?.emit({});
+      this.onNewChat?.emit(null);
     }
   }
 
@@ -378,17 +391,16 @@ export class ProfileChatsSidebarComponent
       }
     });
   }
-  appQrmodal(){
+  appQrmodal() {
     const modalRef = this.modalService.open(AppQrModalComponent, {
       centered: true,
     });
   }
-  uniqueLink(){
+  uniqueLink() {
     const modalRef = this.modalService.open(ConferenceLinkComponent, {
       centered: true,
     });
   }
-  
 
   deleteOrLeaveChat(item) {
     if (item.roomId) {
@@ -399,7 +411,7 @@ export class ProfileChatsSidebarComponent
       this.socketService?.deleteRoom(data, (data: any) => {
         this.getChatList();
         this.getGroupList();
-        this.onNewChat?.emit({});
+        this.onNewChat?.emit(null);
       });
     } else if (item.groupId) {
       const data = {
@@ -409,7 +421,7 @@ export class ProfileChatsSidebarComponent
       this.socketService.removeGroupMember(data, (res) => {
         this.getChatList();
         this.getGroupList();
-        this.onNewChat?.emit({});
+        this.onNewChat?.emit(null);
       });
     }
   }
@@ -446,7 +458,7 @@ export class ProfileChatsSidebarComponent
   //   );
   // }
 
-    openNotificationsMobileModal(): void {
+  openNotificationsMobileModal(): void {
     this.activeOffCanvas?.close();
     this.offcanvasService.open(NotificationsModalComponent, {
       position: 'end',
@@ -459,7 +471,7 @@ export class ProfileChatsSidebarComponent
       id: this.profileId,
     };
     this.socketService.switchOnlineStatus(data, (res) => {
-      this.sharedService.userData.userStatus = res.status
+      this.sharedService.userData.userStatus = res.status;
     });
   }
   findUserStatus(id: string): string {
@@ -472,19 +484,19 @@ export class ProfileChatsSidebarComponent
   logout(): void {
     this.socketService?.socket?.emit('offline', (data) => {
       // console.log('user=>', data)
-    })
+    });
     this.socketService?.socket?.on('get-users', (data) => {
-      data.map(ele => {
+      data.map((ele) => {
         if (!this.sharedService.onlineUserList.includes(ele.userId)) {
-          this.sharedService.onlineUserList.push(ele.userId)
+          this.sharedService.onlineUserList.push(ele.userId);
         }
-      })
-    })
+      });
+    });
     this.customerService.logout().subscribe({
-      next: (res => {
+      next: (res) => {
         this.tokenStorageService.signOut();
         // console.log(res)
-      })
+      },
     });
   }
   goToSetting() {
@@ -503,6 +515,49 @@ export class ProfileChatsSidebarComponent
       if (res !== 'cancel') {
         this.onChat(res);
         console.log(res);
+      }
+    });
+  }
+
+  checkRoom(): void {
+    const oldUserChat = {
+      profileId1: this.profileId,
+      profileId2: this.chatData.Id,
+    };
+    this.socketService.checkRoom(oldUserChat, (res: any) => {
+      const data = res.find((obj) => obj.isDeleted === 'N');
+      if (data && data.id && !this.chatData.GroupId) {
+        const existingUser = {
+          roomId: data.id,
+          profileId: data.profileId1,
+          Username: data.Username || this.chatData.Username,
+          ProfilePicName: data.ProfilePicName || this.chatData.ProfilePicName,
+          isAccepted: data.isAccepted,
+          isDeleted: data.isDeleted,
+          lastMessageText: data.lastMessageText,
+          createdBy: this.chatData.Id,
+        };
+        this.selectedChatUser = existingUser.roomId;
+        this.onNewChat?.emit(existingUser);
+      } else if (this.chatData.GroupId) {
+        const redirectToGroup = {
+          groupId: this.chatData.GroupId,
+          groupName: this.chatData.GroupName,
+          isAccepted: this.chatData?.isAccepted || 'Y',
+          lastMessageText: this.chatData?.lastMessageText,
+          profileImage: this.chatData?.ProfilePicName,
+          ProfilePicName: this.chatData?.ProfilePicName,
+          createdBy: this.chatData?.Id,
+        };
+        this.onNewChat?.emit(redirectToGroup);
+      } else {
+        const newUser = {
+          Id: this.chatData.Id,
+          Username: this.chatData.Username,
+          ProfilePicName: this.chatData.ProfilePicName,
+          unReadMessage: 0,
+        };
+        this.onNewChat?.emit(newUser);
       }
     });
   }

@@ -49,7 +49,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
   isNotificationSoundEnabled: boolean = true;
   authToken: string;
   // qrLink = '';
-
+  resetImageClosebtn = true;
   constructor(
     private modalService: NgbModal,
     private route: ActivatedRoute,
@@ -266,6 +266,7 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
           if (!res.error) {
             this.toastService.success(res.message);
             this.sharedService.getUserDetails();
+            this.resetImageClosebtn = false;
           } else {
             this.toastService.danger(res?.message);
           }
@@ -300,10 +301,12 @@ export class EditProfileComponent implements OnInit, AfterViewInit {
 
   onProfileImgChange(event: any): void {
     this.profileImg = event;
+    this.resetImageClosebtn = false;
   }
 
   onProfileCoverImgChange(event: any): void {
     this.profileCoverImg = event;
+    this.resetImageClosebtn = false;
   }
 
   deleteAccount(): void {

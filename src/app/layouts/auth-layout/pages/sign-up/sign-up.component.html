@@ -13,7 +13,11 @@
             Enterprise on-premises Secure Live Chat Solution hosted on your
             server
           </h3>
-          <img src="/assets/images/landingpage/2040Chat-Logo.jpg" class="cursor" alt="" />
+          <img
+            src="/assets/images/landingpage/2040Chat-Logo.jpg"
+            class="cursor"
+            alt=""
+          />
         </div>
       </div>
     </div>
@@ -34,9 +38,9 @@
       <div
         class="alert alert-{{ type }}"
         role="alert"
-        *ngIf="registrationMessage || msg"
+        *ngIf="registrationMessage"
       >
-        {{ registrationMessage || msg }}
+        {{ registrationMessage }}
       </div>
       <div class="row">
         <div class="col-12 col-md-6 mb-3">
@@ -362,6 +366,9 @@
 <div class="text-center mt-3">
   <p class="text-danger">
     If you are having technical issues, email
-    <a href="mailto:support@2040.chat">{{ "support@2040.chat" }}</a>
+    <a class="h5 c-pointer custom-primary" (click)="onClick($event)"
+      >{{ "support@2040.chat" }}
+      <fa-icon class="font-16-px ms-1" [icon]="['fas', 'copy']" />
+    </a>
   </p>
 </div>

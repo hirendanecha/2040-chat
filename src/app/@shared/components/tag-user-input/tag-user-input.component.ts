@@ -68,7 +68,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     private spinner: NgxSpinnerService,
     private messageService: MessageService
   ) {
-    this.metaDataSubject.pipe(debounceTime(5)).subscribe(() => {
+    this.metaDataSubject.pipe(debounceTime(200)).subscribe(() => {
       this.getMetaDataFromUrlStr();
       this.checkUserTagFlag();
     });
@@ -99,6 +99,57 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     this.emitChangeEvent();
   }
 
+  // checkUserTagFlag(): void {
+  //   this.userList = [];
+  //   if (this.isAllowTagUser) {
+  //     let htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
+  //     const anchorTagRegex =
+  //       /<a\s+href="\/settings\/view-profile\/(\d+)"\s+class="text-danger"\s+data-id="\d+">@([\w\s]+)<\/a>/g;
+  //     htmlText = htmlText.replace(anchorTagRegex, '');
+  //     const atSymbolRegex = /@(\w*)/g;
+  //     const matches = [...htmlText.matchAll(atSymbolRegex)];
+  //     const cursorPosition = this.getCursorPosition();
+  //     if (matches.length > 0) {
+  //       let foundValidTag = false;
+  //       for (const match of matches) {
+  //         const atSymbolIndex = match.index;
+  //         if (cursorPosition > atSymbolIndex) {
+  //           let textAfterAt = htmlText
+  //             .substring(atSymbolIndex + 1, cursorPosition)
+  //             .trim();
+  //           textAfterAt = textAfterAt.replace(/<[^>]*>/g, '');
+  //           textAfterAt = textAfterAt.replace(/[^\w\s\-_\.]/g, '');
+  //           const currentPositionValue = textAfterAt.split(' ')[0].trim();
+  //           if (currentPositionValue.length > 0) {
+  //             this.userNameSearch = currentPositionValue;
+  //             foundValidTag = true;
+  //           }
+  //         } else {
+  //           const atSymbolIndex = htmlText.lastIndexOf('@');
+  //           if (atSymbolIndex !== -1) {
+  //             let textAfterAt = htmlText.substring(atSymbolIndex + 1).trim();
+  //             textAfterAt = textAfterAt.replace(/<[^>]*>/g, '');
+  //             textAfterAt = textAfterAt.replace(/[^\w\s\-_\.]/g, '');
+  //             this.userNameSearch = textAfterAt.split(' ')[0].trim();
+  //             foundValidTag = true;
+  //           }
+  //         }
+  //       }
+  //       if (
+  //         foundValidTag &&
+  //         this.userNameSearch &&
+  //         this.userNameSearch.length > 1 && !this.isCustomeSearch
+  //       ) {
+  //         this.getUserList(this.userNameSearch);
+  //       } else if (this.isCustomeSearch) {
+  //         this.getUserList('');
+  //       } else {
+  //         this.clearUserSearchData();
+  //       }
+  //     }
+  //   }
+  // }
+
   checkUserTagFlag(): void {
     this.userList = [];
     if (this.isAllowTagUser) {
@@ -109,10 +160,12 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
       const atSymbolRegex = /@(\w*)/g;
       const matches = [...htmlText.matchAll(atSymbolRegex)];
       const cursorPosition = this.getCursorPosition();
+
       if (matches.length > 0) {
         let foundValidTag = false;
         for (const match of matches) {
           const atSymbolIndex = match.index;
+
           if (cursorPosition > atSymbolIndex) {
             let textAfterAt = htmlText
               .substring(atSymbolIndex + 1, cursorPosition)
@@ -132,20 +185,32 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
               textAfterAt = textAfterAt.replace(/[^\w\s\-_\.]/g, '');
               this.userNameSearch = textAfterAt.split(' ')[0].trim();
               foundValidTag = true;
+              // if (this.userNameSearch?.length > 2) {
+              //   this.getUserList(this.userNameSearch);
+              // } else {
+              //   this.clearUserSearchData();
+              // }
+              // } else {
+              //   this.clearUserSearchData();
             }
           }
         }
+
+        // After checking for @ and capturing the text, proceed to fetch user list
         if (
           foundValidTag &&
           this.userNameSearch &&
-          this.userNameSearch.length > 1 && !this.isCustomeSearch
+          this.userNameSearch.length >= 0 &&
+          !this.isCustomeSearch
         ) {
-          this.getUserList(this.userNameSearch);
+          this.getUserList(this.userNameSearch); // Fetch the user list based on search
         } else if (this.isCustomeSearch) {
           this.getUserList('');
         } else {
-          this.clearUserSearchData();
+          this.clearUserSearchData(); // Clear the search data if no valid tag or input is too short
         }
+      } else {
+        return;
       }
     }
   }
@@ -251,9 +316,64 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     selection.addRange(range);
   }
 
+  // selectTagUser(user: any): void {
+  //   const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
+  //   const savedRange = this.saveCursorPosition();
+  //   const replaceUsernamesInTextNodesAtCursor = (
+  //     html: string,
+  //     userName: string,
+  //     userId: string,
+  //     displayName: string
+  //   ) => {
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(html, 'text/html');
+  //     const walk = (node: Node) => {
+  //       if (node.nodeType === Node.TEXT_NODE) {
+  //         const cursorPosition = this.getCursorPosition();
+  //         const regex = /@/g;
+  //         const match = regex.exec(node.nodeValue || '');
+  //         if (match && match.index <= cursorPosition) {
+  //           const atSymbolIndex = match.index;
+  //           const replacement = `<a href="/settings/view-profile/${userId}" class="text-danger" data-id="${userId}">@${displayName}</a>`;
+  //           const beforeText = node.nodeValue?.substring(0, atSymbolIndex);
+  //           const afterText = node.nodeValue?.substring(cursorPosition);
+  //           const replacedText = `${beforeText}${replacement}${afterText}`;
+  //           const span = document.createElement('span');
+  //           span.innerHTML = replacedText;
+  //           while (span.firstChild) {
+  //             node.parentNode?.insertBefore(span.firstChild, node);
+  //           }
+  //           node.parentNode?.removeChild(node);
+  //         }
+  //       } else if (
+  //         node.nodeType === Node.ELEMENT_NODE &&
+  //         node.nodeName.toLowerCase() !== 'a'
+  //       ) {
+  //         node.childNodes.forEach((child) => walk(child));
+  //       }
+  //     };
+
+  //     doc.body.childNodes.forEach((child) => walk(child));
+  //     return doc.body.innerHTML;
+  //   };
+  //   const text = replaceUsernamesInTextNodesAtCursor(
+  //     htmlText,
+  //     this.userNameSearch,
+  //     user?.Id,
+  //     user?.Username.split(' ').join('')
+  //   );
+  //   this.setTagInputDivValue(text);
+  //   this.restoreCursorPosition(savedRange);
+  //   this.emitChangeEvent();
+  //   this.moveCursorToEnd();
+  // }
+
   selectTagUser(user: any): void {
     const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
+
+    // Save the cursor position
     const savedRange = this.saveCursorPosition();
+
     const replaceUsernamesInTextNodesAtCursor = (
       html: string,
       userName: string,
@@ -267,14 +387,27 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
           const cursorPosition = this.getCursorPosition();
           const regex = /@/g;
           const match = regex.exec(node.nodeValue || '');
+
           if (match && match.index <= cursorPosition) {
             const atSymbolIndex = match.index;
+            const selection = window.getSelection();
+
+            const range = selection.getRangeAt(0);
+            const cursorOffset = range.startOffset;
             const replacement = `<a href="/settings/view-profile/${userId}" class="text-danger" data-id="${userId}">@${displayName}</a>`;
             const beforeText = node.nodeValue?.substring(0, atSymbolIndex);
-            const afterText = node.nodeValue?.substring(cursorPosition);
+            const afterText = node.nodeValue?.substring(cursorOffset);
+
             const replacedText = `${beforeText}${replacement}${afterText}`;
+            console.log(
+              `replacedText======> ${replacement}`,
+              `before==> ${beforeText}`,
+              `after==> ${afterText}`
+            );
+
             const span = document.createElement('span');
             span.innerHTML = replacedText;
+
             while (span.firstChild) {
               node.parentNode?.insertBefore(span.firstChild, node);
             }
@@ -291,6 +424,8 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
       doc.body.childNodes.forEach((child) => walk(child));
       return doc.body.innerHTML;
     };
+
+    // Call the function to replace @ mention at the current cursor position
     const text = replaceUsernamesInTextNodesAtCursor(
       htmlText,
       this.userNameSearch,
@@ -321,7 +456,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
 
   selectEmoji(emoji: any): void {
     let htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
-    htmlText = htmlText.replace(/^(<br\s*\/?>)+/i, '');
+    htmlText = htmlText.replace(/(<br\s*\/?>)$/i, '');
     const text = `${htmlText}<img src=${emoji} width="50" height="50">`;
     this.setTagInputDivValue(text);
     this.emitChangeEvent();
