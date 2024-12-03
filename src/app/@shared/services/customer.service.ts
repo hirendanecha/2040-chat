@@ -71,7 +71,9 @@ export class CustomerService {
   }
 
   getProfile(id): Observable<Object> {
-    return this.http.get<Object>(`${this.baseUrl}/profile/${id}?q=${Date.now()}`);
+    return this.http.get<Object>(
+      `${this.baseUrl}/profile/${id}?q=${Date.now()}`
+    );
   }
 
   updateProfile(id, customer: Customer): Observable<Object> {
@@ -128,16 +130,29 @@ export class CustomerService {
   verifyToken(token): Observable<any> {
     return this.http.get(`${this.baseUrl}/verify-token/${token}`);
   }
-  startCallToBuzzRing(callerData: Object): Observable<any>{
+  startCallToBuzzRing(callerData: Object): Observable<any> {
     const url = 'https://ring-api.2040.chat/api/v1/customers/call-notification';
     return this.http.post(url, callerData);
   }
-  startGroupCallToBuzzRing(callerData: Object): Observable<any>{
-    const url = 'https://ring-api.2040.chat/api/v1/customers/group-call-notification';
+  startGroupCallToBuzzRing(callerData: Object): Observable<any> {
+    const url =
+      'https://ring-api.2040.chat/api/v1/customers/group-call-notification';
     return this.http.post(url, callerData);
   }
 
   updateNotificationSound(data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/onOff-notification`, data);
+  }
+
+  readAllNotification(id: number): Observable<any> {
+    return this.http.get(
+      `${this.baseUrl}/read-all-notification/${id}?q=${Date.now()}`
+    );
+  }
+
+  deleteAllNotification(id: number): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/delete-all-notification/${id}?q=${Date.now()}`
+    );
   }
 }
