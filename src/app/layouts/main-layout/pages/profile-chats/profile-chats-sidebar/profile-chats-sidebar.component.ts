@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -24,7 +25,7 @@ import { EncryptDecryptService } from 'src/app/@shared/services/encrypt-decrypt.
 import { CreateGroupModalComponent } from 'src/app/@shared/modals/create-group-modal/create-group-modal.component';
 import { ProfileMenusModalComponent } from '../../../components/profile-menus-modal/profile-menus-modal.component';
 import { NotificationsModalComponent } from '../../../components/notifications-modal/notifications-modal.component';
-import * as moment from 'moment';
+import moment from 'moment';
 import { ToastService } from 'src/app/@shared/services/toast.service';
 import { MessageService } from 'src/app/@shared/services/message.service';
 import { AppQrModalComponent } from 'src/app/@shared/modals/app-qr-modal/app-qr-modal.component';
@@ -88,7 +89,8 @@ export class ProfileChatsSidebarComponent
     private offcanvasService: NgbOffcanvas,
     public activeOffCanvas: NgbActiveOffcanvas,
     private tokenStorageService: TokenStorageService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {
     this.userId = +localStorage.getItem('user_id');
     this.originalFavicon = document.querySelector('link[rel="icon"]');
@@ -263,6 +265,7 @@ export class ProfileChatsSidebarComponent
         (user: any) => user.isAccepted === 'N'
       );
     });
+    this.cdr.markForCheck();
     return this.chatList;
   }
 
@@ -304,6 +307,7 @@ export class ProfileChatsSidebarComponent
         this.searchText = null;
       }
     }
+    this.cdr.markForCheck();
   }
 
   goToViewProfile(): void {
@@ -351,6 +355,7 @@ export class ProfileChatsSidebarComponent
       this.groupList = data;
       this.mergeUserChatList();
     });
+    this.cdr.markForCheck();
   }
 
   mergeUserChatList(): void {
@@ -374,6 +379,7 @@ export class ProfileChatsSidebarComponent
       });
       this.messageService.chatList.push(this.newChatList);
     }
+    this.cdr.markForCheck();
   }
 
   createNewGroup() {
@@ -514,7 +520,6 @@ export class ProfileChatsSidebarComponent
     modalRef.result.then((res) => {
       if (res !== 'cancel') {
         this.onChat(res);
-        console.log(res);
       }
     });
   }
@@ -560,5 +565,6 @@ export class ProfileChatsSidebarComponent
         this.onNewChat?.emit(newUser);
       }
     });
+    this.cdr.markForCheck();
   }
 }

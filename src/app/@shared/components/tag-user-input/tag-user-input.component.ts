@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -13,8 +14,10 @@ import {
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerService } from '../../services/customer.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { SharedService } from '../../services/shared.service';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { MessageService } from '../../services/message.service';
+import { EmojiPaths } from '../../constant/emoji';
 
 @Component({
   selector: 'app-tag-user-input',
@@ -30,14 +33,13 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   @Input('isShowMetaLoader') isShowMetaLoader: boolean = true;
   @Input('isShowEmojis') isShowEmojis: boolean = false;
   @Input('isCustomeSearch') isCustomeSearch: number = null;
-  @Input() placement: string = 'bottom-end';
   @Output('onDataChange') onDataChange: EventEmitter<any> =
     new EventEmitter<any>();
 
   @ViewChild('tagInputDiv', { static: false }) tagInputDiv: ElementRef;
   @ViewChild('userSearchDropdownRef', { static: false, read: NgbDropdown })
   userSearchNgbDropdown: NgbDropdown;
-
+  @Input() placement: string = 'bottom-end';
   metaDataSubject: Subject<void> = new Subject<void>();
 
   userList = [];
@@ -46,33 +48,25 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   isMetaLoader: boolean = false;
 
   copyImage: any;
+
+  emojiPaths = EmojiPaths;
   profileId: number;
-  emojiPaths = [
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Heart.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Cool.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Anger.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Censorship.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Hug.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Kiss.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/LOL.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Party.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Poop.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Sad.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Thumbs-UP.gif',
-    'https://s3.us-east-1.wasabisys.com/freedom-social/freedom-emojies/Thumbs-down.gif',
-  ];
 
   constructor(
     private renderer: Renderer2,
     private customerService: CustomerService,
     private spinner: NgxSpinnerService,
-    private messageService: MessageService
+    private sharedService: SharedService,
+    private messageService: MessageService,
+    private cdr: ChangeDetectorRef
   ) {
+    this.sharedService.loggedInUser$.subscribe((data) => {
+      this.profileId = data?.profileId;
+    });
     this.metaDataSubject.pipe(debounceTime(200)).subscribe(() => {
       this.getMetaDataFromUrlStr();
       this.checkUserTagFlag();
     });
-    this.profileId = +localStorage.getItem('profileId');
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -87,6 +81,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
       this.getMetaDataFromUrlStr();
       this.checkUserTagFlag();
     }
+    // this.moveCursorToEnd()
   }
 
   ngOnDestroy(): void {
@@ -95,61 +90,31 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   }
 
   messageOnKeyEvent(): void {
+    if (this.isCustomeSearch) {
+      this.cdr.detectChanges();
+    };
     this.metaDataSubject.next();
     this.emitChangeEvent();
   }
 
-  // checkUserTagFlag(): void {
-  //   this.userList = [];
+  // checkUserTagFlag1(): void {
   //   if (this.isAllowTagUser) {
-  //     let htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
-  //     const anchorTagRegex =
-  //       /<a\s+href="\/settings\/view-profile\/(\d+)"\s+class="text-danger"\s+data-id="\d+">@([\w\s]+)<\/a>/g;
-  //     htmlText = htmlText.replace(anchorTagRegex, '');
-  //     const atSymbolRegex = /@(\w*)/g;
-  //     const matches = [...htmlText.matchAll(atSymbolRegex)];
-  //     const cursorPosition = this.getCursorPosition();
-  //     if (matches.length > 0) {
-  //       let foundValidTag = false;
-  //       for (const match of matches) {
-  //         const atSymbolIndex = match.index;
-  //         if (cursorPosition > atSymbolIndex) {
-  //           let textAfterAt = htmlText
-  //             .substring(atSymbolIndex + 1, cursorPosition)
-  //             .trim();
-  //           textAfterAt = textAfterAt.replace(/<[^>]*>/g, '');
-  //           textAfterAt = textAfterAt.replace(/[^\w\s\-_\.]/g, '');
-  //           const currentPositionValue = textAfterAt.split(' ')[0].trim();
-  //           if (currentPositionValue.length > 0) {
-  //             this.userNameSearch = currentPositionValue;
-  //             foundValidTag = true;
-  //           }
-  //         } else {
-  //           const atSymbolIndex = htmlText.lastIndexOf('@');
-  //           if (atSymbolIndex !== -1) {
-  //             let textAfterAt = htmlText.substring(atSymbolIndex + 1).trim();
-  //             textAfterAt = textAfterAt.replace(/<[^>]*>/g, '');
-  //             textAfterAt = textAfterAt.replace(/[^\w\s\-_\.]/g, '');
-  //             this.userNameSearch = textAfterAt.split(' ')[0].trim();
-  //             foundValidTag = true;
-  //           }
-  //         }
-  //       }
-  //       if (
-  //         foundValidTag &&
-  //         this.userNameSearch &&
-  //         this.userNameSearch.length > 1 && !this.isCustomeSearch
-  //       ) {
+  //     const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
+
+  //     const atSymbolIndex = htmlText.lastIndexOf('@');
+
+  //     if (atSymbolIndex !== -1) {
+  //       this.userNameSearch = htmlText.substring(atSymbolIndex + 1);
+  //       if (this.userNameSearch?.length > 2) {
   //         this.getUserList(this.userNameSearch);
-  //       } else if (this.isCustomeSearch) {
-  //         this.getUserList('');
   //       } else {
   //         this.clearUserSearchData();
   //       }
+  //     } else {
+  //       this.clearUserSearchData();
   //     }
   //   }
   // }
-
   checkUserTagFlag(): void {
     this.userList = [];
     if (this.isAllowTagUser) {
@@ -215,16 +180,17 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     }
   }
 
+  // Method to get the cursor position
   getCursorPosition(): number {
     const selection = window.getSelection();
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      const preCaretRange = range.cloneRange();
-      preCaretRange.selectNodeContents(this.tagInputDiv.nativeElement);
-      preCaretRange.setEnd(range.endContainer, range.endOffset);
-      return preCaretRange.toString().length;
+      const preCaretRange = range.cloneRange(); // Create a clone of the current selection range
+      preCaretRange.selectNodeContents(this.tagInputDiv.nativeElement); // Select the contents of the contenteditable div
+      preCaretRange.setEnd(range.endContainer, range.endOffset); // Set the end to the current selection position
+      return preCaretRange.toString().length; // Return the length of the text up to the cursor position
     }
-    return -1;
+    return -1; // If no selection, return -1
   }
 
   getMetaDataFromUrlStr(): void {
@@ -240,12 +206,15 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
         /<a\s+(?![^>]*\bdata-id=["'][^"']*["'])[^>]*?href=["']([^"']*)["']/gi
       ),
     ].map((match) => match[1]);
+    // const matches = text?.match(/(?:https?:\/\/|www\.)[^\s<]+(?:\s|<br\s*\/?>|$)/);
     const matches = text.match(
       /(?:https?:\/\/|www\.)[^\s<&]+(?:\.[^\s<&]+)+(?:\.[^\s<]+)?/g
     );
     const url = matches?.[0] || extractedLinks?.[0];
     if (url) {
       if (url !== this.metaData?.url) {
+        // this.isMetaLoader = true;
+        // this.spinner.show();
         const unsubscribe$ = new Subject<void>();
         this.customerService
           .getMetaData({ url })
@@ -253,6 +222,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
           .subscribe({
             next: (res: any) => {
               this.isMetaLoader = false;
+              this.spinner.hide();
               if (res?.meta?.image) {
                 const urls = res.meta?.image?.url;
                 const imgUrl = Array.isArray(urls) ? urls?.[0] : urls;
@@ -316,57 +286,6 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     selection.addRange(range);
   }
 
-  // selectTagUser(user: any): void {
-  //   const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
-  //   const savedRange = this.saveCursorPosition();
-  //   const replaceUsernamesInTextNodesAtCursor = (
-  //     html: string,
-  //     userName: string,
-  //     userId: string,
-  //     displayName: string
-  //   ) => {
-  //     const parser = new DOMParser();
-  //     const doc = parser.parseFromString(html, 'text/html');
-  //     const walk = (node: Node) => {
-  //       if (node.nodeType === Node.TEXT_NODE) {
-  //         const cursorPosition = this.getCursorPosition();
-  //         const regex = /@/g;
-  //         const match = regex.exec(node.nodeValue || '');
-  //         if (match && match.index <= cursorPosition) {
-  //           const atSymbolIndex = match.index;
-  //           const replacement = `<a href="/settings/view-profile/${userId}" class="text-danger" data-id="${userId}">@${displayName}</a>`;
-  //           const beforeText = node.nodeValue?.substring(0, atSymbolIndex);
-  //           const afterText = node.nodeValue?.substring(cursorPosition);
-  //           const replacedText = `${beforeText}${replacement}${afterText}`;
-  //           const span = document.createElement('span');
-  //           span.innerHTML = replacedText;
-  //           while (span.firstChild) {
-  //             node.parentNode?.insertBefore(span.firstChild, node);
-  //           }
-  //           node.parentNode?.removeChild(node);
-  //         }
-  //       } else if (
-  //         node.nodeType === Node.ELEMENT_NODE &&
-  //         node.nodeName.toLowerCase() !== 'a'
-  //       ) {
-  //         node.childNodes.forEach((child) => walk(child));
-  //       }
-  //     };
-
-  //     doc.body.childNodes.forEach((child) => walk(child));
-  //     return doc.body.innerHTML;
-  //   };
-  //   const text = replaceUsernamesInTextNodesAtCursor(
-  //     htmlText,
-  //     this.userNameSearch,
-  //     user?.Id,
-  //     user?.Username.split(' ').join('')
-  //   );
-  //   this.setTagInputDivValue(text);
-  //   this.restoreCursorPosition(savedRange);
-  //   this.emitChangeEvent();
-  //   this.moveCursorToEnd();
-  // }
 
   selectTagUser(user: any): void {
     const htmlText = this.tagInputDiv?.nativeElement?.innerHTML || '';
@@ -399,12 +318,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
             const afterText = node.nodeValue?.substring(cursorOffset);
 
             const replacedText = `${beforeText}${replacement}${afterText}`;
-            console.log(
-              `replacedText======> ${replacement}`,
-              `before==> ${beforeText}`,
-              `after==> ${afterText}`
-            );
-
+            this.clearUserSearchData();
             const span = document.createElement('span');
             span.innerHTML = replacedText;
 
@@ -441,16 +355,17 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   saveCursorPosition(): Range | null {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
-      return selection.getRangeAt(0).cloneRange();
+      return selection.getRangeAt(0).cloneRange(); // Clone the range to save it
     }
     return null;
   }
 
+  // Restore saved cursor position
   restoreCursorPosition(savedRange: Range | null): void {
     if (savedRange) {
       const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(savedRange);
+      selection.removeAllRanges(); // Clear any existing ranges
+      selection.addRange(savedRange); // Restore the saved range
     }
   }
 
@@ -464,6 +379,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
 
   getUserList(search: string): void {
     if (this.isCustomeSearch) {
+      this.cdr.detach();
       this.messageService
         .getRoomProfileList(search, this.isCustomeSearch)
         .subscribe({
@@ -485,6 +401,7 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
         next: (res: any) => {
           if (res?.data?.length > 0) {
             this.userList = res.data.map((e) => e);
+            // this.userSearchNgbDropdown.open();
           } else {
             this.clearUserSearchData();
           }
@@ -499,6 +416,10 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   clearUserSearchData(): void {
     this.userNameSearch = '';
     this.userList = [];
+    // this.userSearchNgbDropdown?.close();
+    if (this.isCustomeSearch) {
+      this.cdr.reattach();
+    }
   }
 
   clearMetaData(): void {
@@ -553,16 +474,16 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
   }
   cleanPastedData(data: string): string {
     return data
-      .replace(/<!--.*?-->/gs, '')
-      .replace(/<!DOCTYPE.*?>/gs, '')
-      .replace(/<xml.*?<\/xml>/gs, '')
-      .replace(/<o:.*?<\/o:.+?>/gs, '')
-      .replace(/<w:.*?>.*?<\/w:.+?>/gs, '')
-      .replace(/<m:.*?>.*?<\/m:.+?>/gs, '')
-      .replace(/<!--[if.*?]>([\s\S]*?)<!\[endif]-->/gs, '')
-      .replace(/<w:LatentStyles.*?<\/w:LatentStyles>/gs, '')
-      .replace(/<style.*?<\/style>/gs, '')
-      .trim();
+      .replace(/<!--.*?-->/gs, '') // Remove all HTML comments
+      .replace(/<!DOCTYPE.*?>/gs, '') // Remove DOCTYPE declarations
+      .replace(/<xml.*?<\/xml>/gs, '') // Remove XML tags and their content
+      .replace(/<o:.*?<\/o:.+?>/gs, '') // Remove specific Office tags
+      .replace(/<w:.*?>.*?<\/w:.+?>/gs, '') // Remove Word-specific tags
+      .replace(/<m:.*?>.*?<\/m:.+?>/gs, '') // Remove Math-specific tags
+      .replace(/<!--[if.*?]>([\s\S]*?)<!\[endif]-->/gs, '') // Remove conditional comments
+      .replace(/<w:LatentStyles.*?<\/w:LatentStyles>/gs, '') // Remove specific LatentStyles tag
+      .replace(/<style.*?<\/style>/gs, '') // Remove <style> tags and their content
+      .trim(); // Trim any extra whitespace
   }
   removeInlineStyles(element: HTMLElement) {
     const elementsWithStyle = element.querySelectorAll('[style]');
@@ -571,18 +492,18 @@ export class TagUserInputComponent implements OnChanges, OnDestroy {
     }
 
     const tagsToConvert = [
-      'B',
-      'I',
-      'U',
-      'STRONG',
-      'EM',
-      'MARK',
-      'SMALL',
-      'S',
-      'DEL',
-      'INS',
-      'SUB',
-      'SUP',
+      'B', // Bold
+      'I', // Italic
+      'U', // Underline
+      'STRONG', // Strong
+      'EM', // Emphasis
+      'MARK', // Marked text
+      'SMALL', // Small text
+      'S', // Strikethrough
+      'DEL', // Deleted text
+      'INS', // Inserted text
+      'SUB', // Subscript
+      'SUP', // Superscript
     ];
     tagsToConvert.forEach((tag) => {
       const elements = element.getElementsByTagName(tag);

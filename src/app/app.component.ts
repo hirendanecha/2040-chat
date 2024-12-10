@@ -62,6 +62,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.socketService.socket?.emit('join', { room: this.profileId });
     if (this.tokenService.getToken()) {
+      this.sharedService.getUserDetails();
       this.customerService.verifyToken(this.tokenService.getToken()).subscribe({
         next: (res: any) => {
           if (!res?.verifiedToken) {
@@ -81,7 +82,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.originalFavicon = document.querySelector('link[rel="icon"]');
-      this.sharedService.getUserDetails();
       this.spinner.hide();
       setTimeout(() => {
         const splashScreenLoader =

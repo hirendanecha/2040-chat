@@ -5,6 +5,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { ToastService } from './toast.service';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { Socket } from 'socket.io-client';
+import { SocketService } from './socket.service';
 
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
@@ -16,9 +18,11 @@ export class TokenStorageService {
   isUserAuthenticated: Subject<boolean> = new BehaviorSubject<boolean>(false);
   public _credentials: any = {};
 
-  constructor(private cookieService: CookieService,
+  constructor(
+    private cookieService: CookieService,
     private router: Router,
     private toastService: ToastService,
+    private socketService: SocketService
   ) { }
 
   signOut(): void {
@@ -68,5 +72,14 @@ export class TokenStorageService {
 
   changeIsUserAuthenticated(flag: boolean = false) {
     this.isUserAuthenticated.next(flag);
+  }
+
+  clearLoginSession(profileId): void {
+    this.socketService.logout(
+      { profileId: profileId, token: this.getToken() },
+      (data) => {
+        return;
+      }
+    );
   }
 }

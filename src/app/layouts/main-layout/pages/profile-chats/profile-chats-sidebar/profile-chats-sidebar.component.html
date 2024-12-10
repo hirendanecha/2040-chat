@@ -6,8 +6,7 @@
       >
         <div
           class="avatar-item d-flex mb-2 gap-3 align-items-center cursor"
-          (click)="clearChatList()"
-        >
+          >
           <div ngbDropdown class="avatar-item position-relative online-status">
             <!--  -->
             <ng-container>
@@ -289,7 +288,7 @@
       </ng-container>
       <div class="d-flex justify-content-between select-chat-group mt-3">
         <button
-          (click)="selectButton('users'); getApprovedUserList()"
+          (click)="selectButton('users')"
           [ngClass]="{ active: selectedButton === 'users' }"
           title="Users"
         >
@@ -352,7 +351,7 @@
                 </div>
               </div>
             </div>
-            <div
+            <!-- <div
               class="d-center m-3 text-white c-pointer"
               (click)="loadMoreApprovedUsers()"
               *ngIf="hasMoreUsers"
@@ -362,7 +361,7 @@
                 class="font-24-px me-2"
               ></fa-icon>
               <span>Loadmore</span>
-            </div>
+            </div> -->
           </div>
         </ng-container>
         <ng-template #noNewUserFound>

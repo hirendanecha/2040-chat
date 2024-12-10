@@ -21,7 +21,7 @@ import { SearchFilterPipe } from './search-filter.pipe';
     MessageTimePipe,
     MessageDatePipe,
     SearchFilterPipe,
-    HighlightPipe,
+    HighlightPipe
   ],
   imports: [CommonModule],
   exports: [
@@ -32,7 +32,7 @@ import { SearchFilterPipe } from './search-filter.pipe';
     MessageTimePipe,
     MessageDatePipe,
     SearchFilterPipe,
-    HighlightPipe,
+    HighlightPipe
   ],
 })
 export class PipeModule {}

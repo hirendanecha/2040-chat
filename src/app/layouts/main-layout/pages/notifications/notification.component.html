@@ -9,7 +9,7 @@
     <div>
       <h5>Notifications</h5>
     </div>
-    <div class="btn-group cus-dropdown d-flex gap-3">
+    <div class="btn-group cus-dropdown d-flex gap-3" *ngIf="notificationList.length > 0">
       <div ngbDropdown class="d-inline-block">
         <button class="dropdown-btn" ngbDropdownToggle>
           <fa-icon [icon]="['fas', 'ellipsis']" class="font-24-px" />
@@ -125,7 +125,7 @@
     </ng-container>
 
     <ng-container *ngIf="notificationList.length === 0">
-      <span> No notifications!</span>
+      <span class="p-2"> No notifications!</span>
     </ng-container>
   </div>
 </div>
