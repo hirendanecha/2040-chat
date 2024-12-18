@@ -173,6 +173,11 @@ export class ProfileChatsListComponent
       localStorage.removeItem('callRoomId');
       this.callRoomId = null;
     }
+    if (this.userChat?.groupId) {
+      this.getGroupDetails(this.userChat?.groupId);
+    } else {
+      this.groupData = null;
+    }
   }
 
   ngOnInit(): void {
@@ -1379,7 +1384,8 @@ export class ProfileChatsListComponent
   // }
 
   private processMessageData(data): void {
-    const isActivePage = this.activePage === data.pagination.totalPages && data.data.length > 15;
+    const isActivePage =
+      this.activePage === data.pagination.totalPages && data.data.length > 15;
 
     // Sort the incoming messages by created date
     const sortedData = data.data.sort(
@@ -1414,8 +1420,8 @@ export class ProfileChatsListComponent
 
   private compareDates(dateA: string, dateB: string): number {
     const today = new Date();
-    const parsedDateA = dateA === "Today" ? today : new Date(dateA);
-    const parsedDateB = dateB === "Today" ? today : new Date(dateB);
+    const parsedDateA = dateA === 'Today' ? today : new Date(dateA);
+    const parsedDateB = dateB === 'Today' ? today : new Date(dateB);
     return parsedDateA.getTime() - parsedDateB.getTime();
   }
 
