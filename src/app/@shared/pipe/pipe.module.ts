@@ -11,6 +11,7 @@ import { MessageDatePipe } from './message-date.pipe';
 import { HighlightPipe } from './hightlight-text.pipe';
 import { GetImageUrlPipe } from './get-image-url.pipe';
 import { SearchFilterPipe } from './search-filter.pipe';
+import { LinkifyPipe } from './linkify.pipe';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { SearchFilterPipe } from './search-filter.pipe';
     MessageTimePipe,
     MessageDatePipe,
     SearchFilterPipe,
-    HighlightPipe
+    HighlightPipe,
+    LinkifyPipe,
   ],
   imports: [CommonModule],
   exports: [
@@ -32,7 +34,8 @@ import { SearchFilterPipe } from './search-filter.pipe';
     MessageTimePipe,
     MessageDatePipe,
     SearchFilterPipe,
-    HighlightPipe
+    HighlightPipe,
+    LinkifyPipe,
   ],
 })
 export class PipeModule {}

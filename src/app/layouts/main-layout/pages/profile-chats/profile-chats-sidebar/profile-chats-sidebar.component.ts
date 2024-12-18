@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
@@ -48,6 +49,7 @@ export class ProfileChatsSidebarComponent
 
   @ViewChild('userSearchDropdownRef', { static: false, read: NgbDropdown })
   userSearchNgbDropdown: NgbDropdown;
+  @ViewChild('chatSidebar') chatSidebar: ElementRef;
   searchText = '';
   userList: any = [];
   profileId: number;
@@ -64,7 +66,6 @@ export class ProfileChatsSidebarComponent
   approvedUserData = [];
 
   userMenusOverlayDialog: any;
-  hideOngoingCallButton: boolean = false;
   chatData: any = [];
 
   @Output('newRoomCreated') newRoomCreated: EventEmitter<any> =
@@ -112,7 +113,6 @@ export class ProfileChatsSidebarComponent
     // }
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        this.hideOngoingCallButton = this.router.url.includes('facetime');
         this.sharedService.callId = sessionStorage.getItem('callId') || null;
       }
     });
@@ -378,6 +378,9 @@ export class ProfileChatsSidebarComponent
         } else return ele;
       });
       this.messageService.chatList.push(this.newChatList);
+      if (this.chatSidebar) {
+        this.chatSidebar.nativeElement.scrollTop = 0;
+      }
     }
     this.cdr.markForCheck();
   }

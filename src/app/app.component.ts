@@ -124,7 +124,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             this.messageNotificationSound =
               user.messageNotificationSound === 'Y' || false;
           });
-          if (data?.notificationByProfileId !== this.profileId && !data.status) {
+          if (
+            data?.notificationByProfileId !== this.profileId &&
+            !data.status
+          ) {
             this.sharedService.isNotify = true;
             this.originalFavicon.href = '/assets/images/icon-unread.jpg';
           }
@@ -205,10 +208,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               ) {
                 const callIdMatch = data.link.match(/callId-\d+/);
                 const callId = callIdMatch ? callIdMatch[0] : data.link;
+                this.sharedService.setExistingCallData(chatDataPass);
                 this.router.navigate([`/facetime/${callId}`], {
                   state: { chatDataPass },
                 });
-                // this.router.navigate([`/freedom-call/${data.link}`]);
               }
               // window.open(`appointment-call/${data.link}`, '_blank');
               // window?.open(data?.link, '_blank');

@@ -52,8 +52,6 @@ export class NotificationsComponent {
         this.spinner.hide();
         if (this.activePage < res.pagination.totalPages) {
           this.hasMoreData = true;
-        } else {
-          this.hasMoreData = false;
         }
         this.notificationList = [...this.notificationList, ...res?.data];
       },
@@ -101,34 +99,6 @@ export class NotificationsComponent {
     this.getNotificationList();
   }
 
-  selectMessaging(data) {
-    if (!data?.postId) {
-      const userData = {
-        Id: data.notificationByProfileId,
-        ProfilePicName:
-          data.profileImage ||
-          data.ProfilePicName ||
-          '/assets/images/avtar/placeholder-user.png',
-        Username: data.Username,
-        GroupId: data.groupId,
-        GroupName: data.groupName,
-      };
-      const encodedUserData = encodeURIComponent(JSON.stringify(userData));
-      const url = this.router
-        .createUrlTree(['/profile-chats'], {
-          queryParams: { chatUserData: encodedUserData },
-        })
-        .toString();
-      this.router.navigateByUrl(url);
-    }
-    //  else if (!data?.postId && data?.groupId) {
-    //   const url = this.router.serializeUrl(
-    //     this.router.createUrlTree([`/profile-chats`])
-    //   );
-    //   window.location.href = url;
-    // }
-  }
-
   readAllNotifications(): void {
     this.customerService.readAllNotification(this.profileId).subscribe({
       next: (res) => {
@@ -155,5 +125,40 @@ export class NotificationsComponent {
         this.toastService.danger(error.message);
       },
     });
+  }
+
+  selectMessaging(data) {
+    if (!data?.postId) {
+      const userData = {
+        Id: data.notificationByProfileId,
+        ProfilePicName:
+          data.profileImage ||
+          data.ProfilePicName ||
+          '/assets/images/avtar/placeholder-user.png',
+        Username: data.Username,
+        GroupId: data.groupId,
+        GroupName: data.groupName,
+      };
+      const encodedUserData = encodeURIComponent(JSON.stringify(userData));
+      const url = this.router
+        .createUrlTree(['/profile-chats'], {
+          queryParams: { chatUserData: encodedUserData },
+        })
+        .toString();
+      this.router.navigateByUrl(url);
+    }
+  }
+
+  customName(notification): string {
+    if (!notification?.notificationDesc || !notification?.Username) {
+      return notification?.notificationDesc || '';
+    }
+    const username = notification.Username.trim();
+    if (notification.notificationDesc.includes('You have missed call from')) {
+      return notification.notificationDesc;
+    }
+    return notification.notificationDesc
+      .replace(new RegExp(`\\b${username}\\b`, 'g'), '')
+      .trim();
   }
 }

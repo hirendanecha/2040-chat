@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CustomerService } from './customer.service';
-import { PostService } from './post.service';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
@@ -35,12 +34,12 @@ export class SharedService {
   // Expose as an observable
   isNotify$ = this.isNotifySubject.asObservable();
 
+  private callData: any = {};
   callId: string;
   constructor(
     public modalService: NgbModal,
     private spinner: NgxSpinnerService,
     private customerService: CustomerService,
-    private postService: PostService,
     private route: ActivatedRoute,
     private tokenStorageService: TokenStorageService,
     private socketService: SocketService
@@ -132,7 +131,7 @@ export class SharedService {
   }
 
   getMetaDataFromUrlStr(url): void {
-    this.postService.getMetaData({ url }).subscribe({
+    this.customerService.getMetaData({ url }).subscribe({
       next: (res: any) => {
         const meta = res?.meta;
         const urls = meta?.image?.url;
@@ -217,5 +216,14 @@ export class SharedService {
   // Method to get the current value
   getNotify(): boolean {
     return this.isNotifySubject.getValue();
+  }
+
+  setExistingCallData(data) {
+    this.callData = data;
+  }
+
+  getExistingCallData() {
+    console.log(this.callData);
+    return this.callData;
   }
 }
